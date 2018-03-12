@@ -1,0 +1,55 @@
+<template>
+  <div class="out-bound-order-del">
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px;height: 257px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table :tableData="tableData"></detail-table>
+        </div>
+        <div style="height: 40px;padding: 5px;">
+          <el-button size="mini" type="primary" style="float: right;margin: 5px 5% 10px 0px">确定</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../outBoundOrderInfo/Info.vue"
+  import DetailTable from "../outBoundOrderInfo/DetailTable.vue"
+  export default{
+    name:"Confirm",
+    mounted(){
+
+    },
+    data(){
+      return{
+        dialogVisible:true,
+        tableData:[
+          {date:"----"},
+          {date:"----"},
+        ]
+      }
+    },
+    methods:{
+
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable,
+    }
+  }
+</script>
+<style>
+
+</style>

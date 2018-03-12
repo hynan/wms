@@ -1,0 +1,483 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：SH201712040001
+    </div>
+    <div class="card-box right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          新建调拨单
+        </div>
+        <div style="padding: 5px;height: 180px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <el-form ref="form" :model="form" label-width="130px" size="mini" style="width: 100%">
+            <el-form-item label="转出部门:" class="right-content-body-tableForm" style="width: 33%" prop="outDeptId" :rules="[
+      { required: true, message: '请选择', trigger: 'blur' },
+    ]">
+              <el-select clearable v-model="form.outDeptId" filterable placeholder="转出部门" style="width: 100%" @change="handleOutDept">
+                <el-option
+                        v-for="item in warehouseDeptList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转入部门:" class="right-content-body-tableForm" style="width: 33%" prop="InDeptId" :rules="[
+      { required: true, message: '请选择', trigger: 'blur' },
+    ]">
+              <el-select clearable v-model="form.InDeptId" filterable placeholder="转入部门" size="mini"  style="width: 100%" @change="handleInDept">
+                <el-option
+                        v-for="item in warehouseDeptList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转出仓库:" class="right-content-body-tableForm" style="width: 33%" prop="outWarehouseId" :rules="[
+      { required: true, message: '请选择', trigger: 'blur' },
+    ]">
+              <el-select clearable v-model="form.outWarehouseId" filterable placeholder="转出仓库" size="mini" style="width: 100%" @change="handleOutWh">
+                <el-option
+                        v-for="item in whList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转入仓库:" class="right-content-body-tableForm" style="width: 33%" prop="InWarehouseId" :rules="[
+      { required: true, message: '请选择', trigger: 'blur' },
+    ]">
+              <el-select clearable v-model="form.InWarehouseId" filterable placeholder="转出仓库" size="mini" style="width: 100%" @change="handleInWh">
+                <el-option
+                        v-for="item in whList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="备注:" class="right-content-body-tableForm" style="width: 99.2%">
+              <el-input size="mini" placeholder="" v-model="form.remarks"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <!--明细信息-->
+        <div style="padding: 5px;">
+          <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+              明细信息
+          </span>
+          <el-button size="mini" style="float: right;margin: 0px 7px 2px 0px" type="primary" @click="addDetail">添加明细</el-button>
+          <el-form :model="form" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="form.detailList" border style="width:100%" class="operation-table el-input el-input--mini">
+              <el-table-column  label="库区" align="center" :show-overflow-tooltip="true" min-width="120">
+              <template slot-scope="scope">
+                <el-form-item label="" :prop="'detailList.'+scope.$index+'.storeAreaCode'" v-if="scope.row.state=='edit'" :rules="rules.storeAreaCode">
+                  <el-select  size="mini" v-model="scope.row.storeAreaCode" @change="handleArea"><el-option v-for="item in arealist" :value="item.name" :key="item.name" :label="item.name"></el-option></el-select>
+                </el-form-item>
+                <span v-else>{{scope.row.storeAreaCode}}</span>
+              </template>
+            </el-table-column>
+              <el-table-column  label="货位" align="center" :show-overflow-tooltip="true" min-width="120">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.goodsAllocationCode'" v-if="scope.row.state=='edit'" :rules="rules.goodsAllocationCode">
+                    <el-select size="mini" v-model="scope.row.goodsAllocationCode" @change="handleGoods"><el-option v-for="item in goodslist" :value="item.code" :key="item.code" :label="item.code"></el-option></el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.goodsAllocationCode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="物料编码" align="center" :show-overflow-tooltip="true" min-width="120">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.materialCode'" v-if="scope.row.state=='edit'" :rules="rules.materialCode">
+                    <el-select size="mini" v-model="scope.row.materialCode" @change="handleMCode"><el-option v-for="item in mCodelist" :label="item.materialCode" :value="item.materialCode" :key="item.materialCode"></el-option></el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.materialCode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="物料名称" align="center" :show-overflow-tooltip="true" min-width="120">
+                <template slot-scope="scope">
+                  <!--<el-form-item label="" :prop="'detailList.'+scope.$index+'.materialName'" v-if="scope.row.state=='edit'" :rules="rules.materialName">-->
+                  <!--<el-select size="mini" v-model="scope.row.materialName"></el-select>-->
+                  <!--</el-form-item>-->
+                  <span>{{scope.row.materialName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="物料类别" align="center" :show-overflow-tooltip="true" min-width="120">
+                <template slot-scope="scope">
+                  <!--<el-form-item label="" :prop="'detailList.'+scope.$index+'.materialCategoryCode'" v-if="scope.row.state=='edit'" :rules="rules.materialCategoryCode">-->
+                  <!--<el-select size="mini" v-model="scope.row.materialCategoryCode"></el-select>-->
+                  <!--</el-form-item>-->
+                  <span>{{scope.row.materialCategoryName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="入库单号"  align="center" :show-overflow-tooltip="true" min-width="120">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.stockInDate'" v-if="scope.row.state=='edit'" :rules="rules.stockInDate">
+                    <el-select size="mini" v-model="scope.row.warehouseentryCode" @change="handleSCode"><el-option v-for="item in sCodelist" :label="item.warehouseentryCode" :value="item.warehouseentryCode" :key="item.warehouseentryCode"></el-option></el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.stockInDate}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="存货条码" align="center" :show-overflow-tooltip="true" min-width="120">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.stockBarcode'" v-if="scope.row.state=='edit'" :rules="rules.stockBarcode">
+                    <el-select size="mini" v-model="scope.row.stockBarcode" @change="handleBCode"><el-option v-for="item in bCodelist" :label="item.stockBarcode" :value="item.stockBarcode" :key="item.stockBarcode"></el-option></el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.stockBarcode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="型号" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <!--<el-form-item label="" :prop="'detailList.'+scope.$index+'.modelType'" v-if="scope.row.state=='edit'" :rules="rules.modelType">-->
+                  <!--<input class="el-input__inner" size="mini" v-model="scope.row.modelType">-->
+                  <!--</el-form-item>-->
+                  <span>{{scope.row.modelType}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="规格" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <!--<el-form-item label="" :prop="'detailList.'+scope.$index+'.specification'" v-if="scope.row.state=='edit'" :rules="rules.specification">-->
+                  <!--<input class="el-input__inner" size="mini" v-model="scope.row.specification">-->
+                  <!--</el-form-item>-->
+                  <span>{{scope.row.specification}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="库存数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <!--<el-form-item label="" :prop="'detailList.'+scope.$index+'.stockAmount'" v-if="scope.row.state=='edit'" :rules="rules.stockAmount">-->
+                  <!--<input class="el-input__inner" size="mini" v-model="scope.row.stockAmount">-->
+                  <!--</el-form-item>-->
+                  <span >{{scope.row.stockAmount}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="调拨数量" width="120" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.transferAmount'" v-if="scope.row.state=='edit'" :rules="rules.transferAmount">
+                    <input class="el-input__inner" size="mini" v-model="scope.row.transferAmount">
+                  </el-form-item>
+                  <span v-else>{{scope.row.transferAmount}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="物料所有人" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.ownerId'" v-if="scope.row.state=='edit'" :rules="rules.ownerId">
+                    <input class="el-input__inner" size="mini" v-model="scope.row.ownerId">
+                  </el-form-item>
+                  <span v-else>{{scope.row.ownerName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.headOfficeOrderNum'" v-if="scope.row.state=='edit'" :rules="rules.headOfficeOrderNum">
+                    <input class="el-input__inner" size="mini" v-model="scope.row.headOfficeOrderNum">
+                  </el-form-item>
+                  <span v-else>{{scope.row.headOfficeOrderNum}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.branchOfficeOrderNum'" v-if="scope.row.state=='edit'" :rules="rules.branchOfficeOrderNum">
+                    <input class="el-input__inner" size="mini" v-model="scope.row.branchOfficeOrderNum">
+                  </el-form-item>
+                  <span v-else>{{scope.row.branchOfficeOrderNum}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="产品批次" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.productBatch'" v-if="scope.row.state=='edit'" :rules="rules.productBatch">
+                    <input class="el-input__inner" size="mini" v-model="scope.row.productBatch">
+                  </el-form-item>
+                  <span v-else>{{scope.row.productBatch}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="计量单位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <!--<el-form-item label="" :prop="'detailList.'+scope.$index+'.unitName'" v-if="scope.row.state=='edit'" :rules="rules.unitName">-->
+                  <!--<input class="el-input__inner" size="mini" v-model="scope.row.unitName">-->
+                  <!--</el-form-item>-->
+                  <span>{{scope.row.unitName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column  label="操作" fixed="right" align="center" width="87">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.state=='edit'">
+                    <el-button type="text" size="mini" @click="savelDetail(scope.row,scope.$index,'detailForm')">保存</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                  <div v-else>
+                    <el-button type="text" size="mini" @click="editDetail(scope.row,scope.$index)">修改</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div style="text-align: right" class="right-content-body-foot">
+            <el-button size="mini" type="primary" @click="submit" :disabled="uploading">提交</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+    export default{
+        name:"ReportedLossAdd",
+        mounted:function () {
+            this.doAjax()
+        },
+        data(){
+            return{
+                radio:"",
+                index:"",
+                form:{
+                    outDeptId:'',
+                    /** 转出部门名称 */
+                    outDeptName:'',
+                    /** 转出仓库名称 */
+                    outWarehouseName:'',
+                    /** 转出仓库ID */
+                    outWarehouseId:'',
+                    /** 转入部门ID */
+                    InDeptId:'',
+                    /** 转入部门名称 */
+                    InDeptName:'',
+                    /** 转入仓库名称 */
+                    InWarehouseName:'',
+                    /** 转入仓库ID */
+                    InWarehouseId:'',
+                    remarks:'',
+                    detailList:[]
+                },
+                rules:{
+                    storeAreaCode:[{ required: true,message:'请选择库区', trigger: 'blur' }],
+                    goodsAllocationCode:[{ required: true,message:'请选择货柜', trigger: 'blur' }],
+                    materialCode:[{ required: true,message:'请选择物料编码', trigger: 'blur' }],
+                    warehouseentryCode:[{ required: true,message:'请选择入库单号', trigger: 'blur' }],
+                    stockBarcode:[{ required: true,message:'请选择存货条码', trigger: 'blur' }],
+                    transferAmount:[{ required: true,message:'请输入调拨数量', trigger: 'blur' }],
+                },
+                uploading:false,
+                whList:[],//仓库列表
+                arealist:[],//库区列表
+                goodslist:[],//货位列表
+                mCodelist:[],//物料编码列表
+                sCodelist:[],//入库单号列表
+                bCodelist:[],//条码列表
+                params:{}
+            }
+        },
+        methods:{
+            editDetail(data,index){
+                this.uploading = true
+                data.state = "edit";
+                this.index = index
+            },
+            delDetail(data,index){
+                this.form.detailList.splice(index, 1);
+                this.uploading = false
+            },
+            savelDetail(data,index,formName){
+                this.$refs[formName].validate((valid)=>{
+                    if(valid) {
+                        data.state = "nomal"
+                        this.index = -1
+                        this.uploading = false
+                    }})
+            },
+            addDetail() {
+                this.uploading = true
+                this.form.detailList.push({stockAmount:"",damageAmount:"",damageSinglePrice:'',damageMoneyAmount:'',damageReson:'',singlePrice:'',stockMoneyAmount:'',productBatch:'',ownerId:"",
+                    ownerName:'',headOfficeOrderNum:'',branchOfficeOrderNum:'',storeAreaName:'',storeAreaCode:'',goodsAllocationCode:'',stockBarcode:'',stockInDate:'',auditorId:'',
+                    auditorName:'',materialCode:'',materialName:'',materialCategoryCode:'',materialCategoryName:'',modelType:'',specification:'',unitName:'',warehouseentryCode:'',state:"edit"})
+                this.index = this.form.detailList.length-1
+            },
+            handleInDept(val){
+                for (let i of this.warehouseDeptList) {
+                    if (i.id == val) {
+                        this.form.InDeptName = i.name
+                    }
+                }
+            },
+            handleOutDept(val){
+                for (let i of this.warehouseDeptList) {
+                    if (i.id == val) {
+                        this.form.outDeptName = i.name
+                    }
+                }
+            },
+            handleOutWh(val){
+                for (let i of this.whList) {
+                    if (i.id == val) {
+                        this.form.outWarehouseName = i.name
+                    }
+                }
+                this.$http.post('/ys-web-wms/common/getStoreAreas',{id:val}).then(
+                    (res)=>{
+                        this.arealist = res.data.data?res.data.data:[]
+                    }
+                )
+            },
+            handleInWh(val){
+                for (let i of this.whList) {
+                    if (i.id == val) {
+                        this.form.InWarehouseName = i.name
+                    }
+                }
+            },
+            handleArea(val){
+                this.resetCurrent()
+                this.form.detailList[this.index].goodsAllocationCode=''
+                this.form.detailList[this.index].materialCode=''
+                this.form.detailList[this.index].materialName=''
+                this.form.detailList[this.index].materialCategoryCode=''
+                this.form.detailList[this.index].materialCategoryName=''
+                this.form.detailList[this.index].warehouseentryCode=''
+                this.form.detailList[this.index].stockBarcode=''
+                let id = ''
+                for(let item of this.arealist){
+                    if(item.code == val){
+                        id = item.id
+                    }
+                }
+                this.$http.post('/ys-web-wms/store/getAllocationByArea',{id:id}).then(
+                    (res)=>{
+                        this.goodslist = res.data.data?res.data.data:[]
+                    }
+                )
+            },
+            handleGoods(val){
+                this.resetCurrent()
+                this.form.detailList[this.index].materialCode=''
+                this.form.detailList[this.index].materialName=''
+                this.form.detailList[this.index].materialCategoryCode=''
+                this.form.detailList[this.index].materialCategoryName=''
+                this.form.detailList[this.index].warehouseentryCode=''
+                this.form.detailList[this.index].stockBarcode=''
+                this.params={goodsAllocationCode : val}
+                this.getList((data)=>{
+                    this.mCodelist = data
+                })
+            },
+            handleMCode(val){
+                this.params={
+                    goodsAllocationCode:this.params.goodsAllocationCode,
+                    materialCode : val
+                }
+                this.resetCurrent()
+                this.form.detailList[this.index].warehouseentryCode=''
+                this.form.detailList[this.index].stockBarcode=''
+                for(let item of this.mCodelist){
+                    if(item.materialCode == val){
+                        this.form.detailList[this.index].materialName = item.materialName
+                        this.form.detailList[this.index].materialCategoryName = item.materialCategoryName
+                        this.form.detailList[this.index].materialCategoryCode = item.materialCategoryCode
+                    }
+                }
+                this.getList((data)=>{
+                    this.sCodelist = data
+                })
+            },
+            handleSCode(val){
+                this.params={
+                    goodsAllocationCode:this.params.goodsAllocationCode,
+                    materialCode : this.params.materialCode,
+                    wareEntryCode  :val,
+                }
+                this.resetCurrent()
+                this.form.detailList[this.index].stockBarcode=''
+                this.getList((data)=>{
+                    this.bCodelist = data
+                })
+            },
+            handleBCode(val){
+                this.resetCurrent()
+                for(let item of this.bCodelist){
+                    if(item.stockBarcode == val){
+                        item.storeAreaCode = this.form.detailList[this.index].storeAreaCode
+                        this.form.detailList[this.index] = Object.assign(this.form.detailList[this.index],item)
+                    }
+                }
+            },
+            resetCurrent(){
+                this.form.detailList[this.index] = Object.assign(this.form.detailList[this.index],{stockAmount:"",damageAmount:"",damageSinglePrice:'',damageMoneyAmount:'',damageReson:'',singlePrice:'',stockMoneyAmount:'',productBatch:'',ownerId:"",
+                    ownerName:'',headOfficeOrderNum:'',branchOfficeOrderNum:'',stockInDate:'',auditorId:'',
+                    auditorName:'',modelType:'',specification:'',unitName:'',state:"edit"} )
+            },
+            doAjax(){
+                this.$http.post('/ys-web-wms/damage/getWhList').then(
+                    (res)=>{
+                        this.whList = res.data.data?res.data.data:[]
+                    }
+                )
+            },
+            getList(cb){
+                this.$http.post('/ys-web-wms/damage/getDetailList',{data:JSON.stringify(this.params)}).then(
+                    (res)=>{
+                        cb(res.data.data);
+                    }
+                )
+            },
+            submit(){
+                if(!this.form.detailList||this.form.detailList.length<1){
+                    this.$message({
+                        'type': 'warning',
+                        message: "请添加明细",
+                        'showClose': true
+                    });
+                    return false
+                }
+                this.$refs['form'].validate((valid)=>{
+                    if(valid){
+                        this.uploading = true
+                        this.$http.post("/ys-web-wms/transfer/add", {params: JSON.stringify(this.form)})
+                            .then((response) => {
+                                if (response.data.data.status == '200') {
+                                    this.$message({
+                                        'type': 'success',
+                                        message: "操作成功",
+                                        'showClose': true
+                                    });
+                                    this.$store.commit('IS_REFRESH')
+                                } else {
+                                    this.$message({
+                                        'type': 'error',
+                                        message: "操作失败，,请重试或联系管理",
+                                        'showClose': true
+                                    });
+                                    this.uploading = false
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                this.uploading = false
+                            });
+                    }else{
+                        this.$nextTick(()=> {
+                            document.getElementsByClassName("el-form-item__error")[0].parentNode.getElementsByClassName('el-input__inner')[0].scrollIntoView()
+                            document.getElementsByClassName("el-form-item__error")[0].parentNode.getElementsByClassName('el-input__inner')[0].focus()
+                        })
+                    }
+                })
+            }
+        },
+        components:{
+
+        },
+      computed:{
+          warehouseDeptList(){
+              return this.$store.state.selectList.warehouseDeptList;
+          },
+          "whList":function () {
+              return this.$store.state.selectList.warehouseList;
+          },
+      }
+  }
+</script>
+<style>
+
+</style>

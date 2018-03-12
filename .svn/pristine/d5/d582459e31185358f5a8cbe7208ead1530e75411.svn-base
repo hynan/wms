@@ -1,0 +1,172 @@
+<template>
+  <div>
+    <div class="right-content-body-topTitle not-print">
+      打印标签
+    </div>
+    <div style="padding: 10px" id="tagPrint">
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+      <div style="border: 1px solid grey;height: 250px" >1</div>
+      <div style="border: 1px solid grey;">
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">物料名称:</el-col>
+          <el-col :span="8">*********</el-col>
+          <el-col :span="4" style="text-align: right;padding-right: 7px;">仓库:</el-col>
+          <el-col :span="8">*********</el-col>
+        </el-row>
+      </div>
+    </div>
+    <div style="text-align: right;padding: 10px">
+      <el-button @click="print" size="mini" type="primary" class="not-print">打印</el-button>
+      <el-button @click="cancel" size="mini" class="not-print">取消</el-button>
+    </div>
+    <pdf-print @closepdf="isShow=false" :pdfurl="pdfData" v-if="isShow"></pdf-print>
+  </div>
+</template>
+<script>
+  import html2Canvas from 'html2canvas'
+  import JsPDF from 'jspdf'
+  import PdfPrint from "../../common/pdfPrint/PdfPrint.vue"
+  export default{
+    name:"PrintAlert",
+    mounted(){
+
+    },
+    data(){
+      return{
+        isShow:false,
+        pdfData:""
+      }
+    },
+    methods:{
+      print(){
+        let _this = this;
+        this.getPdf("#tagPrint","标签打印",function (doc,blob) {
+          var url = window.URL.createObjectURL(blob)
+          var win=window.open(url);
+          win.print();
+          win.location.reload();
+        });
+//        window.print();
+      },
+      cancel(){
+        this.$emit("close",true)
+      }
+    },
+    components:{
+      "pdf-print":PdfPrint
+    }
+  }
+</script>
+<style>
+
+</style>

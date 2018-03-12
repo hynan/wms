@@ -1,0 +1,57 @@
+<template>
+    <div class="navbtn-wrapper not-print">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="examine" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >审核</router-link>
+      <router-link :to="putaway" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >上架</router-link>
+      <router-link :to="print" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >打印</router-link>
+      <router-link :to="tag" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >标签</router-link>
+      <router-link :to="copy" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >复制</router-link>
+      <router-link :to="edit" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >修改</router-link>
+      <router-link :to="del" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >删除</router-link>
+      <router-link :to="cancellation" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >作废</router-link>
+    </div>
+</template>
+<script>
+    export default {
+      name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+          allNo:false
+        }
+      },
+      computed:{
+        "info":function(){
+          return "/putInStorage/detail/"+this.id+"/info";
+        },
+        "examine":function(){
+          return "/putInStorage/detail/"+this.id+"/examine";
+        },
+        "putaway":function(){
+          return "/putInStorage/detail/"+this.id+"/putaway";
+        },
+        "print":function(){
+          return "/putInStorage/detail/"+this.id+"/print";
+        },
+        "tag":function(){
+          return "/putInStorage/detail/"+this.id+"/tag";
+        },
+        "copy":function(){
+          return "/putInStorage/detail/"+this.id+"/copy";
+        },
+        "edit":function(){
+          return "/putInStorage/detail/"+this.id+"/edit";
+        },
+        "del":function(){
+          return "/putInStorage/detail/"+this.id+"/del";
+        },
+        "cancellation":function(){
+          return "/putInStorage/detail/"+this.id+"/cancellation";
+        },
+
+      },
+    }
+</script>
+<style>
+
+</style>

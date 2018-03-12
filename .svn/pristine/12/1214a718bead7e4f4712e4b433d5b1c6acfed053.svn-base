@@ -1,0 +1,178 @@
+<template>
+  <div class="toExamine">
+    <div class="right-topTitle">
+      单据号：{{info.basicInfo.checkBillCode}}
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info :info="info.basicInfo"></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <el-table :data="info.detailList" border style="width: 100%" class="operation-table"   :row-class-name="tableRowClassName">
+            <el-table-column prop="barCode" label="库存条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="storagebinCode" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="actualAmount" label="实际数量" align="center" :show-overflow-tooltip="true" >
+            </el-table-column>
+            <el-table-column prop="stockMoneyAmount" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="actualMoneyAmount" label="实际金额" align="center" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column prop="singlePrice" label="单价" width="60" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="measureUnit" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="OverageAmount" label="盘盈入库数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="shortageAmount" label="盘亏出库数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+          <el-row style="margin-top: 17px" class="right-content-body-tableCss">
+            <el-col :span="2" class="right-content-body-tableCss-left">核实备注:</el-col>
+            <el-col :span="22" class="right-content-body-tableCss-right">
+              <el-input
+                type="textarea"
+                :rows="5"
+                readonly
+                v-model="info.verifyRemarks">
+              </el-input>
+            </el-col>
+          </el-row>
+        </div>
+        <div style="padding: 5px;" >
+          <span class="right-content-body-little-title">
+            审核信息
+          </span>
+          <el-table :data="info.reviewList" border style="width:100%;">
+            <el-table-column prop="reviewDate" label="审核时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="reviewerName" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="reveiwResultKey" label="审核结果" align="center" :show-overflow-tooltip="true">
+              <span slot-scope="sp">{{sp.row.reveiwResultKey|enumtext(YesNo)}}</span>
+            </el-table-column>
+            <el-table-column prop="refuseReason" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+          <br/>
+        </div>
+        <el-form label-width="130px" size="mini" style="width: 90%;margin:-1px 0px 0px 0px;display: inline-table">
+          <el-form-item label="是否同意:"  style="width:99.8%">
+            <el-switch
+                    v-model="doesAgreeFlag"
+                    :active-text="YesNo[0].name"
+                    :inactive-text="YesNo[1].name"
+                    :active-value="YesNo[0].code"
+                    :inactive-value="YesNo[1].code">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="拒绝原因:"  v-if="doesAgreeFlag==YesNo[1].code" >
+            <el-input size="mini"></el-input>
+          </el-form-item>
+          <div style="text-align: right">
+            <el-button size="mini" type="primary" style="float: right;margin: 10px" @click="submit" :disabled="uploading">提交</el-button>
+          </div>
+        </el-form>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../stockTackingInfo/Info.vue"
+  export default{
+    name:"ToExamine",
+      mounted(){
+          this.doAjax()
+      },
+      data(){
+          return{
+              info:{
+                  basicInfo:{},
+                  detailList:[],
+                  reviewList:[],
+                  verifyRemarks:''
+              },
+              doesAgreeFlag:2,
+              refuseReason:'',
+              uploading:false,
+          }
+      },
+      methods: {
+          tableRowClassName({row, rowIndex}){
+              if(row.stockAmount!=row.actualAmount){
+                  return 'warning-row'
+              }else{
+                  return ''
+              }
+          },
+          doAjax(){
+              this.$http.post('/ys-web-wms/check/getRInfo', {id: this.$route.params.id}).then(
+                  (res) => {
+                      this.info = Object.assign({
+                          basicInfo: {},
+                          detailList: [],
+                          reviewList: [],
+                          verifyRemarks:''
+                      }, res.data.data)
+                  }
+              )
+          },
+          submit(){
+              if (this.doesAgreeFlag == this.YesNo[1].code && !this.refuseReason) {
+                  this.$message({
+                      'type': 'warning',
+                      message: "请输入拒绝原因",
+                      'showClose': true
+                  });
+                  return false
+              }
+              let param = {
+                  billId: this.$route.params.id, doesAgreeFlag: this.doesAgreeFlag,
+                  refuseReason: this.refuseReason,
+              }
+              this.$http.post("/ys-web-wms/check/check", {params: JSON.stringify(param)})
+                  .then((response) => {
+                      if (response.data.data.status == '200') {
+                          this.$message({
+                              'type': 'success',
+                              message: "操作成功",
+                              'showClose': true
+                          });
+                          this.$router.push('/stockTacking/detail/' + this.$route.params.id + '/info')
+                      } else {
+                          this.$message({
+                              'type': 'error',
+                              message: "操作失败，,请重试或联系管理",
+                              'showClose': true
+                          });
+                          this.uploading = false
+                      }
+                  })
+                  .catch((error) => {
+                      console.log(error)
+                      this.uploading = false
+                  });
+          }
+      },
+      computed:{
+          YesNo(){
+              return this.$store.state.enumList.YesNo
+          },
+      },
+    components:{
+      "info":Info,
+    }
+  }
+</script>
+<style>
+  .toExamine-submit .right-content-body-tableForm{margin-left: 0px}
+  .toExamine .red-background{background-color: red;color: white}
+  .toExamine .red-background :hover{background-color: red}
+  .el-table .warning-row {
+    background: rgba(255, 51, 36, 0.96);
+    color: black;
+  }
+</style>

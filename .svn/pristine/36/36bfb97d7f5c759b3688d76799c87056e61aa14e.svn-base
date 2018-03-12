@@ -1,0 +1,146 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px;height: 157px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <el-table :data="tableData" border style="width: 100%">
+            <el-table-column type="selection" align="center" width="55"></el-table-column>
+            <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="出库数量" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-input size="mini" v-model="scope.row.date"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="盘亏数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.date" placeholder="物料所有人" size="mini">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="产品批次" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.date" placeholder="产品批次" size="mini">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="订单号" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.date" placeholder="订单号" size="mini">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.date" placeholder="库区" size="mini">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.date" placeholder="货位" size="mini">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="入库创建日期" width="90" align="center" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.date" placeholder="入库创建日期" size="mini">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+          <div style="text-align: right;padding: 7px;">
+            <el-button size="mini">保存</el-button>
+            <el-button size="mini" type="primary">提交</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../stockTackingInfo/Info.vue"
+  export default{
+    name:"InventoryLosses",
+    mounted(){
+
+    },
+    data(){
+      return{
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        tableData:[
+          {date:"----"},
+          {date:"----"},
+        ]
+      }
+    },
+    methods:{
+
+    },
+    components:{
+      "info":Info,
+    }
+  }
+</script>
+<style>
+
+</style>

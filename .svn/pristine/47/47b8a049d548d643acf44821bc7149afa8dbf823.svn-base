@@ -1,0 +1,107 @@
+<template>
+  <div class="toExamine">
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <el-table :data="tableData" border style="width: 100%" :row-class-name="rowClassName">
+            <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="num1" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="num2" label="实际数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="实际金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="盘盈入库数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="盘亏出库数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+          <el-row style="margin-top: 17px" class="right-content-body-tableCss">
+            <el-col :span="2" class="right-content-body-tableCss-left">核实备注:</el-col>
+            <el-col :span="22" class="right-content-body-tableCss-right">
+              <el-input
+                type="textarea"
+                :rows="5"
+                placeholder=""
+                v-model="test">
+              </el-input>
+            </el-col>
+          </el-row>
+        </div>
+        <div style="padding: 5px;height: 210px;" class="toExamine-submit">
+          <span class="right-content-body-little-title">
+            审核信息
+          </span>
+          <el-table :data="tableData" border style="width:100%">
+            <el-table-column prop="date" label="审核时间" width="131" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="审核结果" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+          <el-form label-width="130px" size="mini" style="width: 100%;margin:-1px 0px 0px 0px;">
+            <el-form-item label="是否同意:" class="right-content-body-tableForm" style="width:99.8%">
+              <el-switch
+                v-model="agree"
+                active-text="同意"
+                inactive-text="拒绝">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="拒绝原因:" class="right-content-body-tableForm" v-if="!agree" style="width:99.8%">
+              <el-input size="mini"></el-input>
+            </el-form-item>
+          </el-form>
+          <el-button size="mini" type="primary" style="float: right;margin: 10px">提交</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../stockTackingInfo/Info.vue"
+  export default{
+    name:"ToExamine",
+    mounted(){
+
+    },
+    data(){
+      return{
+        test:"",
+        agree:true,
+        tableData:[
+          {date:"----",num1:"1",num2:"2"},
+          {date:"----",num1:"1",num2:"1"},
+        ]
+      }
+    },
+    methods:{
+      rowClassName({row, rowIndex}){
+        if(row.num1 == row.num2){
+          return 'red-background'
+        }else{
+          return '';
+        }
+      }
+    },
+    components:{
+      "info":Info,
+    }
+  }
+</script>
+<style>
+  .toExamine-submit .right-content-body-tableForm{margin-left: 0px}
+  .toExamine .red-background{background-color: red;color: white}
+  .toExamine .red-background :hover{background-color: red}
+</style>

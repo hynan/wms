@@ -1,0 +1,64 @@
+<template>
+    <div style="display:inline-block">
+    <el-select v-model="city" placeholder="所在地" size="small" :clearable="true">
+      <el-option
+        v-for="item in cities"
+        :label="item.name"
+        :value="item.name">
+      </el-option>
+    </el-select>
+    </div>
+</template>
+<script>
+   import area from './area';
+   export default{
+    name :'CitiesSelect',
+    props:{
+      'value':{
+      },
+      'province':{
+        type:String,
+        required:true
+      }
+    },
+    data(){
+      return {
+        city:this.value
+      }
+    },
+    methods:{
+      resetValue(cities){
+        let b = cities.find((item)=>{
+          return item.name == this.city
+        });
+        if(!b){
+          this.city='';
+        }
+      }
+    },
+    computed:{
+      cities:function(){
+        let cities = area.cities.filter((item)=>{
+          return item.parent_code == this.provinceCode;
+        },this);
+        this.resetValue(cities);
+        return cities;
+      },
+      provinceCode:function(){
+       let pobj =  area.provinces.find((item)=>{
+          return item.name == this.province
+        },this);
+       return pobj ? pobj.code : '';
+      }
+    },
+    watch:{
+      'city':function(nval){
+        this.$emit('input',nval);
+      },
+      'value':function(nval){
+        this.city = nval;
+      }
+    }
+
+   }
+</script>

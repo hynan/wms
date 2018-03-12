@@ -1,0 +1,16 @@
+import * as types from "./mutations_types"
+
+export default {
+  // [types.SET_SLIDE_FLAG](state){
+  //   state.slideFlag = !state.slideFlag;
+  // },
+  // [types.SET_USER](state,useModel){
+  //   state.user = useModel;
+  // },
+  // [types.SET_Enum_List](state,val){
+  //   state.enumList = val;
+  // },
+  // [types.SET_ROLE_INFO](state,val){
+  //   state.roleInfo = val;
+  // },
+}

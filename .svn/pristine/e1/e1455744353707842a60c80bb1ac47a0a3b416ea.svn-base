@@ -1,0 +1,99 @@
+<template>
+  <div>
+    <div class="right-content-body-topTitle">
+      采购申请
+    </div>
+    <div style="padding: 5px 5px 0px 5px;">
+      <span class="right-content-body-little-title">基本信息</span>
+      <el-form ref="form" :model="formData" label-width="130px" size="mini" style="width: 100%">
+        <el-form-item label="采购单号:" class="right-content-body-tableForm">
+          系统自动生成
+        </el-form-item>
+        <el-form-item label="申请日期:" class="right-content-body-tableForm">
+          {{formData.arrivalDate}}
+        </el-form-item>
+        <el-form-item label="申请部门:" class="right-content-body-tableForm">
+          <el-select clearable v-model="formData.orderState" filterable placeholder="申请部门" style="width: 100%">
+            <el-option
+              v-for="item in testData"
+              :key="item.code"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="申请人:" class="right-content-body-tableForm" style="height: 33px;">
+          登录人
+        </el-form-item>
+        <el-form-item label="订单号:" class="right-content-body-tableForm">
+          <el-input size="mini"></el-input>
+        </el-form-item>
+        <el-form-item label="" class="right-content-body-tableForm" style="height: 33px;">
+
+        </el-form-item>
+      </el-form>
+    </div>
+    <div style="padding: 5px;">
+      <span class="right-content-body-little-title">采购清单</span>
+      <el-table border :data="tableData" style="width:100%" :max-height="tableHeight">
+        <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="数量" align="center" :show-overflow-tooltip="true">
+          <template slot-scope="scope">
+            <el-input-number size="mini" :controls="false" style="width: 100%"></el-input-number>
+          </template>
+        </el-table-column>
+        <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="要求到货日期" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="物料接收人" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="date" label="备注" align="center" :show-overflow-tooltip="true"></el-table-column>
+      </el-table>
+    </div>
+    <div style="text-align: right;padding-right: 3%">
+      <el-button size="mini">保存</el-button>
+      <el-button size="mini" type="primary">提交</el-button>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"PurchaseRequest",
+    props:["tableData"],
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.47
+    },
+    data(){
+      return{
+        tableHeight:"",
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        formData:{
+          orderNum:"",
+          orderState:"",
+          orderSource:"",
+          warehouse:"",
+          foreignOrder:"",
+          arrivalDate:new Date()
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+        }
+      }
+    },
+    methods:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

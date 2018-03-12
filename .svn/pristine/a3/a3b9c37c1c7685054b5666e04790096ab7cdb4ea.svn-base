@@ -1,0 +1,50 @@
+<template>
+    <div class="navbtn-wrapper not-print">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="receiving" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >收货</router-link>
+      <router-link :to="edit" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="receiptBillStatusKey==1">修改</router-link>
+      <router-link :to="del" tag="button" class="el-button el-button--mini" active-class="el-button--primary"  v-if="receiptBillStatusKey==1">删除</router-link>
+      <router-link :to="tag" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >标签</router-link>
+      <router-link :to="print" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >打印</router-link>
+    </div>
+</template>
+<script>
+    export default {
+      name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+          allNo:false
+        }
+      },
+      computed:{
+        "receiptBillStatusKey":function () {
+          return this.$store.state.receivingInfo.receiptBillStatusKey?this.$store.state.receivingInfo.receiptBillStatusKey:""
+        },
+        "info":function(){
+          return "/receivingInspection/detail/"+this.id+"/info";
+        },
+        "receiving":function(){
+          return "/receivingInspection/detail/"+this.id+"/receiving";
+        },
+        "edit":function(){
+          return "/receivingInspection/detail/"+this.id+"/edit";
+        },
+        "del":function(){
+          return "/receivingInspection/detail/"+this.id+"/del";
+        },
+        "tag":function(){
+          return "/receivingInspection/detail/"+this.id+"/tag";
+        },
+        "print":function(){
+          return "/receivingInspection/detail/"+this.id+"/print";
+        },
+        roleInfo:function(){
+          return this.$store.state.roleInfo;
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

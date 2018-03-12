@@ -1,0 +1,50 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="tableData" border style="width:98.2%">
+      <el-table-column :prop="'displayDto.'+item.rowName" :label="item.rowDesc" align="center" :show-overflow-tooltip="showTips" v-for="item,index in displayItem" :key="index" v-if="item.visible"></el-table-column>
+      <!--<el-table-column prop="displayDto.materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="displayDto.modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="displayDto.specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="displayDto.stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="displayDto.singlePrice" label="单价" width="97" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="displayDto.stockMoneyAmount" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="displayDto.measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    </el-table>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    props:{
+        tableData:{
+            type:Array
+        },
+        showTips:{
+            type:Boolean,
+            default:true
+        }
+    },
+    mounted(){
+
+    },
+    data(){
+      return{
+        dialogVisible:false,
+      }
+    },
+    methods:{
+
+    },
+    components:{
+
+    },
+      computed:{
+        displayItem(){
+            return this.$store.state.displayItems.checkDescs
+        }
+      }
+  }
+</script>
+<style>
+
+</style>

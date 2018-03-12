@@ -1,0 +1,167 @@
+<template>
+  <div class="card-box warning-manage">
+    <div class="card-box-inner">
+    <div class="searchBar-main">
+      <el-date-picker
+        style="width: 47%"
+        size="small"
+        v-model="searchParams.alarmDateBegin"
+        align="right"
+        type="date"
+        placeholder="报警开始日期"
+        :picker-options="pickerOptions">
+      </el-date-picker>
+      <el-date-picker
+        style="width: 47%"
+        size="small"
+        v-model="searchParams.alarmDateEnd"
+        align="right"
+        type="date"
+        placeholder="报警结束日期"
+        value-format="yyyy-MM-dd 23:59:59"
+        :picker-options="pickerOptions">
+      </el-date-picker>
+      <el-select clearable v-model="searchParams.warehouseId" placeholder="仓库" size="small" style="width:95%">
+        <el-option
+          v-for="item in warehouseList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.materialCategoryIds" filterable placeholder="物料类别" size="small" style="width:95%">
+        <el-option
+          v-for="item in materialCategoryList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.materialCode" :loading="loading1" remote filterable :remote-method="materialCodeSearch" placeholder="物料编码" size="small" style="width:95%">
+        <el-option
+          v-for="item in materialCodeList"
+          :key="item"
+          :label="item"
+          :value="item">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.materialName" :loading="loading2" remote filterable :remote-method="materialNameSearch" placeholder="物料名称" size="small" style="width:95%">
+        <el-option
+          v-for="item in materialNameList"
+          :key="item.id"
+          :label="item.name+'，'+item.id"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.alarmTypeKey" filterable placeholder="报警类别" size="small" style="width:95%">
+        <el-option
+          v-for="item in alarmType"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.alarmStatusKey" filterable placeholder="报警状态" size="small" style="width:95%">
+        <el-option
+          v-for="item in alarmStatus"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code">
+        </el-option>
+      </el-select>
+
+      <div class="searchBar-foot" style="width: 27%">
+        <el-button type="primary" @click="search" icon="search" size="mini">搜索</el-button>
+      </div>
+    </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    name:"WarningManageSearchBar",
+    props:{
+      params:Object
+    },
+    mounted(){
+
+    },
+    data(){
+      return {
+        loading1:false,
+        loading2:false,
+        materialCodeList:[],//物料编码列表
+        materialNameList:[],//物料名称列表
+        searchParams: Object.assign({},this.params),
+      }
+    },
+    methods:{
+      //物料名称模糊查询
+      materialNameSearch(val){
+        let _this = this;
+        if(!this.isNull(val)){
+          this.loading2 = true;
+          this.getMaterialList(val,function (res) {
+            _this.materialNameList = res;
+            this.loading2 = false;
+          })
+        }else{
+          this.materialNameList = [];
+        }
+      },
+      //物料编码模糊查询
+      materialCodeSearch(val){
+        let _this = this;
+        if(!this.isNull(val)){
+          this.loading1 = true;
+          this.getMaterialCodeList(val,function (res) {
+            _this.materialCodeList = res;
+            this.loading1 = false;
+          })
+        }else{
+          this.materialCodeList = [];
+        }
+      },
+      search(){
+        if(this.searchParams.materialCode != '' && this.searchParams.materialName != ''){
+          if(this.searchParams.materialCode == this.searchParams.materialName){
+            this.$emit("search",this.searchParams);
+          }else{
+            this.$message({
+              message:"选择的物料名称和物料编码不一致，请二选一或保持一致",
+              type:"error",
+              showClose:true
+            })
+          }
+        }else{
+          this.$emit("search",this.searchParams);
+        }
+      },
+      toAddStockTacking(){
+        this.$router.push("/stockTacking/stockTackingAdd");
+      }
+    },
+    computed:{
+      "pickerOptions":function () {
+        return this.$store.state.pickerOptions;
+      },
+      "warehouseList":function () {//仓库列表
+        return this.$store.state.selectList.warehouseList
+      },
+      "materialCategoryList":function () {//物料类别列表
+        return this.$store.state.selectList.materialCategoryList
+      },
+      "alarmType":function () {//报警类别
+        return this.$store.state.enumList.alarmType
+      },
+      "alarmStatus":function () {//报警状态
+        return this.$store.state.enumList.alarmStatus
+      }
+    },
+
+  }
+</script>
+<style>
+  .warning-manage .searchBar-main .el-select{margin-bottom: 7px;}
+  .warning-manage .searchBar-main .el-date-editor{margin-bottom: 7px;}
+</style>

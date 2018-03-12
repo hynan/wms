@@ -1,0 +1,50 @@
+<template>
+  <div class="container-main">
+    <div class="container-body">
+        <top-nav :id="id" :state="state" v-if="!topHide"></top-nav>
+        <router-view></router-view>
+    </div>
+  </div>
+</template>
+<script>
+  import NavBar from './TopNavBtn.vue'
+
+  export default {
+    name:"PurchaseDetail",
+    mounted:function(){
+      this.id = this.$route.params.id;
+      if(this.id == 0){
+        this.topHide = true;
+      }else{
+        this.topHide = false;
+      }
+      this.state = this.$route.params.state;
+    },
+    data(){
+      return {
+        id:0,
+        topHide:false,
+        state:""
+      }
+    },
+    methods:{
+    },
+    components:{
+      "top-nav":NavBar,
+    },
+    watch:{
+      "$route": function(){
+        this.id = this.$route.params.id;
+        if(this.id == 0){
+          this.topHide = true;
+        }else{
+          this.topHide = false;
+        }
+        this.state = this.$route.params.state;
+      }
+    }
+  }
+</script>
+<style scoped>
+
+</style>

@@ -1,0 +1,190 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：{{receivingInfo.receiptBillCode?receivingInfo.receiptBillCode:""}}
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          收货
+        </div>
+        <div style="padding: 5px;">
+          <span class="right-content-body-little-title">明细信息</span>
+          <el-form :model="detailForm" ref="detailForm" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width:100%" class="operation-table">
+              <el-table-column prop="materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="modelType" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="unitName" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="checkerName" label="质检员" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="arrivalAmount" label="到货数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="qualifiedAmount" label="合格数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.hasSubmit">{{scope.row.qualifiedAmount}}</span>
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.qualifiedAmount'" :rules="rules.qualifiedAmount" v-else>
+                    <el-input size="mini" v-model="scope.row.qualifiedAmount"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="unqualifiedDesc" label="不合格描述" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.hasSubmit">{{scope.row.unqualifiedDesc?scope.row.unqualifiedDesc:""}}</span>
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.unqualifiedDesc'" v-else>
+                    <el-input size="mini" v-model="scope.row.unqualifiedDesc"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="收货备注" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.hasSubmit">{{scope.row.introduction?scope.row.introduction:""}}</span>
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.introduction'" v-else>
+                    <el-input size="mini" v-model="scope.row.introduction"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="arrivalAmount" label="收货时间" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.checkDate">{{scope.row.checkDate}}</span>
+                  <div v-else>
+                    <el-tag size="mini">未收货</el-tag>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div style="height: 50px">
+            <el-button size="mini" type="primary" style="float: right;margin: 5px 17px 20px 0px;" @click="submit" v-if="$store.state.receivingInfo.receiptBillStatusKey == 2 && detailForm.tableData.length>0">保存</el-button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Receiving",
+    mounted:function () {
+      this.id = this.$route.params.id;
+      this.getReceiptDetailList();
+    },
+    data(){
+      var _this = this;
+      var checkAmount = (rule, value, callback) => {
+        let isNum = _this.isNumber(value)
+        if(_this.isNull(value) || undefined == value){
+          callback();
+        }else{
+          if (!isNum) {
+            callback(new Error('请填写正确的数值'));
+          } else {
+            if(value < 0 ){
+              callback(new Error('到货数量不能小于0'));
+            }
+            callback();
+          }
+        }
+      };
+      return{
+        id:"",
+        detailForm:{
+          tableData:[]
+        },
+        rules:{
+          qualifiedAmount: [
+            { validator: checkAmount, trigger: 'change' }
+          ],
+        }
+      }
+    },
+    methods:{
+      getReceiptDetailList(){
+        this.$http.get("/ys-web-wms/receivingInspectionReceiving/getReceiptDetailList?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            let tableData = result.data.data?result.data.data:[];
+            if(tableData.length>0){
+              for(var i=0;i<tableData.length;i++){
+                if(tableData[i].qualifiedAmount){
+                  tableData[i].hasSubmit = true;
+                }
+              }
+            }
+            this.detailForm.tableData = tableData;
+          }else{
+            this.$notify.error({
+              title:"收货明细获取失败",
+              message:result.data.message
+            })
+          }
+        });
+      },
+      submit(){
+        if(!this.checkForm("detailForm")){
+          return;
+        }
+        let submitData = [];
+        let tableData = this.detailForm.tableData;
+        if(tableData.length>0){
+          for(var i=0;i<tableData.length;i++){
+            if(!this.isNull(tableData[i].qualifiedAmount) && undefined != tableData[i].qualifiedAmount && !tableData[i].hasSubmit){
+              tableData[i].unqualifiedAmount = tableData[i].arrivalAmount - tableData[i].qualifiedAmount;
+              if(tableData[i].unqualifiedAmount<0){
+                this.$message({
+                  showClose:true,
+                  message:"物料"+tableData[i].materialName+"合格数量不能超过"+tableData[i].arrivalAmount,
+                  type:"error"
+                })
+                return;
+              }
+              submitData.push(tableData[i])
+            }
+          }
+          if(submitData.length>0){
+            this.doAjax(submitData);
+          }
+        }else{
+          this.$message({
+            showClose:true,
+            message:"暂无无可收货物料",
+            type:"warning"
+          });
+        }
+      },
+      doAjax(data){
+        let dataStr = JSON.stringify(data);
+        this.$http.post("/ys-web-wms/receivingInspectionReceiving/receiveCheck",{data:dataStr,id:this.id}).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:"保存成功",
+              showClose:true,
+              type:"success"
+            })
+            this.getReceiptDetailList();
+            let _this = this;
+            this.getReceivingNoteStatus(this.id,function (status) {
+              _this.$store.state.receivingInfo.receiptBillStatusKey = status
+            })
+          }else{
+            this.$notify.error({
+              title:"保存失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    components:{
+
+    },
+    computed:{
+      "receivingInfo":function () {
+        return this.$store.state.receivingInfo
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

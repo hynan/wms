@@ -1,0 +1,2 @@
+export const ADD_ORDER = 'ADD_PLAN'
+export const EDIT_ORDER = 'UPDATE_PLAN'

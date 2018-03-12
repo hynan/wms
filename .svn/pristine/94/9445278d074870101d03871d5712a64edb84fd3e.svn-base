@@ -1,0 +1,185 @@
+<template>
+  <div>
+    <el-row style="height:100%" class="warning-manage">
+      <el-col style="height:100%; background:#F9FAFC;padding: 10px 5px 10px 5px" id="leftMainBox" :span="6" class="left-main-box not-print">
+        <search-bar @search="search" :params="searchParams"></search-bar>
+      </el-col>
+      <el-col id='rightMainBox' :span="18" class="page-print">
+        <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+        <div class="right-topTitle"  style="text-align: right;padding-right: 3%" >
+          <el-button size="mini" type="primary" @click="purchaseAdd">采购申请</el-button>
+        </div>
+        <el-dialog title="" :visible.sync="dialogVisible" v-if="dialogVisible" top="7vh">
+          <purchase-request :tableData="tableData" @close="dialogVisible=false"></purchase-request>
+        </el-dialog>
+          <div class="right-content">
+            <div class="right-content-body" style="padding-top: 0px;margin-top: 5px;">
+              <div class="" style="height: 90%">
+                <el-table :data="tableData"  border :row-class-name="highlightCurrent" :max-height="tableHeight" style="width: 100%" >
+                  <el-table-column label="操作" fixed prop="buyCode" align="center" :show-overflow-tooltip="true">
+                    <template slot-scope="scope">
+                      <el-button size="mini" v-if="scope.row.alarmStatus == 1" @click="cancelWarning(scope.row)">取消</el-button>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="报警日期" prop="alarmDate"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="物料类别" prop="materialCategoryName"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="物料名称" prop="materialName"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="物料编码" prop="materialCode"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="型号" prop="modelType"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="规格" prop="specification"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="仓库" prop="warehouseName"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="库存数量" prop="stockAmount"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="上限数量" prop="upperLimitAmount"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="下限数量" prop="lowerLimitAmount"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                  <el-table-column label="报警类型" prop="alarmTypeKey"  align="center" :show-overflow-tooltip="true">
+                    <template slot-scope="scope">
+                      {{scope.row.alarmTypeKey|enumtext(alarmType)}}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="取消报警人" prop="cancelAlarmPersonName"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                </el-table>
+              </div>
+              <div class="pageBox" style="margin: 5px 0px;">
+                <el-pagination
+                  @size-change="handleSizeChange"
+                  @current-change="handleCurrentChange"
+                  :current-page="page.pageNo"
+                  :page-size="page.pageSize"
+                  layout="total, prev, pager, next"
+                  :total="count">
+                </el-pagination>
+              </div>
+            </div>
+          </div>
+      </el-col>
+    </el-row>
+    <div class="warning-cancel-alert">
+      <el-dialog title="" :visible.sync="dialogVisibleCancel" v-if="dialogVisibleCancel">
+        <cancel-message :id="currentId" @close="dialogVisibleCancel = false" @success="cancelSuccess"></cancel-message>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+
+<script>
+  import PurchaseRequest from "./PurchaseRequest.vue"
+  import SearchBar from './WarningManageSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  import CancelMessageAlert from "./CancelMessageAlert.vue"
+  export default {
+    name: 'WarningManageList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.73
+      this.getWarningList();
+    },
+    data () {
+      return {
+        currentId:"",
+        dialogVisibleCancel:false,
+        dialogVisible:false,
+        tableHeight:"",
+        count:1,
+        searchParams:{
+          alarmDateBegin:"",//报警日期：起始值
+          alarmDateEnd:"",//报警日期：结束值
+          warehouseId:"",//仓库ID
+          materialCategoryIds:"",//物料类别ID集合
+          materialCode:"",//物料编码
+          materialName:"",//物料名称
+          alarmTypeKey:"",//报警类型
+          alarmStatusKey:"",//报警状态
+          alarmRecordId:"",//记录ID
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          buyId:0,
+          instanceId:0
+        }
+      }
+    },
+    methods:{
+      purchaseAdd(){
+        this.$notify.info({
+          title: '消息',
+          message: '程序员小哥正在努力开发中......'
+        });
+//        this.dialogVisible = true;
+      },
+      search(val){
+        this.searchParams = val;
+        this.getWarningList();
+      },
+      cancelSuccess(){
+        this.getWarningList();
+        this.dialogVisibleCancel = false;
+      },
+      cancelWarning(row){
+        this.currentId = row.alarmRecordId;
+        this.dialogVisibleCancel = true;
+      },
+      getWarningList(){
+        let dataStr = JSON.stringify(this.searchParams);
+        let pageStr = JSON.stringify(this.page)
+        this.$http.post("/ys-web-wms/warning/getList",{data:dataStr,page:pageStr}).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              this.tableData = data.list?data.list:[];
+              this.count = data.count?data.count:0;
+            }else{
+              this.tableData = [];
+              this.count = 0;
+            }
+          }else{
+            this.$notify.error({
+              title:"列表查询失败",
+              message:result.data.message
+            })
+
+          }
+        })
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getWarningList();
+      },
+      highlightCurrent({row, rowIndex}){
+        return (row.alarmStatus == 1 ? 'red-background' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      'purchase-request':PurchaseRequest,
+      'cancel-message':CancelMessageAlert,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+
+      },
+    },
+    computed:{
+      "alarmType":function () {//报警类别
+        return this.$store.state.enumList.alarmType
+      },
+    },
+  }
+</script>
+
+<style>
+  .warning-cancel-alert .el-dialog__header{padding: 0px}
+  .warning-cancel-alert .el-dialog__body{padding: 0px}
+  .warning-cancel-alert .el-dialog{width: 37%}
+  .warning-cancel-alert .el-dialog__close{display: none}
+  .warning-manage .red-background{background-color: red;color: black}
+  .warning-manage .el-dialog{width: 70%}
+  .warning-manage .el-dialog__body{padding: 0px 0px 10px 0px}
+  .warning-manage .el-dialog__headerbtn{top:7px;}
+  .warning-manage .el-dialog__header{padding: 0px}
+  .warning-manage .el-dialog .el-form .el-form-item{margin-bottom: -1px;}
+  /*.warning-manage .red-background>toody:hover{background-color: red;color: white}*/
+</style>

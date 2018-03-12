@@ -1,0 +1,49 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          作废入库单
+        </div>
+        <div style="padding: 5px;">
+          <el-row style="margin-top: 17px" class="right-content-body-tableCss">
+            <el-col :span="2" class="right-content-body-tableCss-left">作废原因:</el-col>
+            <el-col :span="22" class="right-content-body-tableCss-right">
+              <el-input
+                type="textarea"
+                :rows="7"
+                placeholder="请输入原因"
+                v-model="test">
+              </el-input>
+            </el-col>
+          </el-row>
+        </div>
+        <div style="height: 40px">
+        <el-button size="mini" type="primary" style="float: right;margin: 10px">保存</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Cancellation",
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

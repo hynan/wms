@@ -1,0 +1,92 @@
+<template>
+  <div id="app" style="height:100%">
+    <el-row style="height:100%">
+      <el-col :span="24" style="height:100%">
+      <transition name="fade">
+       <router-view></router-view>
+      </transition>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'app',
+  mounted:function(){
+    this.getLoginUser();
+    this.$store.dispatch("getRoleInfo");//加载人员角色信息
+    this.$store.dispatch("getConfigData");//获取配置项信息
+    this.$store.dispatch("getMaterialMainTypeList");//加载物料大类
+    this.$store.dispatch("getMaterialList");//物料列表（物料名称+物料编码
+    this.$store.dispatch("getWarehouse");//加载仓库列表
+    this.$store.dispatch("getOrderList");//获取单号列表 （采购单||订货单）
+    this.$store.dispatch("getEnumList");//加载常用枚举
+    this.$store.dispatch("getPersonList");//加载人员列表
+    this.$store.dispatch("getAllVendors");//加载供应商列表
+    this.$store.dispatch("getMaterialType");//加载物料类别 （大类+小类）树形结构
+  },
+  data(){
+      return {
+        loginform:{
+          "loginName":"",
+          "password":"",
+          "appname":'AAA'
+        }
+      };
+  },
+  methods:{
+    getLoginUser:function(){
+      var self = this;
+      this.$http.post('/ys-web-purchms/purchms/getUserInfo')
+      .then(response=>{
+        if(response.body.status==200){
+          this.$store.commit("SET_USER",response.body.data.user);
+          console.log(this.$store.state.user)
+          //操作式机器码
+//          let cid = response.body.data.machineCode;
+//          if(cid){
+//            this.$store.commit("SET_CLIENT_ID",cid);
+//          }
+        }else{
+          this.errormsg=response.body.message;
+        }
+      },response=>{
+        this.$message({
+          'type':'error',
+          message:'请先登陆',
+          'showClose':true
+        });
+      })
+    }
+  },
+  watch:{
+    "$store.state.user":function (val) {
+        this.$http.get("/ys-web-purchms/common/getDept?id=" + val.id).then(function (result) {
+          if(result.data.state == 200){
+            this.$store.commit("SET_DEPT",result.data.data);
+          }else{
+            this.$notify.error({
+              title:"部门信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+    }
+  }
+}
+</script>
+
+<style>
+html,body{ height: 100%; }
+.fa{ margin-right: 5px; }
+body{ padding:0; margin: 0px; font-family: 'Microsoft YaHei'; }
+.useControlBox{ width: 100%; padding-top:20px; padding-bottom:14px; }
+.top_badge{ display: block; width: 18px; height: 18px; position: absolute; right: 5px; top: 10px; background: #DD5044; border-radius: 50%; text-align: center; line-height: 18px; font-size: 12px;  color: #fff;}
+.userico{ font-size: 40px!important; margin-top: 8px; }
+.user-control-box{
+  display: inline-block;
+  vertical-align: top;
+  color:#fff;
+}
+</style>

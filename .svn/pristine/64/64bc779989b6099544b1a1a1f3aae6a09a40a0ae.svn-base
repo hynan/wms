@@ -1,0 +1,55 @@
+<template>
+    <div class="navbtn-wrapper not-print">
+      <router-link :to="info" tag="button" class="el-button el-button--small" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="purchaseToExamine" tag="button" class="el-button el-button--small" active-class="el-button--primary" v-if="roleInfo.buyReviewer||roleInfo.sysAdmin">采购单审核</router-link>
+      <router-link :to="taskAssignment" tag="button" class="el-button el-button--small" active-class="el-button--primary" v-if="roleInfo.buyLeader||roleInfo.sysAdmin">任务分派</router-link>
+      <router-link :to="taskReceive" tag="button" class="el-button el-button--small" active-class="el-button--primary" v-if="roleInfo.buyer||roleInfo.sysAdmin">任务接收</router-link>
+      <router-link :to="inquiryManage" tag="button" class="el-button el-button--small" active-class="el-button--primary" v-if="roleInfo.buyer||roleInfo.buyLeader||roleInfo.sysAdmin">询价管理</router-link>
+      <router-link :to="arrivalHistory" tag="button" class="el-button el-button--small" active-class="el-button--primary" >到货历史</router-link>
+      <router-link :to="expeditingHistory" tag="button" class="el-button el-button--small" active-class="el-button--primary" >催货历史</router-link>
+    </div>
+</template>
+<script>
+    export default {
+      name:"TopNavBtn",
+      props:["id","state"],
+      data(){
+        return{
+          allNo:false
+        }
+      },
+      computed:{
+        "info":function(){
+          return "/purchaseListManage/detail/"+this.id+"/info/"+this.state+"?instanceId=" + this.$store.state.purchase.instanceId;
+        },
+        "taskAssignment":function(){
+          return "/purchaseListManage/detail/"+this.id+"/taskAssignment/"+this.state;
+        },
+        "taskReceive":function(){
+          return "/purchaseListManage/detail/"+this.id+"/taskReceive/"+this.state;
+        },
+        "inquiryManage":function(){
+          return "/purchaseListManage/detail/"+this.id+"/inquiryManage/"+this.state;
+        },
+        "arrivalHistory":function(){
+          return "/purchaseListManage/detail/"+this.id+"/arrivalHistory/"+this.state;
+        },
+        "expeditingHistory":function(){
+          return "/purchaseListManage/detail/"+this.id+"/expeditingHistory/"+this.state;
+        },
+        "purchaseToExamine":function(){
+          return "/purchaseListManage/detail/"+this.id+"/purchaseToExamine/"+this.state;
+        },
+        roleInfo:function(){
+          let data = this.$store.state.roleInfo;
+          if(!(data.buyApplier||data.buyReviewer||data.buyLeader||data.buyer||data.checker||data.dataManager||data.materialReceiver||data.warehouseKeeper||data.financeReceiver)){
+            this.allNo = true;
+          }
+          return this.$store.state.roleInfo;
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

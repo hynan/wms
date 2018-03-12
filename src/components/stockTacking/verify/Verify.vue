@@ -1,0 +1,185 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：{{info.basicInfo.checkBillCode}}
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px;height: 187px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info :info="info.basicInfo"></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <el-form :model="info" ref="detailForm" :inline-message="true">
+            <el-table :data="info.verifyDetailList" border style="width: 100%" class="operation-table">
+              <!--<el-table-column prop="storagebinCode" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <!--<el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <!--<el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <!--<el-table-column prop="modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <!--<el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <!--<el-table-column prop="stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <!---->
+              <!--&lt;!&ndash;<el-table-column prop="stockMoneyAmount" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>&ndash;&gt;-->
+              <!--&lt;!&ndash;<el-table-column prop="actualMoneyAmount" label="实际金额" align="center" :show-overflow-tooltip="true">&ndash;&gt;-->
+              <!--&lt;!&ndash;</el-table-column>&ndash;&gt;-->
+              <!--&lt;!&ndash;<el-table-column prop="singlePrice" label="单价" width="60" align="center" :show-overflow-tooltip="true"></el-table-column>&ndash;&gt;-->
+              <!--<el-table-column prop="measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+              <el-table-column :prop="item.rowName" :label="item.rowDesc" align="center" :show-overflow-tooltip="true" v-for="item,index in displayItem" :key="index" v-if="item.visible"></el-table-column>
+              <el-table-column prop="num" label="实际数量" align="center" :show-overflow-tooltip="true" min-width="150">
+                <template slot-scope="scope">
+                  <el-form-item v-if="info.basicInfo.checkBillStatusKey == '1'" label="" :prop="'verifyDetailList.'+scope.$index+'.actualAmount'" :rules="rules.num">
+                    <el-input-number size="mini" v-model.number="scope.row.actualAmount"  @change="numChange(scope.row)" :step="1" :min="0" controls-position="right"></el-input-number>
+                  </el-form-item>
+                  <span v-else>{{scope.row.actualAmount}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+            <!--<div style="text-align: center">-->
+              <!--<el-pagination-->
+                      <!--layout="prev, pager, next"-->
+                      <!--:total="total">-->
+              <!--</el-pagination>-->
+            <!--</div>-->
+          </el-form>
+          <el-row style="margin-top: 17px" class="right-content-body-tableCss">
+            <el-col :span="2" class="right-content-body-tableCss-left">核实备注:</el-col>
+            <el-col :span="22" class="right-content-body-tableCss-right">
+              <el-input
+                :readonly="info.basicInfo.checkBillStatusKey != '1'"
+                type="textarea"
+                :rows="5"
+                placeholder=""
+                v-model="info.verifyRemarks">
+              </el-input>
+            </el-col>
+          </el-row>
+          <div style="height: 37px">
+            <el-button size="mini" type="primary" style="float: right;margin: 7px 3% 10px 0px;" @click="submit" :disabled="uploading" v-if="info.basicInfo.checkBillStatusKey == '1'">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../stockTackingInfo/Info.vue"
+  export default{
+    name:"Verify",
+    mounted(){
+      this.doAjax()
+    },
+    data(){
+      var checkNum = (rule, value, callback) => {
+//        console.log(rule)
+//        console.log(value)
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        } else {
+          callback();
+        }
+      };
+      return{
+          info:{
+              basicInfo:{},
+              detailList:[],
+              verifyDetailList:[],
+              verifyRemarks:''
+          },
+        test:"",
+        rules: {
+          num: [
+            {validator: checkNum, trigger: 'change'}
+          ],
+        },
+          uploading:false,
+          total:0,
+          currentPage:1
+      }
+    },
+    methods:{
+      testChange(val){
+        console.log(val)
+      },
+      numChange(row){
+          this.$nextTick(()=>{
+              row.actualAmount=parseInt(row.actualAmount)
+              row.actualMoneyAmount = Number(row.actualAmount)*Number(row.singlePrice?row.singlePrice:0)
+          })
+      },
+        doAjax(){
+            this.$http.post('/ys-web-wms/check/getRInfo',{id:this.$route.params.id}).then(
+                (res)=>{
+                    this.info=Object.assign({
+                        basicInfo:{},
+                        detailList:[],
+                        verifyDetailList:[],
+                        verifyRemarks:''
+                    },res.data.data)
+                    if(this.info.detailList){
+                        this.info.detailList.map((val)=>{
+                            let obj = {
+                                barCode:val.barCode,
+                                storagebinCode:val.storagebinCode,
+                                checkDetailVerifyId:val.checkBillVerifyDetailId,
+                                materialCode:val.materialCode,
+                                materialName:val.materialName,
+                                measureUnit:val.measureUnit,
+                                modelNum:val.modelNum,
+                                singlePrice:val.singlePrice,
+                                specification:val.specification,
+                                stockAmount:val.stockAmount,
+                                stockMoneyAmount:val.stockMoneyAmount,
+                                actualMoneyAmount:val.actualMoneyAmount?val.actualMoneyAmount:0,
+                                actualAmount:val.actualAmount?val.actualAmount:0
+                            }
+                            this.info.verifyDetailList.push(obj)
+                        })
+//                        this.info.verifyDetailList = this.info.detailList
+                        this.total = this.info.verifyDetailList.length
+                    }
+                }
+            )
+        },
+        submit(){
+            this.$http.post("/ys-web-wms/check/verify", {params:JSON.stringify(this.info),id:this.$route.params.id})
+                .then((response) => {
+                    if (response.data.data.status == '200') {
+                        this.$message({
+                            'type': 'success',
+                            message: "操作成功",
+                            'showClose': true
+                        });
+                        this.$router.push('/stockTacking/detail/' + this.$route.params.id + '/info')
+                    } else {
+                        this.$message({
+                            'type': 'error',
+                            message: "操作失败，,请重试或联系管理",
+                            'showClose': true
+                        });
+                        this.uploading = false
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    this.uploading = false
+                });
+        }
+    },
+      computed:{
+          displayItem(){
+              return this.$store.state.displayItems.checkDescs
+          }
+      },
+    components:{
+      "info":Info,
+    }
+  }
+</script>
+<style>
+
+</style>

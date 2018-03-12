@@ -1,0 +1,37 @@
+<template>
+  <div>
+    <div class="right-content-body-topTitle">
+      下架信息
+    </div>
+    <div style="padding: 10px;">
+    <el-table :data="tableData" border style="width: 100%">
+      <el-table-column prop="warehouseName" align="center" label="仓库" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="storeAreaCode" align="center" label="库区" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="goodsAllocationCode" align="center" label="货位" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="alreadyDownAmount" align="center" label="下架数量" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="downDate" align="center" label="下架时间" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="downShelfPersonName" align="center" label="下架员" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"PutawayInformationAlert",
+    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

@@ -1,0 +1,358 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：{{receiptBillCode}}
+    </div>
+    <div class="card-box right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          修改收货单
+        </div>
+        <div style="padding: 5px;height: 140px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <el-form ref="infoForm" :model="formData" label-width="130px" :inline-message="true" :rules="rules" size="mini" style="width: 100%">
+            <el-form-item label="单据号:" class="right-content-body-tableForm">
+              {{receiptBillCode}}
+            </el-form-item>
+            <el-form-item label="单据来源:" class="right-content-body-tableForm" prop="receiptBillSourceKey">
+              <el-select clearable v-model="formData.receiptBillSourceKey" @change="billSourceChange" filterable placeholder="单据来源" size="mini"  style="width: 100%">
+                <el-option
+                  v-for="item in billSource"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="入库仓库:" class="right-content-body-tableForm" prop="warehouseId">
+              <el-select clearable v-model="formData.warehouseId" filterable placeholder="入库仓库" size="mini" style="width: 100%">
+                <el-option
+                  v-for="item in warehouseList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="外来单号:" class="right-content-body-tableForm">
+              <el-select clearable v-model="formData.externalBillCode" filterable placeholder="外来单号" size="mini" style="width: 100%">
+                <el-option
+                  v-for="item in externalCodeList"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="到货日期:" class="right-content-body-tableForm">
+              <el-date-picker
+                style="width: 100%"
+                size="mini"
+                v-model="formData.arrivalDate"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div style="padding: 5px;">
+          <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+              明细信息
+          </span>
+          <el-button size="mini" style="float: right;margin: 0px 7px 2px 0px" type="primary" @click="addDetail">添加明细</el-button>
+          <el-form :model="formData" ref="detailForm" :inline-message="true">
+            <el-table :data="formData.materialList" border style="width:100%" class="operation-table">
+              <el-table-column label="物料类别" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.materialCategoryCode'" v-if="scope.row.state=='edit'" :rules="rules.materialCategoryCode">
+                    <el-select v-model="scope.row.materialCategoryCode" @change="materialCategoryCodeChange(scope.row)" placeholder="物料类别" size="mini">
+                      <el-option
+                        v-for="item in materialCategoryList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.materialCategoryName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="物料编码" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.materialCode'" v-if="scope.row.state=='edit'" :rules="rules.materialCode">
+                    <el-input size="mini" v-model="scope.row.materialCode"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.materialCode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="物料名称" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.materialName'" v-if="scope.row.state=='edit'" :rules="rules.materialName">
+                    <el-input size="mini" v-model="scope.row.materialName"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.materialName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="型号" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" v-if="scope.row.state=='edit'">
+                    <el-input size="mini" v-model="scope.row.modelType"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.modelType}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="规格" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.specification'" v-if="scope.row.state=='edit'" :rules="rules.specification">
+                    <el-input size="mini" v-model="scope.row.specification"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.specification}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="单位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.unitName'" v-if="scope.row.state=='edit'" :rules="rules.unitName">
+                    <el-input size="mini" v-model="scope.row.unitName" :maxlength="5"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.unitName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="质检员" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.checkerId'" v-if="scope.row.state=='edit'" :rules="rules.checkerId">
+                    <el-select v-model="scope.row.checkerId" placeholder="质检员" @change="checkerChange(scope.row)" size="mini">
+                      <el-option
+                        v-for="item in checkerList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.checkerName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="到货数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'materialList.'+scope.$index+'.arrivalAmount'" v-if="scope.row.state=='edit'" :rules="rules.arrivalAmount">
+                    <el-input size="mini" v-model="scope.row.arrivalAmount"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.arrivalAmount}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" align="center" width="87">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.state=='edit'">
+                    <el-button type="text" size="mini" @click="savelDetail(scope.row,scope.$index,'detailForm')">保存</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                  <div v-else>
+                    <el-button type="text" size="mini" @click="editDetail(scope.row,scope.$index)">修改</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+        </div>
+        <div style="text-align: right" class="right-content-body-foot">
+          <el-button size="mini" @click="saveOrSubmit('save')">保存</el-button>
+          <el-button size="mini" type="primary" @click="saveOrSubmit('submit')">提交</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"ReceivingNoteEdit",
+    mounted(){
+      this.id = this.$route.params.id
+      this.getModifyInfo();
+    },
+    data(){
+      var _this = this;
+      var checkAmount = (rule, value, callback) => {
+        let isNum = _this.isNumber(value)
+        if (!isNum) {
+          callback(new Error('请填写正确的数值'));
+        } else {
+          if(value < 0 ){
+            callback(new Error('到货数量不能小于0'));
+          }
+          callback();
+        }
+      };
+      return{
+        id:"",
+        receiptBillCode:"",//单据号
+        externalCodeList:[],//外来单号列表
+        formData:{
+          receiptBillSourceKey:"",//单据来源
+          warehouseId:"",//入库仓库Id
+          externalBillCode:"",//外来单号
+          arrivalDate:new Date(),//到货日期
+          materialList:[],//明细信息
+        },
+        rules:{
+          receiptBillSourceKey:[
+            { required: true, message: '请选择单据来源', trigger: 'change' },
+          ],
+          warehouseId:[
+            { required: true, message: '请选择入库仓库', trigger: 'change' },
+          ],
+          materialCategoryCode: [
+            { required: true, message: '请选择物料类别', trigger: 'change' },
+          ],
+          materialCode: [
+            { required: true, message: '请输入物料编码', trigger: 'change' },
+          ],
+          materialName: [
+            { required: true, message: '请输入物料名称', trigger: 'change' },
+          ],
+          specification: [
+            { required: true, message: '请输入规格', trigger: 'change' },
+          ],
+          unitName: [
+            { required: true, message: '请输入单位', trigger: 'change' },
+          ],
+          checkerId: [
+            { required: true, message: '请选择质检员', trigger: 'change' },
+          ],
+          arrivalAmount: [
+            { required: true, message: '请输入到货数量', trigger: 'change' },
+            { validator: checkAmount, trigger: 'change' }
+          ],
+        }
+      }
+    },
+    methods:{
+      getModifyInfo(){
+        this.$http.get("/ys-web-wms/recivingInspectionInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              this.receiptBillCode = data.receiptBillCode;
+              let materialList = data.details?data.details:[];
+              if(materialList.length > 0){
+                for(var i=0;i<materialList.length;i++){
+                  materialList[i].state = "nomal";
+                }
+              }
+              this.formData = {
+                receiptBillSourceKey:data.receiptBillSourceKey?data.receiptBillSourceKey:"",//单据来源
+                warehouseId:data.warehouseId?data.warehouseId:"",//入库仓库Id
+                externalBillCode:data.externalBillCode?data.externalBillCode:"",//外来单号
+                arrivalDate:data.arrivalDate?data.arrivalDate:"",//到货日期
+                materialList:Object.assign([],materialList),//明细信息
+              };
+            }
+          }else{
+            this.$notify.error({
+              title:"订货单信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      saveOrSubmit(type){
+        if(this.checkForm("infoForm") && this.checkForm("detailForm")) {
+          if(this.formData.materialList.length==0){
+            this.$message({
+              message:"请添加明细",
+              type:"warning",
+              showClose:true
+            })
+            return;
+          }
+          let dataStr = JSON.stringify(this.formData);
+          let postUrl = "/ys-web-wms/recivingInspectionInfo/modifiedReceiptBill";
+          let message = type == 'save' ? "保存" : "提交";
+          this.$http.post(postUrl, {data: dataStr, type: type, id: this.id}).then(function (result) {
+            if (result.data.state == 200) {
+              this.$message({
+                showClose: true,
+                message: message + "成功",
+                type: "success"
+              })
+              if ("submit" == type) {
+                let _this = this;
+                this.getReceivingNoteStatus(this.id, function (status) {
+                  _this.$store.state.receivingInfo.receiptBillStatusKey = status
+                })
+              }
+              this.$router.push("/receivingInspection/detail/" + this.id + "/info")
+            } else {
+              this.$notify.error({
+                title: message + "失败",
+                message: result.data.message
+              })
+            }
+          })
+        }
+      },
+      checkerChange(row){//质检员改变
+        this.getNameById(row.checkerId,this.checkerList,function (result) {
+          row.checkerName = result;
+        })
+      },
+      materialCategoryCodeChange(row){//物料类别改变
+        this.getNameById(row.materialCategoryCode,this.materialCategoryList,function (result) {
+          row.materialCategoryName = result;
+        })
+      },
+      billSourceChange(val){
+        let _this = this;
+        this.getExternalCodeList(val,function (result) {
+          _this.externalCodeList = result;
+        })
+      },
+      editDetail(data,index){
+        console.log(data)
+        data.state = "edit";
+      },
+      delDetail(data,index){
+        this.formData.materialList.splice(index, 1);
+      },
+      savelDetail(data,index,formName){
+        if(this.checkForm(formName)){
+          data.state = "nomal"
+        }
+      },
+      addDetail() {
+        this.formData.materialList.push({
+          materialCode:"",//物料编码
+          materialName:"",//物料名称
+          materialCategoryCode:"",//物料类别编码
+          materialCategoryName:"",//物料类别名称
+          modelType:"",//型号
+          specification:"",//规格
+          unitName:"",//单位
+          checkerName:'',//质检员名称
+          checkerId:'',//质检员id
+          arrivalAmount:'',//到货数量
+          state:"edit"
+        })
+      }
+    },
+    computed:{
+      "billSource":function () {//收货单据来源
+        return this.$store.state.enumList.billSource;
+      },
+      "warehouseList":function () {//仓库列表
+        return this.$store.state.selectList.warehouseList;
+      },
+      "materialCategoryList":function () {//物料类别列表
+        return this.$store.state.selectList.materialCategoryList;
+      },
+      "checkerList":function () {//质检员列表
+        return this.$store.state.selectList.checkerList;
+      }
+    },
+  }
+</script>
+<style>
+
+</style>

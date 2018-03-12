@@ -1,0 +1,51 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="tableData" border style="width:98.2%" @row-click="rowCurrentChange">
+      <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="总公司订单号" width="97" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="出库数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+    <el-dialog title="" :visible.sync="dialogVisible" top="20vh">
+      <sold-out-information  :tableData="tableData"></sold-out-information>
+    </el-dialog>
+  </div>
+</template>
+<script>
+  import SoldOutInformationAlert from "./SoldOutInformationAlert.vue"
+  export default{
+    name:"Info",
+    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+        dialogVisible:false,
+      }
+    },
+    methods:{
+      rowCurrentChange(row, event, column){
+        this.dialogVisible = true;
+      }
+    },
+    components:{
+      "sold-out-information":SoldOutInformationAlert
+    }
+  }
+</script>
+<style>
+  .detail-table .el-dialog__header{padding: 0px}
+  .detail-table .el-dialog__body{padding: 0px}
+  /*.detail-table .el-dialog{width: 37%}*/
+  .detail-table .el-dialog__headerbtn{  top: 10px;}
+</style>

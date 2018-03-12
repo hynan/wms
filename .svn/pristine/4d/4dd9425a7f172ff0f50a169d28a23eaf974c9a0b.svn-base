@@ -1,0 +1,118 @@
+import * as types from './mutations_types'
+import Vue from 'vue'
+
+export const getMaterialMainTypeList = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getMaterialMainTypeList').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_Material_MainType,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getMaterialList = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getMaterialList').then(function(res){
+      if(res.data.state==200){
+        let resultData = res.data.data;
+        if(resultData && resultData.length>0){
+          for(var i=0;i<resultData.length;i++){
+            resultData[i].value = resultData[i].materialCode+","+resultData[i].materialName
+          }
+        }
+        commit(types.SET_MATERIAL_LIST,resultData);
+        resolve();
+      }
+    });
+});
+};
+
+export const getEnumList = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/enum_list').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_Enum_List,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getPersonList = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getPersonList').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_Person_List,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getMaterialType = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getMaterialTypeList').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_Material_Type,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getRoleInfo = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getRoleInfo').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_ROLE_INFO,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getWarehouse = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getWarehouse').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_WAREHOUSE_LIST,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getOrderList = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getOrderList').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_ORDER_LIST,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getAllVendors = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getAllVendors').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_ALL_VENDORS,res.data.data);
+        resolve();
+      }
+    });
+});
+};
+
+export const getConfigData = ({commit}) => {
+  return new Promise((resolve,reject)=>{
+      Vue.http.get('/ys-web-purchms/common/getConfig').then(function(res){
+      if(res.data.state==200){
+        commit(types.SET_CONFIG_DATA,res.data.data);
+        resolve();
+      }
+    });
+});
+};

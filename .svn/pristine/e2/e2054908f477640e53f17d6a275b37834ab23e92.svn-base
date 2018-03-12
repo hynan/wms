@@ -1,0 +1,70 @@
+<template>
+  <div class="out-bound-order-del">
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px;height: 257px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table></detail-table>
+        </div>
+        <div style="height: 40px;padding: 5px;">
+          <el-button size="mini" type="primary" style="float: right;margin: 5px 5% 10px 0px" @click="submit" v-if="$store.state.putOutStorageInfo.stockOutStatusKey == 4">确定</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../outBoundOrderInfo/Info.vue"
+  import DetailTable from "../outBoundOrderInfo/DetailTable.vue"
+  export default{
+    name:"Confirm",
+    mounted(){
+      this.id = this.$route.params.id
+    },
+    data(){
+      return{
+       id:""
+      }
+    },
+    methods:{
+      submit(){
+        this.$http.get("/ys-web-wms/putOutStorageConfirm/confirm?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:"确认成功",
+              type:"success",
+              showClose:true
+            })
+            let _this = this;
+            this.getPutOutStorageStatus(this.id,function (res) {
+              _this.$store.state.putOutStorageInfo.stockOutStatusKey = res;
+            })
+          }else{
+            this.$notify.error({
+              title:"确认失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable,
+    }
+  }
+</script>
+<style>
+
+</style>

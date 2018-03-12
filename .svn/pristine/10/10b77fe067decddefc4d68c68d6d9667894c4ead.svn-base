@@ -1,0 +1,178 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：{{$store.state.putInStorageInfo.stockInBillCode}}
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px" v-if="!toPutaway">
+          <el-button size="mini" style="float: right;margin: 0px 10px 10px 10px;" type="primary" @click="putaway">上架</el-button>
+          <el-table :data="recordList" border style="width: 100%">
+            <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="warehouseName" label="仓库" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="storeAreaName" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="goodsAllocationCode" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="alreadyUpAmount" label="上架数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="upShelfOperator" label="上架员" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="upShelfTime" label="上架时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+        <div style="padding: 5px" v-else>
+          <el-form :model="detailForm" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="detailForm.waitPutAwayList" border style="width: 100%" class="operation-table">
+              <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="waitUpAmount" label="待上架数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="upAmount" label="上架数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'waitPutAwayList.'+scope.$index+'.upAmount'" :rules="rules.amount">
+                    <el-input size="mini" v-model="scope.row.upAmount" :max="scope.row.waitUpAmount" :min="0"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column label="库区" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'waitPutAwayList.'+scope.$index+'.subareaCode'">
+                    <el-select v-model="scope.row.subareaId" placeholder="请选择" @change="subareaCodeChange(scope.row)" size="mini">
+                      <el-option
+                        v-for="item in storeAreaList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column label="货位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'waitPutAwayList.'+scope.$index+'.storagebinCode'">
+                    <el-select v-model="scope.row.storagebinCode" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in scope.row.goodsAllocationList"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div style="height: 40px">
+          <el-button size="mini" style="float: right;margin: 10px;" type="primary" @click="save">保存</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Putaway",
+    mounted(){
+      let _this = this;
+      this.id = this.$route.params.id;
+      this.getRecordList();//上架记录
+      this.getPutAwayList();//待上架列表
+      this.getStoreAreas(this.$store.state.putInStorageInfo.warehouseId,function (result) {
+        _this.storeAreaList = result;
+      })
+    },
+    data(){
+      var _this = this;
+      var checkAmount = (rule, value, callback) => {
+        if(_this.isNull(value)){
+          callback();
+        }
+        let isNum = _this.isNumber(value)
+        if (!isNum) {
+          callback(new Error('请填写正确的数值'));
+        } else {
+          if(value < 0 ){
+            callback(new Error('数值不能小于0'));
+          }
+          callback();
+        }
+      };
+      return{
+        id:"",
+        toPutaway:false,
+        recordList:[],//上架记录
+        detailForm:{
+          waitPutAwayList:[]//待上架列表
+        },
+        storeAreaList:[],//库区列表
+        goodsAllocationList:[],//货位列表
+        rules:{
+          amount:[
+            { validator: checkAmount, trigger: 'change' }
+          ]
+        },
+      }
+    },
+    methods:{
+      getRecordList(){//获取上架记录
+        this.$http.get("/ys-web-wms/putInStoragePutAway/getStockInUpShelfList?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.recordList = result.data.data?result.data.data:[];
+          }else{
+            this.$notify.error({
+              title:"上架记录获取失败",
+              message:result.data.message
+            })
+            this.recordList = [];
+          }
+        });
+      },
+      getPutAwayList(){
+        this.$http.get("/ys-web-wms/putInStoragePutAway/queryStockInDetailShelf?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            let waitPutAwayList = result.data.data?result.data.data:[];
+            let list = [];
+            if(waitPutAwayList.length>0){
+              for(var i=0;i<waitPutAwayList.length;i++){
+                if(waitPutAwayList[i].waitUpAmount>0){
+                  waitPutAwayList[i].upAmount = "";//上架数量
+                  waitPutAwayList[i].subareaId = "";//库区id
+                  waitPutAwayList[i].subareaCode = "";//库区编码
+                  waitPutAwayList[i].storagebinCode = "";//货位编码
+                  waitPutAwayList[i].goodsAllocationList = [];//货位列表
+                  list.push(waitPutAwayList[i]);
+                }
+              }
+            }
+            this.detailForm.waitPutAwayList = list;
+          }else{
+            this.$notify.error({
+              title:"待上架列表获取失败",
+              message:result.data.message
+            })
+            this.detailForm.waitPutAwayList = [];
+          }
+        })
+      },
+      subareaCodeChange(row){
+        let _this = this;
+        this.getGoodsAllocations(row.subareaId,function (result) {
+          row.goodsAllocationList = result;
+          _this.getCodeById(row.subareaId,_this.storeAreaList,function (res) {
+            row.subareaCode = res;
+          })
+        })
+      },
+      putaway(){
+        this.toPutaway = true;
+      },
+      save(){
+        this.toPutaway = false;
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

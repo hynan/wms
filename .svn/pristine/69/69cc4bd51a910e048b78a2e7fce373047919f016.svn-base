@@ -1,0 +1,69 @@
+
+//收货质检
+const ReceivingList = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/ReceivingList.vue')), 'receivingList')
+const ReceivingDetail = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/ReceivingDetail.vue')), 'receivingList')
+const ReceivingNoteAdd = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteAdd/ReceivingNoteAdd.vue')), 'receivingList')
+const ReceivingNoteInfo = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteInfo/ReceivingNoteInfo.vue')), 'receivingList')
+const Receiving = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receiving/Receiving.vue')), 'receivingList')
+const ReceivingNoteEdit = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteEdit/ReceivingNoteEdit.vue')), 'receivingList')
+const ReceivingNoteDel = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteDel/ReceivingNoteDel.vue')), 'receivingList')
+const ReceivingNotePrint = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNotePrint/ReceivingNotePrint.vue')), 'receivingList')
+const PrintTag = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/printTag/PrintTag.vue')), 'receivingList')
+
+//入库管理
+const PutInStorageList = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/PutInStorageList.vue')), 'putInStorageList')
+const PutInStorageDetail = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/PutInStorageDetail.vue')), 'putInStorageList')
+const GodownEntryAdd = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/godownEntryAdd/GodownEntryAdd.vue')), 'putInStorageList')
+const GodownEntryInfo = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/godownEntryInfo/GodownEntryInfo.vue')), 'putInStorageList')
+const ToExamine = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/toExamine/ToExamine.vue')), 'putInStorageList')
+const Putaway = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/putaway/Putaway.vue')), 'putInStorageList')
+const GodownEntryPrint = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/print/GodownEntryPrint.vue')), 'putInStorageList')
+const GodownEntryCopy = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/copy/GodownEntryCopy.vue')), 'putInStorageList')
+const GodownEntryEdit = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/godownEntyrEdit/GodownEntryEdit.vue')), 'putInStorageList')
+const GodownEntryDel = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/godownEntryDel/GodownEntryDel.vue')), 'putInStorageList')
+const GodownEntryCancellation = resolve => require.ensure([], () => resolve(require('../components/putInStorageManage/godownEntryCancellation/cancellation.vue')), 'putInStorageList')
+
+
+
+
+
+
+export default [
+  //收货质检
+  {path:'/receivingInspection',component:ReceivingList,name:"receivingList",
+    children:[
+      {'path':'detail/:id',
+        component:ReceivingDetail,
+        children:[
+          {path:'info',component:ReceivingNoteInfo},
+          {path:'receiving',component:Receiving},
+          {path:'edit',component:ReceivingNoteEdit},
+          {path:'del',component:ReceivingNoteDel},
+          {path:'print',component:ReceivingNotePrint},
+          {path:'tag',component:PrintTag},
+        ]},
+      {'path':'receivingNoteAdd',
+        component:ReceivingNoteAdd
+      }
+    ]},
+  //入库管理
+  {path:'/putInStorage',component:PutInStorageList,name:"putInStorage",
+    children:[
+      {'path':'detail/:id',
+        component:PutInStorageDetail,
+        children:[
+          {path:'info',component:GodownEntryInfo},
+          {path:'examine',component:ToExamine},
+          {path:'putaway',component:Putaway},
+          {path:'print',component:GodownEntryPrint},
+          {path:'copy',component:GodownEntryCopy},
+          {path:'edit',component:GodownEntryEdit},
+          {path:'del',component:GodownEntryDel},
+          {path:'cancellation',component:GodownEntryCancellation},
+
+        ]},
+      {'path':'godownEntryAdd',
+        component:GodownEntryAdd
+      }
+    ]},
+]

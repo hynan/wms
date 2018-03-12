@@ -1,0 +1,83 @@
+<template>
+  <div class="godown-entry-del">
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <el-dialog title="" :visible.sync="dialogVisible" top="20vh">
+        <del-alert :id="id"></del-alert>
+      </el-dialog>
+      <div class="right-content-body">
+        <el-row style="padding: 5px;margin-top: 10px">
+          <el-steps :active="progressBar.currProgressIndex?progressBar.currProgressIndex:0" align-center finish-status="success">
+            <el-step v-for="(item, key, index) in progressBar.progressNameArray?progressBar.progressNameArray:[]" v-bind:key="index" :title="item"></el-step>
+          </el-steps>
+        </el-row>
+        <div style="padding: 5px;">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table></detail-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../godownEntryInfo/Info.vue"
+  import DetailTable from "../godownEntryInfo/DetailTable.vue"
+  import DelMessageAlert from "./DelMessageAlert.vue"
+  export default{
+    name:"GodownEntryDel",
+    mounted(){
+      this.id = this.$route.params.id;
+      this.getInfo();
+    },
+    data(){
+      return{
+        id:"",
+        dialogVisible:true,
+        progressBar:{},
+        reviewList:[],
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/putInStorageInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            if(result.data.data){
+              let data = result.data.data;
+              this.progressBar = data.progressBar?data.progressBar:{};
+              this.reviewList = data.reviewList?data.reviewList:[];
+            }else{
+              this.progressBar = {};
+              this.reviewList = [];
+            }
+          }else{
+            this.$notify.error({
+              title:"入库单详情获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable,
+      "del-alert":DelMessageAlert
+    }
+  }
+</script>
+<style>
+  .godown-entry-del .el-dialog__header{padding: 0px}
+  .godown-entry-del .el-dialog__body{padding: 0px}
+  .godown-entry-del .el-dialog{width: 37%}
+  .godown-entry-del .el-dialog__close{display: none}
+</style>

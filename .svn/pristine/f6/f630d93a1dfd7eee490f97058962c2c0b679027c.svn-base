@@ -1,0 +1,48 @@
+<template>
+  <el-form label-width="130px" size="mini" style="width: 100%">
+    <el-form-item label="单据来源:" class="right-content-body-tableForm">
+      生产管理系统
+    </el-form-item>
+    <el-form-item label="外来单号:" class="right-content-body-tableForm">
+      ****
+    </el-form-item>
+    <el-form-item label="入库仓库:" class="right-content-body-tableForm">
+      仓库1
+    </el-form-item>
+    <el-form-item label="单据状态:" class="right-content-body-tableForm">
+      未收货
+    </el-form-item>
+    <el-form-item label="创建人:" class="right-content-body-tableForm">
+      张**
+    </el-form-item>
+    <el-form-item label="创建日期:" class="right-content-body-tableForm">
+      2017-12-05
+    </el-form-item>
+    <el-form-item label="到货日期:" class="right-content-body-tableForm">
+      2017-12-08
+    </el-form-item>
+    <el-form-item label="" class="right-content-body-tableForm" style="height: 32px;">
+    </el-form-item>
+  </el-form>
+</template>
+<script>
+  export default{
+    name:"Info",
+    props:["InfoData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    }
+
+  }
+</script>
+<style>
+
+</style>

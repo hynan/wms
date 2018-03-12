@@ -1,0 +1,83 @@
+<template>
+  <div>
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+      <el-form-item label="入库类别" prop="type">
+        <el-select v-model="ruleForm.type" placeholder="入库类别" size="small" >
+          <el-option
+            v-for="item in stockInType"
+            :key="item.code"
+            :label="item.name"
+            :value="item.code">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="文件上传" prop="region">
+        <el-upload
+          class="upload-demo"
+          action="/ys-web-wms/upload"
+          list-type=""
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="1"
+          :on-exceed="handleExceed"
+          :file-list="fileList">
+          <el-button size="small" type="primary">点击上传</el-button>
+        </el-upload>
+      </el-form-item>
+    </el-form>
+    <div style="text-align: center">
+      <el-button size="mini" type="primary">提交</el-button>
+      <el-button size="mini" type="">取消</el-button>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"UploadCode",
+    mounted(){
+
+    },
+    data(){
+      return{
+        ruleForm:{
+          type:"",
+          fileUrl:""
+        },
+        fileList:[],
+        rules: {
+          type: [
+            {required: true, message: '类别不能为空', trigger: 'blur'},
+          ],
+        }
+      }
+    },
+    methods:{
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      }
+    },
+    components:{
+
+    },
+    computed:{
+      "stockInType":function () {
+        return this.$store.state.enumList.stockInType;
+      },
+    }
+  }
+</script>
+<style>
+
+
+</style>

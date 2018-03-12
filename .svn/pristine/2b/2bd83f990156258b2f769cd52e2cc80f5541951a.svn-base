@@ -1,0 +1,50 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="tableData" border  style="width: 98%;margin:5px auto">
+      <el-table-column prop="displayDto.materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.damageAmount" label="报损数量" width="97" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.damageUnitPrice" label="报损单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.damageMoneyAmount" label="报损金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.damageReason" label="报损原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.singlePrice" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.stockMoneyAmount" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.ownerName" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.centralOrderNum" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.filialeOrderNum" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.productBatch" label="产品批次" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.storeArea" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.goodsAllocation" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.stockInDate" label="入库创建日期" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.stockBarcode" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="displayDto.measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+        dialogVisible:false,
+      }
+    },
+    methods:{
+
+    },
+    components:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

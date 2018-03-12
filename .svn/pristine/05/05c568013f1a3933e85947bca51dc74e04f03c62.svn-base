@@ -1,0 +1,48 @@
+<template>
+  <div>
+    <el-collapse @change="doAjax">
+      <el-collapse-item>
+        <template slot="title">
+          <div class="myTask-topTitle"><span style="color: white">待审核的调拨单</span></div>
+        </template>
+        <div v-loading="loading"  element-loading-text="拼命加载中">
+          <el-table :data="tableData" border style="width: 100%" max-height="270" @current-change="rowCurrentChange">
+            <el-table-column label="调拨单号" align="center" prop="order" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="创建日期" align="center" prop="date" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="转出仓库" align="center" prop="order2" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="创建人" align="center" prop="order2" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </div>
+</template>
+<script>
+  export default{
+    name: 'WaitExamineAllocationOrder',
+    mounted(){
+    },
+    data(){
+      return{
+        loading:true,
+        tableData:[
+          {id:11,date:"2017-04-27",order:"D1234",blueprint:"",order2:""}
+        ]
+      }
+    },
+    methods:{
+      doAjax(val){
+        if (val.length > 0) {
+          this.loading = false;
+        } else {
+          this.loading = true;
+        }
+      },
+      rowCurrentChange(val){
+        this.$router.push("/allocation/detail/"+val.id+"/examine?tourl=examine");
+      }
+    }
+  }
+</script>
+<style>
+</style>

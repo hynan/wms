@@ -1,0 +1,59 @@
+<template>
+    <div class="navbtn-wrapper not-print">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="examine" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.stockOutReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">审核</router-link>
+      <router-link :to="soldOut" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.downShelfPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">下架</router-link>
+      <router-link :to="print" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >打印</router-link>
+      <router-link :to="copy" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.stockOutPerson">复制</router-link>
+      <router-link :to="edit" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.stockOutPerson&&$store.state.putOutStorageInfo.stockOutStatusKey == 1">修改</router-link>
+      <router-link :to="del" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.stockOutPerson&&$store.state.putOutStorageInfo.stockOutStatusKey == 1">删除</router-link>
+      <router-link :to="cancellation" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.stockOutPerson&&$store.state.putOutStorageInfo.stockOutStatusKey <=3">作废</router-link>
+      <router-link :to="confirm" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.stockOutConfirmPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">确认</router-link>
+    </div>
+</template>
+<script>
+    export default {
+      name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+          allNo:false
+        }
+      },
+      computed:{
+        "info":function(){
+          return "/putOutStorage/detail/"+this.id+"/info";
+        },
+        "examine":function(){
+          return "/putOutStorage/detail/"+this.id+"/examine";
+        },
+        "soldOut":function(){
+          return "/putOutStorage/detail/"+this.id+"/soldOut";
+        },
+        "print":function(){
+          return "/putOutStorage/detail/"+this.id+"/print";
+        },
+        "copy":function(){
+          return "/putOutStorage/detail/"+this.id+"/copy";
+        },
+        "edit":function(){
+          return "/putOutStorage/detail/"+this.id+"/edit";
+        },
+        "del":function(){
+          return "/putOutStorage/detail/"+this.id+"/del";
+        },
+        "cancellation":function(){
+          return "/putOutStorage/detail/"+this.id+"/cancellation";
+        },
+        "confirm":function(){
+          return "/putOutStorage/detail/"+this.id+"/confirm";
+        },
+        roleInfo:function(){
+          return this.$store.state.roleInfo;
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

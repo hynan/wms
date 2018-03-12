@@ -1,0 +1,217 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：{{$store.state.putOutStorageInfo.stockOutCode}}
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px" v-if="!toSoldOut">
+          <el-button size="mini" style="float: right;margin: 0px 10px 10px 10px;" type="primary" @click="soldOut">下架</el-button>
+          <el-table :data="stockOutDownShelfList" border style="width: 100%">
+            <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="warehouseName" label="仓库" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="storeAreaName" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="goodsAllocationCode" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="downAmount" label="下架数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="stockBarcode" label="货存条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="materialOwnerName" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="headOfficeOrderNum" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="branchOfficeOrderNum" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="downShelfPersonName" label="下架员" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="downDate" label="下架时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+        <div style="padding: 5px" v-else>
+          <el-form :model="detailForm" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width: 100%" class="operation-table">
+              <el-table-column prop="detailForm" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="waitDownAmount" label="待下架数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="actualDownAmount" label="下架数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.actualDownAmount'" :rules="rules.amount">
+                    <el-input size="mini" v-model="scope.row.actualDownAmount"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.goodsAllocationCode'">
+                    <el-select v-model="scope.row.goodsAllocationCode" placeholder="请选择" size="mini" @change="goodsAllocationCodeChange(row)">
+                      <el-option
+                        v-for="item in scope.row.stockDetailList"
+                        :key="item.storagebinCode"
+                        :label="item.storagebinCode+'-'+item.stockAmount"
+                        :value="item.storagebinCode">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="materialOwnerName" label="物料所有人" align="center" :show-overflow-tooltip="true">
+              </el-table-column>
+              <el-table-column prop="headOfficeOrderNum" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+              </el-table-column>
+              <el-table-column prop="branchOfficeOrderNum" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div style="height: 40px">
+          <el-button size="mini" style="float: right;margin: 10px;" type="primary" @click="save">保存</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"SoldOut",
+    mounted(){
+      this.id = this.$route.params.id;
+      this.getList();
+    },
+    data(){
+      var _this = this;
+      var checkAmount = (rule, value, callback) => {
+        if(_this.isNull(value)){
+          callback();
+        }
+        let isNum = _this.isNumber(value)
+        if (!isNum) {
+          callback(new Error('请填写正确的数值'));
+        } else {
+          if(value < 0 ){
+            callback(new Error('数值不能小于0'));
+          }
+          callback();
+        }
+      };
+      return{
+        id:"",
+        toSoldOut:false,
+        stockOutDownShelfList:[],
+        detailForm:{
+          tableData:[]
+        },
+        rules:{
+          amount:[
+            { validator: checkAmount, trigger: 'change' }
+          ]
+        },
+      }
+    },
+    methods:{
+      getList(){
+        this.$http.get("/ys-web-wms/putOutStorageSoldOut/getStockOutDownShelfList?id="+this.id).then(function (resutl) {
+          if(resutl.data.state == 200){
+            this.stockOutDownShelfList = result.data.data?result.data.data:[];
+          }else{
+            this.$notify.error({
+              title:"下架记录获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      getWaitList(){
+        this.$http.get("/ys-web-wms/putOutStorageSoldOut/getStockOutWaitDownShelfList?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            let list = result.data.data?result.data.data:[];
+            if(list.length>0){
+              for(var i=0;i<list.length;i++){
+                list[i].stockBarcode = "";//存货条码
+                list[i].actualDownAmount = "";//实际下架数量
+                list[i].storeAreaCode = "";//库区编码
+                list[i].goodsAllocationCode = "";//货位编码
+                list[i].materialOwnerName = "";//物料所有人name
+                list[i].materialOwnerId = "";//物料所有人id
+                list[i].headOfficeOrderNum = "";//总公司订单号
+                list[i].branchOfficeOrderNum = "";//分公司订单号
+                list[i].goodsAllocationStockAmount = "";//货位库存数量
+              }
+            }
+            this.detailForm.tableData = list;
+          }else{
+            this.$notify.error({
+              title:"待下架明细获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      goodsAllocationCodeChange(row){
+        let list = row.stockDetailList;
+        for(var i=0;i<list.length;i++){
+          if(row.goodsAllocationCode = list[i].storagebinCode){
+            row.stockBarcode = list[i].stockBarcode;//存货条码
+            row.storeAreaCode = list[i].subareaCode;//库区编码
+            row.materialOwnerName = list[i].materialOwnerName;//物料所有人name
+            row.materialOwnerId = list[i].materialOwnerId;//物料所有人id
+            row.headOfficeOrderNum = list[i].headOfficeOrderNum;//总公司订单号
+            row.branchOfficeOrderNum = list[i].branchOfficeOrderNum;//分公司订单号
+            row.goodsAllocationStockAmount = list[i].stockAmount;//货位库存数量
+          }
+        }
+      },
+      soldOut(){
+        this.getWaitList();
+        this.toSoldOut = true;
+      },
+      save(){
+        let list = this.detailForm.tableData;
+        let submitList = [];
+        for(var i=0;i<list.length;i++){
+          if(this.isNull(list[i].actualDownAmount)){
+            continue;
+          }
+          if(list[i].goodsAllocationCode == ""){
+            this.$message({
+              message:"请为物料"+list[i].materialName+"选择下架货位",
+              type:"error",
+              showClose:true
+            })
+            return;
+          }
+          if(list[i].actualDownAmount > list[i].goodsAllocationStockAmount){
+            this.$message({
+              message:"物料"+list[i].materialName+"的下架数量不能大于"+list[i].goodsAllocationStockAmount,
+              type:"error",
+              showClose:true
+            })
+            return;
+          }
+          submitList.push(list[i]);
+        }
+        let dataStr = JSON.stringify(submitList);
+        this.$http.post("/ys-web-wms/putOutStorageSoldOut/downShelf",{data:dataStr}).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:"下架成功",
+              type:"success",
+              showClose:true
+            })
+            this.getList();
+            let _this = this;
+            this.getPutOutStorageStatus(this.id,function (res) {
+              _this.$store.state.putOutStorageInfo.stockOutStatusKey = res;
+            })
+            this.toSoldOut = false;
+          }else{
+            this.$notify.error({
+              title:"下架失败",
+              message:result.data.message
+            })
+          }
+        })
+
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

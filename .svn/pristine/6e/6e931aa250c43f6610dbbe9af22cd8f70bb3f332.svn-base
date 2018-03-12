@@ -1,0 +1,43 @@
+<template>
+  <div>
+    <el-table :data="tableData" border style="width:100%" >
+      <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="质检员" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="到货数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="合格数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="不合格数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="不合格描述" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="收货备注" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+
+  </div>
+</template>
+<script>
+  export default{
+    name:"DetailTable",
+    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    },
+    components:{
+
+    }
+
+  }
+</script>
+<style>
+
+</style>

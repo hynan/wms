@@ -1,0 +1,40 @@
+<template>
+    <div class="navbtn-wrapper not-print">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="verify" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >核实</router-link>
+      <router-link :to="examine" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >审核</router-link>
+      <router-link :to="inventoryProfit" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >盘盈入库</router-link>
+      <router-link :to="inventoryLosses" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >盘亏出库</router-link>
+    </div>
+</template>
+<script>
+    export default {
+      name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+
+        }
+      },
+      computed:{
+        "info":function(){
+          return "/stockTacking/detail/"+this.id+"/info";
+        },
+        "verify":function(){
+          return "/stockTacking/detail/"+this.id+"/verify";
+        },
+        "examine":function(){
+          return "/stockTacking/detail/"+this.id+"/examine";
+        },
+        "inventoryProfit":function(){
+          return "/stockTacking/detail/"+this.id+"/inventoryProfit";
+        },
+        "inventoryLosses":function(){
+          return "/stockTacking/detail/"+this.id+"/inventoryLosses";
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

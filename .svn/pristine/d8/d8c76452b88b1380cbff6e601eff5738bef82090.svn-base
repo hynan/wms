@@ -1,0 +1,119 @@
+<template>
+  <div class="deblocking-info">
+    <div class="right-topTitle" style="font-size: 12px;padding-left: 20px;">
+      规格：***  &nbsp;&nbsp;&nbsp;&nbsp;单位：***  &nbsp;&nbsp;&nbsp;&nbsp;报损数量：***  &nbsp;&nbsp;&nbsp;&nbsp;库存数量：***  &nbsp;&nbsp;&nbsp;&nbsp;锁定数量：***
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          解锁确认
+        </div>
+        <div style="padding: 5px;height: 287px;">
+          <span class="right-content-body-little-title">物料信息</span>
+          <el-form label-width="130px" size="mini" style="width: 100%">
+            <el-form-item label="入库单号:" class="right-content-body-tableForm right-form-width">
+              *****
+            </el-form-item>
+            <el-form-item label="入库日期:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="物料类别:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="物料编码:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="物料名称:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="外来单号:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="收货单号:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="产品批次:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="物料所有人:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="存货条码:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="供应商编号:" class="right-content-body-tableForm right-form-width" >
+              ****
+            </el-form-item>
+            <el-form-item label="总公司订单号:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="总公司订单号:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="分公司订单号:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="仓库所属部门:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="仓库:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="库区:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="货位:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="总数量:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="锁定数量:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="未锁定数量:" class="right-content-body-tableForm right-form-width">
+              ****
+            </el-form-item>
+            <el-form-item label="未锁定数量:" class="right-content-body-tableForm right-form-width">
+
+            </el-form-item>
+          </el-form>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">物料信息</span>
+          <el-row class="right-content-body-tableCss" style="margin: 5px;">
+            <el-col :span="4" class="right-content-body-tableCss-left">
+              解锁说明:
+            </el-col>
+            <el-col :span="20" class="right-content-body-tableCss-right">
+
+            </el-col>
+          </el-row>
+        </div>
+        <div style="text-align: right;padding-right: 3%">
+          <el-button size="mini" type="primary">同意</el-button>
+          <el-button size="mini">拒绝</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+ export default{
+   name:"DeblockingInfo",
+   mounted(){
+
+   },
+   date(){
+     return{
+
+     }
+   },
+   methods:{
+
+   }
+ }
+</script>
+<style>
+  .deblocking-info .right-form-width{width:33%}
+</style>

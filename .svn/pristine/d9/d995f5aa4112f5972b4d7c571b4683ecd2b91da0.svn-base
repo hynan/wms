@@ -1,0 +1,29 @@
+import mutations from './mutations'
+import * as actions from './actions'
+const state = {
+  orderstatus:[{
+          value: '10',
+          label: '订单保存'
+        },{
+          value: '1',
+          label: '订单审批'
+        },{
+          value: '11',
+          label: '审批拒绝'
+        }
+  ],
+  settledlist:[{
+    value: '0',
+    name: '未结清'
+  },{
+    value: '1',
+    name: '已结清'
+  }
+  ]
+}
+
+export default{
+  state,
+  mutations,
+  actions
+}

@@ -1,0 +1,54 @@
+<template>
+    <div class="navbtn-wrapper">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="examine" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.transferReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">审核</router-link>
+      <el-button @click="printView" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >打印</el-button>
+      <router-link :to="cancellation" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="(roleInfo.stockInPerson||roleInfo.stockOutPerson)&&currentInfo.transferBillStatusKey&&(currentInfo.transferBillStatusKey=='1'||currentInfo.transferBillStatusKey=='2')">作废</router-link>
+        <el-dialog  :visible.sync="dialogTableVisible" fullscreen :show-close="false">
+            <allocation-print :id="id" @close="dialogTableVisible=false" ref="print"></allocation-print>
+        </el-dialog>
+    </div>
+</template>
+<script>
+    import AllocationPrint from "./print/AllocationPrint.vue";
+    export default {
+        components: {AllocationPrint},
+        name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+            dialogTableVisible:false,
+        }
+      },
+        methods:{
+      printView(){
+          this.dialogTableVisible=true
+          if(this.$refs['print'])
+              this.$refs['print'].doAjax()
+      }
+    },
+      computed:{
+        "info":function(){
+          return "/allocation/detail/"+this.id+"/info";
+        },
+        "examine":function(){
+          return "/allocation/detail/"+this.id+"/examine";
+        },
+        "print":function(){
+          return "/allocation/detail/"+this.id+"/print";
+        },
+        "cancellation":function(){
+          return "/allocation/detail/"+this.id+"/cancellation";
+        },
+        roleInfo:function(){
+          return this.$store.state.roleInfo;
+        },
+        currentInfo(){
+            return this.$store.state.moduleDM.currentRow
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

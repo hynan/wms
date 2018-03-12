@@ -1,0 +1,142 @@
+<template>
+    <div>
+        <p class="dataManagement-title">{{isAdd?'添加库区':'修改库区'}}</p>
+        <br/>
+        <el-form :model="form" ref="areaForm" :rules="rules" inline-message>
+        <table class="info-table dataManagement-table">
+            <tbody>
+            <tr>
+                <td>库区名称：</td>
+                <td><el-form-item prop="storeAreaName"><el-input size="small" v-model="form.storeAreaName"></el-input></el-form-item></td>
+                <td>库区类型：</td>
+                <td><el-input size="small" v-model="form.storeAreaType"></el-input></td>
+            </tr>
+            <tr>
+                <td>物料类别：</td>
+                <td>
+                    <el-form-item prop="materialTypeId"><materiel-select v-model="form.materialTypeId"></materiel-select></el-form-item>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        </el-form>
+        <div style="text-align:right;margin-top:10px">
+            <el-button type="primary" size="mini" :disabled="uploading" @click="submit">保存</el-button>
+            <el-button @click="goBack" size="mini" v-if="!isAdd">取消</el-button>
+        </div>
+    </div>
+</template>
+<script>
+    import MaterielSelect from '../MaterielSelect.vue'
+    export default {
+        name:"Edit",
+        mounted(){
+            if(!this.isAdd){
+                this.doAjax()
+            }
+        },
+        data(){
+            var validatePass = (rule, value, callback) => {
+                if (!/^\S+$/.test(value)) {
+                  callback(new Error(''));
+                } else {
+                  callback();
+                }
+              };
+            return{
+                form:{
+                    storeAreaName:'',
+                    materialCategoryCodes:'',
+                    storeAreaType:'',
+                    materialTypeId:''
+                },
+                rules:{
+                    storeAreaName:[{validator:validatePass,message:'请输入名称',trigger:'blur'}],
+                },
+                uploading:false
+            }
+        },
+        methods:{
+            goBack(){
+                this.$router.push("/dataManagement/store/detail/area/"+this.$route.params.id+"/info")
+            },
+            doAjax(){
+                this.$http.post('/ys-web-wms/store/getAreaInfo',{id:this.$route.params.id}).then(
+                    (res)=>{
+                        if(res.data)
+                            this.form=Object.assign({
+                                storeAreaName:'',
+                                materialCategoryCodes:'',
+                                storeAreaType:''
+                            },res.data.data)
+                        this.form.materialTypeId = res.data.data.materialCategoryCodes
+                    }
+                )
+            },
+            submit(){
+                let url = "editArea"
+                if(this.isAdd){
+                    this.form.whId = this.$route.query.whId
+                    url = "addArea"
+                }
+                if(!this.form.materialTypeId){
+                    this.$message({
+                        'type': 'warning',
+                        message: "请选择物料类别",
+                        'showClose': true
+                    });
+                    return false
+                }
+                this.$refs['areaForm'].validate((valid)=>{
+                    if(valid){
+                        this.uploading = true
+                        this.$http.post("/ys-web-wms/store/"+url, {params: JSON.stringify(this.form),id:this.$route.params.id})
+                            .then((response) => {
+                                if (response.data.data.status == '200') {
+                                    this.$message({
+                                        'type': 'success',
+                                        message: "操作成功",
+                                        'showClose': true
+                                    });
+                                    if(this.isAdd){
+                                        this.$store.commit('SET_EXPAND_KEYS',[this.$route.query.whId])
+                                        this.$store.commit('IS_REFRESH')
+                                         this.$router.push('/dataManagement/store/detail/store/'+this.$route.query.whId+'/info')
+                                    }else{
+                                        this.$router.push('/dataManagement/store/detail/area/'+this.$route.params.id+'/info')
+                                    }
+                                } else {
+                                    this.$message({
+                                        'type': 'error',
+                                        message: "操作失败，,请重试或联系管理",
+                                        'showClose': true
+                                    });
+                                    this.uploading = false
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                this.uploading = false
+                            });
+                    }else{
+                        this.$nextTick(()=> {
+                        })
+                    }
+                })
+            }
+        },
+        computed:{
+            isAdd(){
+                return this.$route.name == 'areaAdd'
+            }
+        },
+        components:{
+            MaterielSelect
+        }
+    }
+</script>
+<style scoped>
+
+</style>

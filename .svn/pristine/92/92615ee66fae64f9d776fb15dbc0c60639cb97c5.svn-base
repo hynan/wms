@@ -1,0 +1,161 @@
+<template>
+    <div class="myTask-main">
+      <div class="myTask-waterfall">
+        <!--<div class="myTask-tableBox" v-if="roleInfo.buyReviewer||roleInfo.sysAdmin">-->
+          <!--&lt;!&ndash;待审批采购单&ndash;&gt;-->
+          <!--<wait-review-buy></wait-review-buy>-->
+        <!--</div>-->
+        <div class="myTask-tableBox" v-if="roleInfo.buyReviewer||roleInfo.sysAdmin">
+          <!--待审批采购单-->
+          <wait-review-buy-two></wait-review-buy-two>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyLeader||roleInfo.sysAdmin">
+          <!--待分派采购单-->
+          <wait-assignment-purchase></wait-assignment-purchase>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyer||roleInfo.sysAdmin" >
+          <!--待接收采购单-->
+          <wait-receive-purchase></wait-receive-purchase>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyApplier||roleInfo.sysAdmin">
+          <!--已拒绝采购单-->
+          <rejected-purchase></rejected-purchase>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyer||roleInfo.buyLeader||roleInfo.sysAdmin">
+          <!--快到期采购单-->
+          <soon-expiring></soon-expiring>
+        </div>
+        <!--<div class="myTask-tableBox" v-if="roleInfo.buyLeader||roleInfo.sysAdmin">-->
+          <!--&lt;!&ndash;待审批订货单&ndash;&gt;-->
+          <!--<wait-review-book></wait-review-book>-->
+        <!--</div>-->
+        <div class="myTask-tableBox" v-if="roleInfo.buyLeader||roleInfo.sysAdmin">
+          <!--待审批订货单-->
+          <wait-review-book-two></wait-review-book-two>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyer||roleInfo.buyLeader||roleInfo.sysAdmin">
+          <!--待收货订货单-->
+          <wait-receive-order></wait-receive-order>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyer||roleInfo.sysAdmin">
+          <!--已拒绝订货单-->
+          <rejected-order></rejected-order>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.warehouseKeeper||roleInfo.sysAdmin">
+          <!--待入库的订货单-->
+          <wait-putIn-storage></wait-putIn-storage>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyer||roleInfo.sysAdmin">
+          <!--逾期到货的订货单-->
+          <overdue-order></overdue-order>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.buyer||roleInfo.buyLeader||roleInfo.sysAdmin">
+          <!--待收票的订货单-->
+          <wait-receive-ticket-order></wait-receive-ticket-order>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.checker||roleInfo.sysAdmin">
+          <!--待质检的订货单-->
+          <wait-check-order></wait-check-order>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.materialReceiver||roleInfo.buyApplier||roleInfo.sysAdmin">
+          <!--预计到货通知-->
+          <expected-arrival-notice></expected-arrival-notice>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.materialReceiver||roleInfo.buyApplier||roleInfo.sysAdmin">
+          <!--到货通知-->
+          <arrival-notice></arrival-notice>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.materialReceiver||roleInfo.buyApplier||roleInfo.sysAdmin">
+          <!--入库通知-->
+          <putIn-storage-notice></putIn-storage-notice>
+        </div>
+        <div class="myTask-tableBox">
+          <!--已回复的问题-->
+          <already-reply></already-reply>
+        </div>
+        <div class="myTask-tableBox">
+          <!--待回复的问题-->
+          <wait-reply></wait-reply>
+        </div>
+      </div>
+    </div>
+</template>
+<script>
+  import WaitToAssignmentPurchase from "./purchaseList/WaitToAssignmentPurchase.vue"//待分派的采购单
+  import WaitToReceivePurchase from "./purchaseList/WaitToReceivePurchase.vue"//待接收的采购单
+  import RejectedPurchase from "./purchaseList/RejectedPurchase.vue"//已拒绝的采购单
+  import SoonToExpiring from "./purchaseList/SoonToExpiring.vue"//快到期的采购单
+  import WaitToReceiveOrder from "./orderList/WaitToReceiveOrder.vue"//待收货的订货单
+  import RejectedOrder from "./orderList/RejectedOrder.vue"//已拒绝的订货单
+  import WaitPutInStorageOrder from "./orderList/WaitPutInStorageOrder.vue"//待入库的订货单
+  import BeOverdueOrder from "./orderList/BeOverdueOrder.vue"//逾期到货的订货单
+  import WaitToCheckOrder from "./orderList/WaitToCheckOrder.vue"//待质检的订货单
+  import WaitReceiveTicketOrder from "./orderList/WaitReceiveTicketOrder.vue"//待收票的订货单
+  import ExpectedArrivalNotice from "./notice/ExpectedArrivalNotice.vue"//预计到货通知
+  import ArrivalNotice from "./notice/ArrivalNotice.vue"//到货通知
+  import PutInStorageNotice from "./notice/PutInStorageNotice.vue"//入库通知
+  import WaitToReply from "./question/WaitToReply.vue"//待回复问题
+  import AlreadyReply from "./question/AlreadyReply.vue"//已回复问题
+  import WaitReviewBuyBills from "./purchaseList/WaitReviewBuyBills.vue"//待审批的采购单
+  import WaitReviewBookBills from "./orderList/WaitReviewBookBills.vue"//待审批的订货单
+  import WaitReviewBuyBillsTwo from "./purchaseList/WaitReviewBuyBillsTwo.vue"//待审批的采购单
+  import WaitReviewBookBillsTwo from "./orderList/WaitReviewBookBillsTwo.vue"//待审批的订货单
+  export default{
+    name: 'MyTask',
+    mounted(){
+    },
+    data(){
+      return{
+      }
+    },
+    methods:{
+    },
+    computed:{
+      roleInfo:function(){
+        return this.$store.state.roleInfo;
+      },
+    },
+    components:{
+      "wait-review-buy-two":WaitReviewBuyBillsTwo,//待审批的采购单
+      "wait-review-book-two":WaitReviewBookBillsTwo,//待审批的订货单
+      "wait-review-buy":WaitReviewBuyBills,//待审批的采购单
+      "wait-review-book":WaitReviewBookBills,//待审批的订货单
+      "wait-assignment-purchase":WaitToAssignmentPurchase,//待分派采购单
+      "wait-receive-purchase":WaitToReceivePurchase,//待接收采购单
+      "rejected-purchase":RejectedPurchase,//已拒绝采购单
+      "soon-expiring":SoonToExpiring,//快到期采购单
+      "wait-receive-order":WaitToReceiveOrder,//待收货订货单
+      "rejected-order":RejectedOrder,//已拒绝订货单
+      "wait-putIn-storage":WaitPutInStorageOrder,//待入库的订货单
+      "overdue-order":BeOverdueOrder,//逾期到货的订货单
+      "wait-receive-ticket-order":WaitReceiveTicketOrder,//待收票的订货单
+      "wait-check-order":WaitToCheckOrder,//待质检的订货单
+      "expected-arrival-notice":ExpectedArrivalNotice,//预计到货通知
+      "arrival-notice":ArrivalNotice,//到货通知
+      "putIn-storage-notice":PutInStorageNotice,//入库通知
+      "wait-reply":WaitToReply,//待回复的问题
+      "already-reply":AlreadyReply,//已回复的问题
+    }
+  }
+</script>
+<style>
+  .myTask-topTitle{margin-top:-44px;margin-left:-15px;height:44px;background-color: #20a0ff;padding-left: 37px;line-height: 44px;}
+  .myTask-tableBox .el-collapse-item__content{padding: 0px 0px}
+  .myTask-main {margin-bottom: 20px;}
+  .myTask-main table tr .cell{padding:5px;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .myTask-title{font-size: 17px;  color: white; height: 40px; text-align: center; background: #40595a; line-height: 40px;}
+  /*瀑布流层*/
+  .myTask-waterfall{
+    -moz-column-count:2; /* Firefox */
+    -webkit-column-count:2; /* Safari 和 Chrome */
+    column-count:2;
+  }
+  /*一个内容层*/
+  .myTask-tableBox{
+    padding: 22px 2% 0 2%;
+    /*padding-left: 3%;*/
+    -moz-page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid;
+  }
+</style>

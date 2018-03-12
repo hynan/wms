@@ -1,0 +1,61 @@
+<template>
+  <div>
+    <el-table :data="tableData" border style="width:100%" >
+      <el-table-column prop="materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="modelType" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="unitName" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="checkerName" label="质检员" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="checkDate" label="质检日期" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="arrivalAmount" label="到货数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="qualifiedAmount" label="合格数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="unqualifiedAmount" label="不合格数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="unqualifiedDesc" label="不合格描述" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="introduction" label="收货备注" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+
+  </div>
+</template>
+<script>
+  export default{
+    name:"DetailTable",
+    props:["id"],
+    mounted(){
+      this.getDetailList();
+    },
+    data(){
+      return{
+        tableData:[],
+      }
+    },
+    methods:{
+      getDetailList(){
+        this.$http.get("/ys-web-wms/recivingInspectionInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+//            console.log()
+            this.tableData = result.data.data.details?result.data.data.details:[];
+          }else {
+            this.$notify.error({
+              title:"收货单明细信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    components:{
+
+    },
+    watch:{
+      "id":function () {
+        this.getDetailList();
+      }
+    }
+
+  }
+</script>
+<style>
+
+</style>

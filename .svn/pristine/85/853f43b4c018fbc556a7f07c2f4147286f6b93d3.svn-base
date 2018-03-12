@@ -1,0 +1,146 @@
+<template>
+  <el-row style="height:100%" class="warning-manage">
+    <el-col style="height:100%; background:#F9FAFC;padding: 10px 5px 10px 5px" id="leftMainBox" :span="6" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+    </el-col>
+    <el-col id='rightMainBox' :span="18" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <div class="right-topTitle"  style="text-align: right;padding-right: 3%" >
+        <el-button size="mini" type="primary" @click="purchaseAdd">采购申请</el-button>
+      </div>
+      <el-dialog title="" :visible.sync="dialogVisible" v-if="dialogVisible" top="7vh">
+        <purchase-request :tableData="tableData" @close="dialogVisible=false"></purchase-request>
+      </el-dialog>
+        <div class="right-content">
+          <div class="right-content-body" style="padding-top: 0px;margin-top: 5px;">
+            <div class="" style="height: 90%">
+              <el-table :data="tableData"  border :row-class-name="highlightCurrent" :max-height="tableHeight" style="width: 100%" >
+                <el-table-column label="操作" fixed prop="buyCode" align="center" :show-overflow-tooltip="true">
+                  <template slot-scope="scope">
+                    <el-button size="mini" v-if="scope.row.warning" @click="cancelWarning(scope.row)">取消</el-button>
+                  </template>
+                </el-table-column>
+                <el-table-column label="报警日期" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="物料类别" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="物料名称" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="物料编码" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="型号" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="规格" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="仓库" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="库存数量" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="上限数量" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="下限数量" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="报警类型" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column label="取消报警人" prop="date"  align="center" :show-overflow-tooltip="true"></el-table-column>
+              </el-table>
+            </div>
+            <div class="pageBox" style="margin: 5px 0px;">
+              <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-size="page.pageSize"
+                layout="total, prev, pager, next"
+                :total="count">
+              </el-pagination>
+            </div>
+          </div>
+        </div>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import PurchaseRequest from "./PurchaseRequest.vue"
+  import SearchBar from './WarningManageSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'WarningManageList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.73
+    },
+    data () {
+      return {
+        dialogVisible:false,
+        tableHeight:"",
+        count:1,
+        currentPage: 1,
+        searchParams:{
+          dateCreated:"",//创建日期
+          orderNum:"",//入库单号
+          orderType:"",//入库类别
+          orderState:"",//单据状态
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[
+          {date:"----",warning:true},
+          {date:"----",warning:true},
+          {date:"----",warning:true},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+          {date:"----",warning:false},
+
+        ],
+        currentRow: {
+          buyId:0,
+          instanceId:0
+        }
+      }
+    },
+    methods:{
+      purchaseAdd(){
+        this.dialogVisible = true;
+      },
+      search(val){
+        this.searchParams = val;
+        this.getPurchaseApplyList();
+      },
+      cancelWarning(row){
+        row.warning = false;
+      },
+      getPurchaseApplyList(){
+
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getPurchaseApplyList();
+      },
+      highlightCurrent({row, rowIndex}){
+        return (row.warning ? 'red-background' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      'purchase-request':PurchaseRequest,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+
+      },
+    },
+    computed:{
+
+    },
+  }
+</script>
+
+<style>
+  .warning-manage .red-background{background-color: red;color: black}
+  .warning-manage .el-dialog{width: 70%}
+  .warning-manage .el-dialog__body{padding: 0px 0px 10px 0px}
+  .warning-manage .el-dialog__headerbtn{top:7px;}
+  .warning-manage .el-dialog__header{padding: 0px}
+  .warning-manage .el-dialog .el-form .el-form-item{margin-bottom: -1px;}
+  /*.warning-manage .red-background>toody:hover{background-color: red;color: white}*/
+</style>

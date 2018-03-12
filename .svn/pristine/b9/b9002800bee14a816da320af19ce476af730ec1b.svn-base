@@ -1,0 +1,76 @@
+<template>
+  <div>
+    <el-collapse @change="doAjax">
+      <el-collapse-item>
+        <template slot="title">
+          <div class="myTask-topTitle"><span style="color: white">待处理报警</span></div>
+        </template>
+        <div v-loading="loading"  element-loading-text="拼命加载中">
+          <el-table :data="tableData" border style="width: 100%" max-height="270" @current-change="rowCurrentChange">
+            <el-table-column label="报警类型" align="center" prop="alarmTypeKey" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                {{scope.row.alarmTypeKey|(alarmType)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="报警日期" align="center" prop="alarmDate" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="仓库" align="center" prop="warehouseName" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="产品类别" align="center" prop="productType" :show-overflow-tooltip="true">
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </div>
+</template>
+<script>
+  export default{
+    name: 'WaitHandleWarning',
+    mounted(){
+    },
+    data(){
+      return{
+        loading:true,
+        tableData:[
+//          {id:11,date:"----"}
+        ]
+      }
+    },
+    methods:{
+      doAjax(val){
+        if (val.length > 0) {
+          this.loading = true;
+          this.$http.get("/ys-web-wms/myTask/getTaskList?type=waitHandleWarning").then(function (result) {
+            if (result.data.state == 200) {
+              let data = result.data.data;
+              if (data) {
+                this.tableData = data.waitHandleWarning ? data.waitHandleWarning : []
+              } else {
+                this.tableData = [];
+              }
+            } else {
+              this.$notify.error({
+                title: "待处理的预警列表获取失败",
+                message: result.data.message
+              })
+            }
+            this.loading = false;
+          })
+        } else {
+          this.loading = true;
+        }
+      },
+      rowCurrentChange(val){
+        this.$router.push("/warningManage");
+      }
+    },
+    computed:{
+      "alarmType":function () {
+        return this.$store.state.enumList.alarmType;
+      }
+    }
+  }
+</script>
+<style>
+</style>

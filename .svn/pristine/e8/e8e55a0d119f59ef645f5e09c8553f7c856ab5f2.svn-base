@@ -1,0 +1,216 @@
+//工具类
+
+import JsPDF from 'jspdf'
+import html2Canvas from 'html2canvas'
+import PDFJS from './pdf'
+
+// import html2Canvas from './html2canvas'
+// import JsPDF from './jspdf.debug'
+
+export default{
+
+  install(Vue,options)
+  {
+
+    //根据id获取name
+    Vue.prototype.getNameById = function (id,list,callBack) {
+      if(id == 'undefined' || "" == id){
+        callBack ("")
+        return;
+      }
+      for(var i=0;i<list.length ;i++){
+        if(list[i].id == id){
+          callBack (list[i].name)
+          return;
+        }
+      }
+      callBack ("")
+    }
+
+    //表单校验
+    Vue.prototype.checkForm = function (formName) {
+      var isCheck = "12";
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          isCheck = true;
+        } else {
+          console.log('error submit!!');
+          isCheck = false;
+        }
+      });
+      return isCheck;
+    }
+
+    //精确计算
+    Vue.prototype.accMul = function (arg1,arg2){
+      if(undefined == arg1 || undefined == arg2){
+        return 0;
+      }
+      var m=0,s1=arg1.toString(),s2=arg2.toString();
+      try{m+=s1.split(".")[1].length}catch(e){}
+      try{m+=s2.split(".")[1].length}catch(e){}
+      return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)
+    }
+
+    //小数点保留几位数字
+    Vue.prototype.fomatFloat = function (src,pos){
+      return Math.round(src*Math.pow(10, pos))/Math.pow(10, pos);
+    }
+
+    //判断是否为数字
+    Vue.prototype.isNumber = function (value) {
+      var patrn = /^[0-9]+.?[0-9]*$/;
+      var isNumber = "12";
+      if(!patrn.test(value)){
+        isNumber = false;
+      }else{
+        isNumber = true;
+      }
+      return isNumber;
+    }
+
+    //判断是否为空字符串
+    Vue.prototype.isNull = function ( str ){
+      if ( str == "" ) return true;
+      var regu = "^[ ]+$";
+      var re = new RegExp(regu);
+      return re.test(str);
+    }
+
+    Vue.prototype.printPdf = function(pdfData,canvasName){
+      PDFJS.workerSrc = '///src/assets/js/pdf.worker.js';
+      var loadingTask = PDFJS.getDocument({data: pdfData});
+      loadingTask.promise.then(function(pdf) {
+        console.log('PDF loaded');
+
+        // Fetch the first page
+        var pageNumber = 1;
+        pdf.getPage(pageNumber).then(function(page) {
+          console.log('Page loaded');
+
+          var scale = 1.5;
+          var viewport = page.getViewport(scale);
+
+          // Prepare canvas using PDF page dimensions
+          var canvas = document.getElementById('the-canvas');
+          var context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          // Render PDF page into canvas context
+          var renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+          var renderTask = page.render(renderContext);
+          renderTask.then(function () {
+            console.log('Page rendered');
+          });
+        });
+      }, function (reason) {
+        // PDF loading error
+        console.error(reason);
+      });
+    }
+
+    Vue.prototype.js_getDPI = function(){
+      var arrDPI = new Array;
+      if (window.screen.deviceXDPI) {
+        arrDPI[0] = window.screen.deviceXDPI;
+        arrDPI[1] = window.screen.deviceYDPI;
+      }
+      else {
+        var tmpNode = document.createElement("DIV");
+        tmpNode.style.cssText = "width:1in;height:1in;position:absolute;left:0px;top:0px;z-index:99;visibility:hidden";
+        document.body.appendChild(tmpNode);
+        arrDPI[0] = parseInt(tmpNode.offsetWidth);
+        arrDPI[1] = parseInt(tmpNode.offsetHeight);
+        tmpNode.parentNode.removeChild(tmpNode);
+      }
+      return arrDPI;
+    }
+
+    Vue.prototype.getPdf = function (domName,title,position,tagWidth,tagHeight,callback){
+      // 获取需要打印的区域，以div为单位，此处使用的是vue的选择器
+      let pdfDom = document.querySelector(domName)
+      // 因为在ie10下，会出现input样式丢失的情况，所以在此处清楚input的标签的边框
+      // let arrnode = pdfDom.querySelectorAll('input')
+      // for (var i = 0; i < arrnode.length; i++) {
+      //   arrnode[i].style.border = 'hidden'
+      // }
+      // 设置背景色
+      // pdfDom.style.background = '#FFFFFF'
+      let _this = this;
+      html2Canvas(pdfDom).then(function(canvas) {
+        // 开始canvas截图
+        // 开始准备工作
+        let height = pdfDom.style.height;
+        let width = pdfDom.style.width;
+        let contentWidth = canvas.width
+        let contentHeight = canvas.height
+        // let pageHeight = contentWidth / 592.28 * 841.89
+        // let pageHeight = contentWidth / width * height
+        let pageHeight = tagHeight
+        let leftHeight = contentHeight
+        let imgWidth = width
+        // let imgHeight = width / contentWidth * contentHeight
+        let imgHeight = height
+        // 此处图片格式可以是PNG，也可是JPEG，注意：需要考虑Browser支持的图片格式
+        let pageData = canvas.toDataURL('image/PNG', 1)
+        var arrDPI = _this.js_getDPI();//获取显示器DPI（这个方法没贴出来）
+        var dpiX = 96;
+        var dpiY = 96;
+        if(arrDPI.length>0){
+          dpiX = arrDPI[0];
+          dpiY = arrDPI[1];
+        }
+        // 开始将图片转换为PDF
+        // 设置纸张大小，方向
+        let PDF = new JsPDF('l', 'in', [tagWidth/dpiX,tagHeight/dpiY])
+        if(leftHeight <= pageHeight){
+          PDF.addImage(pageData, 'PNG', 0, position/dpiY, imgWidth, imgHeight)
+        }else{
+          while (leftHeight > 0) {
+            PDF.addImage(pageData, 'PNG', 0, position/dpiY, imgWidth, imgHeight)
+            leftHeight -= pageHeight
+            position -= tagHeight
+            if (leftHeight > 0) {
+              PDF.addPage()
+            }
+          }
+        }
+
+        // 保存PDF
+        // PDF.save(title+ '.pdf')
+        callback(PDF,PDF.output('blob'),pageData)
+      });
+      // html2Canvas()
+    }
+
+    //根据单据来源获取外来单号
+    Vue.prototype.getExternalCodeList = function (val,callback){
+      if(val == null || val == ""){
+        callback([])
+      }
+      this.$http.get("/ys-web-wms/common/getExternalCodeList?key="+val).then(function (result) {
+        if(result.data.state == 200){
+          callback(result.data.data?result.data.data:[])
+        }else{
+          this.$notify.error({
+            title:"外来单号获取失败",
+            message:result.data.message
+          })
+          callback([])
+        }
+      })
+    }
+
+    //根据收货单id获取收货单状态
+    Vue.prototype.getReceivingNoteStatus = function (val,callback){
+      this.$http.get("/ys-web-wms/receivingInspection/getStatus?id="+val).then(function (result) {
+        callback(result.data)
+      })
+    }
+
+  }
+}

@@ -1,0 +1,77 @@
+<template>
+  <div>
+    <div class="right-content-body-topTitle not-print">
+      打印标签
+    </div>
+    <div style="padding: 0px 5px;" id="tagPrint" class="printTag-waterfall">
+      <div v-for="item in tagList" id="tag" style="width: 435px;height: 240px;margin-top: 17px" class="printTag-tableBox">
+        <tag :item="item"></tag>
+      </div>
+    </div>
+    <div style="text-align: right;padding: 10px">
+      <el-button @click="print" size="mini" type="primary" class="not-print">打印</el-button>
+      <el-button @click="cancel" size="mini" class="not-print">取消</el-button>
+    </div>
+  </div>
+</template>
+<script>
+  import html2Canvas from 'html2canvas'
+  import JsPDF from 'jspdf'
+  import Tag from "./Tag.vue"
+  export default{
+    name:"PrintAlert",
+    props:["tagList"],
+    mounted(){
+
+    },
+    data(){
+      return{
+        isShow:false,
+        pdfData:""
+      }
+    },
+    methods:{
+      print(){
+        let _this = this;
+        let tagHeight = document.getElementById("tag").clientHeight+17;
+        let tagWidth = document.getElementById("tag").clientWidth+10;
+        let position = -10;
+        this.getPdf("#tagPrint","标签打印",position,tagWidth,tagHeight,function (doc,blob,pageData) {
+          var url = window.URL.createObjectURL(blob)
+//          var arr = pageData.split(','), mime = arr[0].match(/:(.*?);/)[1],
+//            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+//          while(n--){
+//            u8arr[n] = bstr.charCodeAt(n);
+//          }
+////          return new Blob([u8arr], {type:mime});
+//          var url = window.URL.createObjectURL(new Blob([u8arr], {type:mime}))
+          var win=window.open(url);
+          win.print();
+          win.location.reload();
+        });
+      },
+      cancel(){
+        this.$emit("close",true)
+      }
+    },
+    components:{
+      'tag':Tag
+    }
+  }
+</script>
+<style>
+  /*瀑布流层*/
+  .printTag-waterfall{
+    -moz-column-count:1; /* Firefox */
+    -webkit-column-count:1; /* Safari 和 Chrome */
+    column-count:1;
+  }
+  /*一个内容层*/
+  .printTag-tableBox{
+    /*padding: 12px 2% 0 2%;*/
+    /*padding-left: 3%;*/
+    -moz-page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid;
+  }
+</style>

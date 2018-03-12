@@ -1,0 +1,65 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="not-print" @click="goBack" style="float: right;margin-bottom: -17px;padding-right: 3%"><i class="el-icon-back" style="cursor:pointer"></i></div>
+        <div class="print-title">
+          调拨单
+        </div>
+        <div style="padding: 5px;height: 147px">
+          <!--<span class="right-content-body-little-title">基本信息</span>-->
+          <info></info>
+        </div>
+        <div style="padding: 5px;">
+          <!--<span class="right-content-body-little-title">明细信息</span>-->
+          <detail-table :tableData="tableData"></detail-table>
+        </div>
+        <div style="padding: 5px;">
+          <!--<span class="right-content-body-little-title">审核信息</span>-->
+          <el-table :data="tableData" border style="width:98.2%">
+            <el-table-column prop="date" label="审核时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="审核结果" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+        <div class="not-print" style="height: 40px;padding-right: 2%">
+          <el-button size="mini" style="float: right;margin: 10px;" type="primary" @click="print">打印</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../stockTackingInfo/Info.vue"
+  import DetailTable from "../stockTackingInfo/DetailTable.vue"
+  export default{
+    name:"AllocationPrint",
+    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+      }
+    },
+    methods:{
+      print(){
+        window.print();
+      },
+      goBack(){
+        this.$emit("back",true)
+      }
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable
+    }
+  }
+</script>
+<style>
+
+</style>

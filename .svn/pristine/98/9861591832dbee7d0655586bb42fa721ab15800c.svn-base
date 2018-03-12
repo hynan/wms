@@ -1,0 +1,73 @@
+const _filters={};
+_filters.formatTime = function(time){
+  var min = '00' + (time / 60 | 0), sec = time % 60;
+    sec = '00' + (sec | 0);
+    return [min.substr(-2), sec.substr(-2)].join(':');
+}
+
+_filters.enumtext = function(value,enumList){
+  if(!enumList||enumList.length==0){
+    return value;
+  }else{
+      var temItem = enumList.find((item)=>{
+      if(item.code==value || item.value ==value){
+        return item;
+      }
+      });
+
+      return ((temItem&&temItem.name) ? temItem.name : value);
+  }
+
+}
+_filters.machineTypeText = function(value,enumList){
+  if(!enumList||enumList.length==0){
+    return value;
+  }else{
+    var temItem = enumList.find((item)=>{
+      if(item.categoryId==value){
+        return item;
+      }
+    });
+    return ((temItem&&temItem.categoryName) ? temItem.categoryName : value);
+  }
+}
+
+_filters.materialTypeText = function(value,enumList){
+  if(!enumList||enumList.length==0){
+    return value;
+  }else{
+    var temItem = enumList.find((item)=>{
+        if(item.id==value){
+      return item;
+    }
+  });
+    return ((temItem&&temItem.name) ? temItem.name : value);
+  }
+}
+
+_filters.materialChildrenTypeText = function(value,enumList){
+  if(!enumList||enumList.length==0){
+    return value;
+  }else{
+    var temItem = enumList.find((item)=>{
+        if(!item.children||item.children.length==0){
+          return value
+        }
+        item.children.find((children)=>{
+          if(children.id == value){
+            return children
+          }
+        })
+  });
+    return ((temItem&&temItem.name) ? temItem.name : value);
+  }
+}
+
+
+
+
+export default (Vue)=>{
+  Object.keys(_filters).forEach(key =>{
+    Vue.filter(key,_filters[key])
+  })
+}

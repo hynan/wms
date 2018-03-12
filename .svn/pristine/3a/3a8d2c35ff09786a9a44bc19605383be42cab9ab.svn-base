@@ -1,0 +1,55 @@
+import * as types from "./mutations_types"
+
+export default {
+  [types.SET_SLIDE_FLAG](state){
+    state.slideFlag = !state.slideFlag;
+  },
+  [types.SET_USER](state,useModel){
+    state.user = useModel;
+  },
+  [types.SET_Material_MainType](state,val){
+    state.materialMainType = val;
+  },
+  [types.SET_Enum_List](state,val){
+    state.enumList = val;
+  },
+  [types.SET_Person_List](state,val){
+    state.personList = val;
+  },
+  [types.SET_MATERIAL_LIST](state,val){
+    state.materialList = val;
+  },
+  [types.SET_Material_Type](state,val){
+    state.materialType = val;
+  },
+  [types.SET_Purchase](state,val){
+    state.purchase = val;
+  },
+  [types.SET_DEPT](state,val){
+    state.dept = val;
+  },
+  [types.SET_ROLE_INFO](state,val){
+    state.roleInfo = val;
+  },
+  [types.SET_WAREHOUSE_LIST](state,val){
+    state.warehouseList = val;
+  },
+  [types.SET_ORDER_LIST](state,val){
+    state.orderList = val;
+  },
+  [types.SET_NOTICE](state,val){
+    state.notice = val;
+  },
+  [types.SET_ALL_VENDORS](state,val){
+    state.allVendors = val;
+  },
+  [types.SET_ORDER](state,val){
+    state.order = val;
+  },
+  [types.SET_CONFIG_DATA](state,val){
+    state.configData = Object.assign({},val);  
+  },
+  [types.SET_COMPANY](state,val){
+    state.companyData = val;
+  }
+}

@@ -1,0 +1,82 @@
+<template>
+  <div>
+    <div style="margin-top: -20px">
+      <span style="margin-left: 77px;color: #333333;font-size: 14px">红蓝字类型：红字</span>
+    </div>
+    <el-form label-width="130px" size="mini" style="width: 100%">
+      <el-form-item label="入库单号:" class="right-content-body-tableForm">
+        *****
+      </el-form-item>
+      <el-form-item label="仓库名称:" class="right-content-body-tableForm">
+        ****
+      </el-form-item>
+      <el-form-item label="入库类别:" class="right-content-body-tableForm">
+        采购入库
+      </el-form-item>
+      <el-form-item label="外来单号:" class="right-content-body-tableForm">
+        订货单号
+      </el-form-item>
+      <el-form-item label="总公司订单号:" class="right-content-body-tableForm">
+        222222222
+      </el-form-item>
+      <el-form-item label="分公司订单号:" class="right-content-body-tableForm">
+        111111111
+      </el-form-item>
+      <el-form-item label="入库员:" class="right-content-body-tableForm">
+        张**
+      </el-form-item>
+      <el-form-item label="创建日期:" class="right-content-body-tableForm">
+        2017-12-05
+      </el-form-item>
+      <el-form-item label="作废时间:" class="right-content-body-tableForm">
+        张**
+      </el-form-item>
+      <el-form-item label="作废操作员:" class="right-content-body-tableForm">
+        2017-12-05
+      </el-form-item>
+      <el-form-item label="作废原因:" class="right-content-body-tableForm" style="width: 98.2%">
+      </el-form-item>
+      <el-form-item label="备注:" class="right-content-body-tableForm" style="width: 98.2%">
+      </el-form-item>
+    </el-form>
+    <el-form label-width="130px" size="mini" style="width: 100%">
+      <el-form-item label="收货单号:" class="right-content-body-tableForm">
+        ----
+      </el-form-item>
+      <el-form-item label="收货接收人:" class="right-content-body-tableForm">
+        ****
+      </el-form-item>
+      <el-form-item label="收货日期:" class="right-content-body-tableForm">
+        2018-01-08
+      </el-form-item>
+      <el-form-item label="供应商名称:" class="right-content-body-tableForm">
+        ********
+      </el-form-item>
+      <el-form-item label="供应商编号:" class="right-content-body-tableForm">
+
+      </el-form-item>
+      <el-form-item label="" class="right-content-body-tableForm" style="height: 30px;">
+
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

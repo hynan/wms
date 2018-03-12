@@ -1,0 +1,66 @@
+<template>
+  <div>
+    <div class="right-content-body-topTitle">
+      删除入库单
+    </div>
+    <div style="text-align: center;font-size: 17px;padding: 50px 17px;">
+      <div style="text-align: center">
+        <!--<i class="el-icon-warning" style="margin-right: 7px;font-size: 27px;color: #007B98;"></i>-->
+        <!--<span style="line-height: 29px">确定删除该条收货信息吗？</span>-->
+        <div style="float:left;margin-left: 24%">
+          <i class="el-icon-warning" style="margin-right: 7px;font-size: 27px;color: #007B98;"></i>
+        </div>
+        <div style="float:left">
+          <span style="line-height: 29px">确定删除该条入库信息吗？</span>
+        </div>
+      </div>
+
+    </div>
+    <div style="text-align: center;padding: 20px 10px">
+      <el-button size="mini" type="primary" @click="sure">确定</el-button>
+      <el-button size="mini" @click="cancel">取消</el-button>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"DelMessageAlert",
+    props:["id"],
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+      sure(){
+        this.$http.get("/ys-web-wms/putInStorageInfo/del?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:"删除成功",
+              type:"success",
+              showClose:true
+            })
+            this.$router.push("/putInStorage");
+            this.$store.state.doAjaxSuccess = this.$store.state.doAjaxSuccess?false:true;
+          }else{
+            this.$notify.error({
+              title:"删除失败",
+              message:result.data.message
+            })
+            this.$router.push("/putInStorage/detail/"+this.id+"/info");
+          }
+        })
+
+      },
+      cancel(){
+        this.$router.push("/putInStorage/detail/"+this.id+"/info");
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

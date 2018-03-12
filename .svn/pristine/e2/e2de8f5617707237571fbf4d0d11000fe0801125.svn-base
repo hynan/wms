@@ -1,0 +1,158 @@
+<template>
+  <div class="card-box">
+    <div class="card-box-inner">
+    <div class="searchBar-main">
+      <el-date-picker
+        style="width: 98%;margin-bottom: 5px"
+        size="mini"
+        v-model="searchParams.dateCreated"
+        type="daterange"
+        align="center"
+        unlink-panels
+        range-separator="--"
+        start-placeholder="入库单创建开始日期"
+        end-placeholder="入库单创建结束日期"
+        :picker-options="pickerOptions">
+      </el-date-picker>
+      <el-select v-model="searchParams.orderNum" placeholder="入库单号" size="mini" style="width: 32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderType" placeholder="外来单号" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="收货单号" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="供应商编号" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="总公司订单号" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="分公司订单号" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料所有人" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="仓库所属部门" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="仓库" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料类别" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料编码" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料名称" size="mini" style="width:32%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+
+      <div class="searchBar-foot" style="width: 17%;">
+        <el-button type="primary" @click="search" icon="search" size="mini">搜索</el-button>
+      </div>
+    </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    name:"InventorySearchBar",
+    props:{
+      params:Object
+    },
+    mounted(){
+
+    },
+    data(){
+      return {
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        searchParams: Object.assign({},this.params),
+      }
+    },
+    methods:{
+      handleChange(value) {
+        console.log(value);
+      },
+      search(){
+        this.$emit("search",this.searchParams);
+      },
+    },
+    computed:{
+      "pickerOptions":function () {
+        return this.$store.state.pickerOptions;
+      }
+    },
+
+  }
+</script>
+<style>
+
+</style>

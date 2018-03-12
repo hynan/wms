@@ -1,0 +1,70 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <el-row style="padding: 5px;margin-top: 10px">
+          <el-steps :active="2" align-center finish-status="success">
+            <el-step title="待审核"></el-step>
+            <el-step title="待出库"></el-step>
+            <el-step title="待入库"></el-step>
+            <el-step title="结束"></el-step>
+          </el-steps>
+        </el-row>
+        <div style="padding: 5px;height: 257px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table :tableData="tableData"></detail-table>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            审核信息
+          </span>
+          <el-table :data="tableData" border style="width:98.2%">
+            <el-table-column prop="date" label="审核时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="审核结果" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+           </el-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "./Info.vue"
+  import DetailTable from "./DetailTable.vue"
+  export default{
+    name:"AllocationInfo",
+    mounted(){
+
+    },
+    data(){
+      return{
+        tableData:[
+          {date:"----"},
+          {date:"----"},
+        ]
+      }
+    },
+    methods:{
+
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable
+    }
+  }
+</script>
+<style>
+
+</style>

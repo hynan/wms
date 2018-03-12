@@ -1,0 +1,137 @@
+<template>
+  <div class="inventory">
+    <div class="right-topTitle" style="font-size: 12px;padding-left: 20px;">
+      规格：***  &nbsp;&nbsp;&nbsp;&nbsp;单位：***  &nbsp;&nbsp;&nbsp;&nbsp;报损数量：***  &nbsp;&nbsp;&nbsp;&nbsp;库存数量：***  &nbsp;&nbsp;&nbsp;&nbsp;锁定数量：***
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          明细信息
+        </div>
+        <div style="padding: 5px;">
+          <el-form :model="detailForm" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width: 100%;" class="operation-table" :row-class-name="tableRowClassName" :cell-class-name="tableCellClassName">
+              <el-table-column prop="date" label="操作" fixed align="center" width="110" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <div  v-if="scope.row.state!='edit'">
+                    <el-button size="mini" type="text" v-if="scope.row.isLock" @click="deblocking(scope.row)">解锁</el-button>
+                    <el-button size="mini" type="text" @click="toChange(scope.row)">货位调整</el-button>
+                  </div>
+                  <div v-else>
+                    <el-button size="mini" type="text" @click="submit(scope.row,'detailForm')">确定</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'"  :rules="rules.date"  v-if="scope.row.state=='edit'">
+                    <el-select clearable v-model="scope.row.date" filterable placeholder="库区" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date" v-if="scope.row.state=='edit'">
+                    <el-select clearable v-model="scope.row.date" filterable placeholder="货位" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="入库日期" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="入库单号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="外来单号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="产品批次" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="供应商编号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="外协要求" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="工艺" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="仓库所属部门" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="仓库" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+          </el-form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"InventoryInfo",
+    mounted(){
+
+    },
+    data(){
+      return{
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        detailForm:{
+          tableData:[
+            {date:"1",state:"nomal",isLock:true},
+            {date:"----",state:"nomal",isLock:false},
+          ],
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+          ],
+        }
+      }
+    },
+    methods:{
+      tableCellClassName({row, column, rowIndex, columnIndex}){
+//        console.log(columnIndex)
+        if(columnIndex == 0){
+          return "cell-button-style";
+        }
+        return '';
+      },
+      tableRowClassName({row, rowIndex}) {
+        if (row.isLock) {
+          return 'lock-style';
+        } else{
+          return 'unLock-style';
+        }
+      },
+      deblocking(row){
+        row.isLock = false;
+      },
+      toChange(row){
+        row.state = "edit"
+      },
+      submit(row,formName){
+        console.log(row)
+        if(this.checkForm(formName)){
+          row.state = "nomal"
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .inventory .lock-style{background-color: #c1bcb6}
+  .inventory .unLock-style{background-color: #7deab4}
+  .inventory .cell-button-style{background-color: white;padding: 2px 0px;}
+</style>

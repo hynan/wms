@@ -1,0 +1,500 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+
+    </div>
+    <div class="card-box right-content">
+      <div class="right-content-body">
+        <el-row style="padding: 5px;margin-top: 10px">
+          <steps></steps>
+        </el-row>
+        <div style="padding: 5px;height: 200px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <el-form ref="form" :model="formData" label-width="130px" size="mini" style="width: 100%">
+            <el-form-item label="出库单号:" class="right-content-body-tableForm">
+              <span>{{detailForm.stockOutBillCode}}</span>
+            </el-form-item>
+            <el-form-item label="冲红单号:" class="right-content-body-tableForm" v-if="detailForm.blueRedFlagKey == '2'">
+              <span>{{detailForm.oldStockOutBillCode}}</span>
+            </el-form-item>
+            <el-form-item label="仓库名称:" class="right-content-body-tableForm">
+              <el-select clearable v-model="detailForm.warehouseId" filterable placeholder="仓库名称" @change="warehouseChange" style="width: 100%">
+                <el-option
+                  v-for="item in warehouseList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="出库类别:" class="right-content-body-tableForm">
+              <el-select clearable v-model="detailForm.stockOutTypeKey" filterable placeholder="出库类别" size="mini" style="width: 100%">
+                <el-option
+                  v-for="item in stockOutType"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <!--<el-form-item label="外来单号:" class="right-content-body-tableForm">-->
+            <!--<el-select clearable v-model="detailForm.orderState" filterable placeholder="外来单号" size="mini" style="width: 100%">-->
+            <!--<el-option-->
+            <!--v-for="item in testData"-->
+            <!--:key="item.code"-->
+            <!--:label="item.name"-->
+            <!--:value="item.name">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--</el-form-item>-->
+            <el-form-item label="领料人:" class="right-content-body-tableForm">
+              <el-select clearable v-model="detailForm.pickingPersonId" filterable placeholder="领料人" size="mini" @change="pickingPersonChange" style="width: 100%">
+                <el-option
+                  v-for="item in allPersons"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="领料部门:" class="right-content-body-tableForm">
+              <el-select clearable v-model="detailForm.pickingDeptId" filterable placeholder="领料部门" size="mini" @change="pickingDeptChange" style="width: 100%">
+                <el-option
+                  v-for="item in warehouseDeptList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="出库员:" class="right-content-body-tableForm" style="">
+              <span>{{detailForm.stockOutPersonName}}</span>
+            </el-form-item>
+            <el-form-item label="创建日期:" class="right-content-body-tableForm">
+              <span>{{detailForm.createDate}}</span>
+            </el-form-item>
+            <el-form-item label="备注:" class="right-content-body-tableForm" style="width: 98.2%">
+              <el-input size="mini" placeholder="" v-model="detailForm.remarks"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <!--明细信息-->
+        <div style="padding: 5px;">
+          <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+              明细信息
+          </span>
+          <el-button size="mini" style="float: right;margin: 0px 7px 2px 0px" type="primary" @click="addDetail" v-if="detailForm.blueRedFlagKey == '1'">添加明细</el-button>
+          <el-form :model="detailForm" ref="detailForm" :inline-message="true">
+            <el-table :data="detailForm.detailList" border style="width:100%" class="operation-table">
+              <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.materialCategoryCode'" v-if="scope.row.state=='edit' && detailForm.blueRedFlagKey == '1'" :rules="{ required: true, message: '请选择物料类别', trigger: 'change' },">
+                    <el-select clearable size="mini" v-model="scope.row.materialCategoryCode" filterable placeholder="物料类别" @change="materialCategoryCodeChange(scope.row)" style="width: 100%">
+                      <el-option
+                        v-for="item in materialCategoryList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.materialCategoryName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.materialCode'" v-if="scope.row.state=='edit' && detailForm.blueRedFlagKey == '1'" :rules="{ required: true, message: '请选择物料', trigger: 'change' },">
+                    <el-select clearable size="mini" v-model="scope.row.materialCode" filterable placeholder="物料名称" @change="materialCodeChange(scope.row)" style="width: 100%">
+                      <el-option
+                        v-for="item in scope.row.materialNameCodeList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.materialName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true">
+              </el-table-column>
+              <el-table-column prop="modelType" label="型号" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.modelType'" v-if="scope.row.state=='edit'">
+                    自动显示
+                  </el-form-item>
+                  <span v-else>{{scope.row.modelType}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.specification'" v-if="scope.row.state=='edit' && detailForm.blueRedFlagKey == '1'" :rules="{ required: true, message: '请选择规格', trigger: 'change' }">
+                    <el-select clearable size="mini" v-model="scope.row.specification" filterable placeholder="规格" @change="specificationChange(scope.row)" style="width: 100%">
+                      <el-option
+                        v-for="item in scope.row.specList"
+                        :key="item"
+                        :label="item"
+                        :value="item">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.specification}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="oldStockOutAmount" label="原出库数量" align="center" :show-overflow-tooltip="true" v-if="detailForm.blueRedFlagKey == '2'">
+              </el-table-column>
+              <el-table-column prop="date" :label="detailForm.blueRedFlagKey == '1'?'出库数量':'冲红数量'" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.stockOutAmount'" v-if="scope.row.state=='edit'" :rules="[{ required: true, message: '请输入出库数量', trigger: 'change' },rules.amount]">
+                    <el-input size="mini" v-model="scope.row.stockOutAmount"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.stockOutAmount}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="库存数量"  align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.stockAmount'" v-if="scope.row.state=='edit'">
+                    自动显示
+                  </el-form-item>
+                  <span v-else>{{scope.row.stockAmount}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.unitName'" v-if="scope.row.state=='edit' && detailForm.blueRedFlagKey == '1'" :rules="{ required: true, message: '请选择单位', trigger: 'change' }">
+                    <el-select clearable size="mini" v-model="scope.row.unitName" filterable placeholder="规格" style="width: 100%">
+                      <el-option
+                        v-for="item in scope.row.unitList"
+                        :key="item"
+                        :label="item"
+                        :value="item">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.unitName}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="操作" fixed="right" align="center" width="87">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.state=='edit'">
+                    <el-button type="text" size="mini" @click="savelDetail(scope.row,scope.$index,'detailForm')">保存</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                  <div v-else>
+                    <el-button type="text" size="mini" @click="editDetail(scope.row,scope.$index)">修改</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+        </div>
+        <div style="text-align: right" class="right-content-body-foot">
+          <el-button size="mini" @click="submit('save')">保存</el-button>
+          <el-button size="mini" type="primary" @click="submit('submit')">提交</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Steps from "../outBoundOrderInfo/Steps.vue"
+  export default{
+    name:"OutBoundOrderEdit",
+    mounted:function () {
+      this.id = this.$route.params.id
+      this.getCopyInfo();
+    },
+    data(){
+      var _this = this;
+      var checkAmount = (rule, value, callback) => {
+        if(_this.isNull(value)){
+          callback();
+        }
+        let isNum = _this.isNumber(value)
+        if (!isNum) {
+          callback(new Error('请填写正确的数值'));
+        } else {
+          if(value < 0 ){
+            callback(new Error('数值不能小于0'));
+          }
+          callback();
+        }
+      };
+      return{
+        id:"",
+        index:"",
+        detailForm:{
+          stockOutBillCode:"",//出库单号
+          blueRedFlagKey:"1",//红蓝字类型
+          oldStockOutBillCodeId:"",//冲红出库单id
+          oldStockOutBillCode:"",//冲红出库单号
+          stockOutTypeKey:"",//出库类别
+          warehouseName:"",//仓库名称
+          warehouseId:"",//仓库id
+          pickingPersonName:"",//领料人姓名
+          pickingPersonId:"",//领料人Id
+          pickingDeptName:"",//领料部门名称
+          pickingDeptId:"",//领料部门id
+          remarks:"",//备注
+          stockOutPersonId:this.$store.state.user.id,//出库员id
+          stockOutPersonName:this.$store.state.user.name,//出库员姓名
+          detailList:[]
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+          amount:[
+            { validator: checkAmount, trigger: 'change' }
+          ]
+        }
+      }
+    },
+    methods:{
+      getCopyInfo(){
+        let _this = this;
+        _this.$http.get("/ys-web-wms/putOutStorageInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              let info = {
+                stockOutBillCode:"",//出库单号
+                blueRedFlagKey:"1",//红蓝字类型
+                oldStockOutBillCodeId:"",//冲红出库单id
+                oldStockOutBillCode:"",//冲红出库单号
+                stockOutTypeKey:"",//出库类别
+                warehouseName:"",//仓库名称
+                warehouseId:"",//仓库id
+                pickingPersonName:"",//领料人姓名
+                pickingPersonId:"",//领料人Id
+                pickingDeptName:"",//领料部门名称
+                pickingDeptId:"",//领料部门id
+                remarks:"",//备注
+                stockOutPersonId:_this.$store.state.user.id,//出库员id
+                stockOutPersonName:_this.$store.state.user.name,//出库员姓名
+              }
+              let basicInfo = data.basicInfo?data.basicInfo:info;
+              basicInfo.blueRedFlagKey = basicInfo.blueRedFlagKey + "";
+              let detailList = data.detailList?data.detailList:[];
+              if(detailList.length>0){
+                for(var i=0;i<detailList.length;i++){
+                  detailList[i].state = "nomal";
+                  detailList[i].stockOutAmount = detailList[i].stockOutAmount + "";
+                  detailList[i].materialNameCodeList=[];//物料名称列表（名称+编码）
+                  detailList[i].specList=[];//规格列表
+                  detailList[i].unitList=[];//单位列表
+                  detailList[i].firstEdit = true;
+                }
+              }
+              basicInfo.detailList = detailList;
+              _this.detailForm = Object.assign({},basicInfo);
+            }else{
+              _this.detailForm = {
+                blueRedFlagKey:"1",//红蓝字类型
+                oldStockOutBillCodeId:"",//冲红出库单id
+                oldStockOutBillCode:"",//冲红出库单号
+                stockOutTypeKey:"",//出库类别
+                warehouseName:"",//仓库名称
+                warehouseId:"",//仓库id
+                pickingPersonName:"",//领料人姓名
+                pickingPersonId:"",//领料人Id
+                pickingDeptName:"",//领料部门名称
+                pickingDeptId:"",//领料部门id
+                remarks:"",//备注
+                stockOutPersonId:this.$store.state.user.id,//出库员id
+                stockOutPersonName:this.$store.state.user.name,//出库员姓名
+                detailList:[]
+              };
+              _this.$message({
+                message:"出库单信息获取失败",
+                type:"error",
+                showClose:true
+              })
+            }
+          }else{
+            _this.$notify.error({
+              title:"出库单信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+
+      },
+      submit(type){
+        let submitData = Object.assign({},this.detailForm);
+        if(submitData.detailList.length>0){
+          for(var i=0;i<submitData.detailList.length;i++){
+            submitData.detailList[i].materialNameCodeList = "";
+            submitData.detailList[i].specList = null;
+            submitData.detailList[i].unitList = "";
+          }
+        }else{
+          this.$message({
+            message:"请添加明细",
+            type:"error",
+            showClose:true
+          })
+          return;
+        }
+        let errMsg = type=='save'?'保存':'提交';
+        let dataStr = JSON.stringify(submitData);
+        this.$http.post("/ys-web-wms/putOutStorageInfo/copy",{data:dataStr,type:type,id:this.id}).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:errMsg + "成功",
+              type:"success",
+              showClose:true
+            })
+            this.$store.state.doAjaxSuccess = this.$store.state.doAjaxSuccess?false:true;
+            this.$router.push("/putOutStorage")
+          }else{
+            this.$notify.error({
+              title:errMsg + "失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      //仓库选择时触发
+      warehouseChange(val){
+        let _this = this;
+        this.getNameById(val,this.warehouseList,function (res) {
+          _this.detailForm.warehouseName = res;
+        });
+      },
+      //领料人选择时触发
+      pickingPersonChange(val){
+        let _this = this;
+        this.getNameById(val,this.allPersons,function (res) {
+          _this.detailForm.pickingPersonName = res;
+        });
+      },
+      //领料部门选择时触发
+      pickingDeptChange(val){
+        let _this = this;
+        this.getNameById(val,this.warehouseDeptList,function (res) {
+          _this.detailForm.pickingDeptName = res;
+        });
+      },
+      //物料类别选择时触发
+      materialCategoryCodeChange(row){
+        let _this = this;
+        row.materialCode = "";
+        row.materialName = "";
+        row.modelType = "";
+        row.specification = "";
+        row.unitName = "";
+        row.materialNameCodeList=[];//物料名称列表（名称+编码）
+        row.specList=[];//规格列表
+        row.unitList=[];//单位列表
+        this.getNameById(row.materialCategoryCode,this.materialCategoryList,function (result) {
+          row.materialCategoryName = result;
+          _this.getStockMaterialList(row.materialCategoryCode,function (res) {
+            row.materialNameCodeList = res?res:[];
+          })
+        });
+      },
+      //物料名称选择时触发
+      materialCodeChange(row){
+        row.modelType = "";
+        row.specification = "";
+        row.unitName = "";
+        row.specList=[];//规格列表
+        row.unitList=[];//单位列表
+        let _this = this;
+        this.getNameById(row.materialCode,row.materialNameCodeList,function (result) {
+          row.materialName = result;
+          if(_this.isNull(row.materialCode)){
+            return;
+          }
+          _this.getStockSpecList(row.materialName,row.materialCode,function (res) {
+            row.specList = res;
+          })
+        })
+      },
+      //规格选择时触发
+      specificationChange(row){
+        row.unitName = "";
+        row.unitList=[];//单位列表
+        if(this.isNull(row.materialName) || this.isNull(row.materialCode) || this.isNull(row.specification)){
+          return;
+        }
+        this.getStockUnitList(row.materialName,row.materialCode,row.specification,function (result) {
+          row.unitList = result;
+        })
+      },
+      editDetail(row,index){
+        let _this = this;
+        if(row.firstEdit){
+          this.getStockMaterialList(row.materialCategoryCode,function (res) {
+            row.materialNameCodeList = res?res:[];
+            _this.getStockSpecList(row.materialName,row.materialCode,function (res) {
+              row.specList = res;
+              _this.getStockUnitList(row.materialName,row.materialCode,row.specification,function (result) {
+                row.unitList = result;
+                row.firstEdit = false;
+                row.state = "edit";
+              })
+            })
+          })
+        }else{
+          row.state = "edit";
+        }
+
+      },
+      delDetail(data,index){
+        this.detailForm.detailList.splice(index, 1);
+      },
+      savelDetail(data,index,formName){
+        if(this.checkForm(formName)){
+          data.state = "nomal"
+        }
+      },
+      addDetail() {
+        let add = {
+          stockOutAmount:"",//出库数量
+          stockAmount:"",//库存数量
+          materialCode:"",//物料编码
+          materialName:"",//物料名称
+          materialCategoryCode:"",//物料类别编码
+          materialCategoryName:"",//物料类别名称
+          modelType:"",//型号
+          specification:"",//规格
+          unitName:"",//单位
+          materialNameCodeList:[],//物料名称列表（名称+编码）
+          specList:[],//规格列表
+          unitList:[],//单位列表
+          state:"edit"
+        }
+        this.detailForm.detailList.push(add)
+      }
+    },
+    components:{
+        "steps":Steps
+    },
+    computed:{
+      "warehouseList":function () {//仓库列表
+        return this.$store.state.selectList.warehouseList;
+      },
+      "stockOutType":function () {//出库类别
+        return this.$store.state.enumList.stockOutType;
+      },
+      "allPersons":function () {//领料人列表
+        return this.$store.state.selectList.allPersons;
+      },
+      "warehouseDeptList":function () {//领料部门列表
+        return this.$store.state.selectList.warehouseDeptList;
+      },
+      "materialCategoryList":function () {//物料类别列表
+        return this.$store.state.selectList.materialCategoryList;
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

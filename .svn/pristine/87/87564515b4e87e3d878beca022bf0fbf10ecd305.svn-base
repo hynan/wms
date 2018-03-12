@@ -1,0 +1,56 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="print-title">
+          {{$store.state.putOutStorageInfo.stockOutTypeKey|enumtext(stockOutType)}}出库单
+        </div>
+        <div style="padding: 5px;height: 235px">
+          <!--<span class="right-content-body-little-title">基本信息</span>-->
+          <info></info>
+        </div>
+        <div style="padding: 5px;">
+          <!--<span class="right-content-body-little-title">明细信息</span>-->
+          <detail-table></detail-table>
+        </div>
+        <div class="not-print" style="height: 40px;padding-right: 2%">
+          <el-button size="mini" style="float: right;margin: 10px;" type="primary" @click="print">打印</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../outBoundOrderInfo/Info.vue"
+  import DetailTable from "../outBoundOrderInfo/DetailTable.vue"
+  export default{
+    name:"OutBoundOrderPrint",
+    mounted(){
+
+    },
+    data(){
+      return{
+      }
+    },
+    methods:{
+      print(){
+        window.print();
+      }
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable
+    },
+    computed: {
+      "stockOutType": function () {//出库类别
+        return this.$store.state.enumList.stockOutType;
+      },
+    }
+  }
+</script>
+<style>
+
+</style>

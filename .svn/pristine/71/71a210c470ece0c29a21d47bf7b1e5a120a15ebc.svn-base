@@ -1,0 +1,68 @@
+<template>
+  <div>
+    <el-collapse @change="doAjax">
+      <el-collapse-item>
+        <template slot="title">
+          <div class="myTask-topTitle"><span style="color: white">待核实的盘点单</span></div>
+        </template>
+        <div v-loading="loading"  element-loading-text="拼命加载中">
+          <el-table :data="tableData" border style="width: 100%" max-height="270" @current-change="rowCurrentChange">
+            <el-table-column label="盘点单号" align="checkBillCode" prop="date" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="创建日期" align="createDate" prop="date" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="仓库" align="checkWarehouseName" prop="date" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="创建人" align="applierName" prop="date" :show-overflow-tooltip="true">
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </div>
+</template>
+<script>
+  export default{
+    name: 'WaitVerifyStockTacking',
+    mounted(){
+    },
+    data(){
+      return{
+        loading:true,
+        tableData:[
+//          {id:11,date:"----"}
+        ]
+      }
+    },
+    methods:{
+      doAjax(val){
+        if (val.length > 0) {
+          this.loading = true;
+          this.$http.get("/ys-web-wms/myTask/getTaskList?type=waitVerifyStockTacking").then(function (result) {
+            if (result.data.state == 200) {
+              let data = result.data.data;
+              if (data) {
+                this.tableData = data.waitVerifyStockTacking ? data.waitVerifyStockTacking : []
+              } else {
+                this.tableData = [];
+              }
+            } else {
+              this.$notify.error({
+                title: "待核实的盘点单列表获取失败",
+                message: result.data.message
+              })
+            }
+            this.loading = false;
+          })
+        } else {
+          this.loading = true;
+        }
+      },
+      rowCurrentChange(val){
+        this.$router.push("/stockTacking/detail/"+val.checkBillId+"/verify?tourl=verify");
+      }
+    }
+  }
+</script>
+<style>
+</style>

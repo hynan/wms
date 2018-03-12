@@ -1,0 +1,50 @@
+<template>
+  <div>
+    <el-form label-width="160px" size="mini" style="width: 100%;display: inline-block">
+      <el-form-item label="盘点单号:" class="right-content-body-tableForm">
+        {{info.checkBillCode}}
+      </el-form-item>
+      <el-form-item label="盘点仓库:" class="right-content-body-tableForm">
+        {{info.checkWarehouseName}}
+      </el-form-item>
+      <el-form-item label="仓库所属部门:" class="right-content-body-tableForm">
+        {{info.warehouseDeptName}}
+      </el-form-item>
+      <el-form-item label="物料类别:" class="right-content-body-tableForm">
+        {{info.materialCategoryNames?info.materialCategoryNames.join(','):''}}
+      </el-form-item>
+      <el-form-item label="入库创建日期（开始）:" class="right-content-body-tableForm">
+        {{info.stockInDateBegin}}
+      </el-form-item>
+      <el-form-item label="入库创建日期（结束）:" class="right-content-body-tableForm">
+        {{info.stockInDateEnd}}
+      </el-form-item>
+      <el-form-item label="盘点员:" class="right-content-body-tableForm">
+        {{info.checkerName}}
+      </el-form-item>
+      <el-form-item label="盘点日期:" class="right-content-body-tableForm">
+        {{info.checkDate}}
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+      props:['info'],
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

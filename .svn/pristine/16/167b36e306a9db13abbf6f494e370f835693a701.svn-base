@@ -1,0 +1,49 @@
+<template>
+  <div>
+    <div class="right-content-body-topTitle">解锁说明</div>
+    <el-row class="right-content-body-tableCss" style="margin: 5px;">
+      <el-col :span="4" class="right-content-body-tableCss-left">
+        解锁说明:
+      </el-col>
+      <el-col :span="20" class="right-content-body-tableCss-right">
+        <el-input type="textarea" size="mini" v-model="unlockDesc" :rows="7"></el-input>
+      </el-col>
+    </el-row>
+    <div style="padding: 7px;text-align: center">
+      <el-button size="mini" type="primary" @click="submit">提交</el-button>
+      <el-button size="mini" @click="cancel">取消</el-button>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"DeblockingAlert",
+    mounted(){
+
+    },
+    data(){
+      return{
+        unlockDesc:"",
+      }
+    },
+    methods:{
+      submit(){
+        if(this.isNull(this.unlockDesc)){
+          this.$message({
+            message:"解锁说明不能为空",
+            type:"warning",
+            showClose:true
+          })
+          return;
+        }
+        this.$emit("submit",this.unlockDesc);
+      },
+      cancel(){
+        this.$emit("cancel",true)
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

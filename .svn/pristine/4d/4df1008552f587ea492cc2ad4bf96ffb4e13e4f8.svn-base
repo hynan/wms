@@ -1,0 +1,57 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import moduleOrder from './order'
+import moduleDrawing from './drawings'
+import mutations from './mutations'
+import moduleDM from './dataManagement'
+
+import * as actions from './actions'
+Vue.use(Vuex)
+const state = {
+  slideFlag:true, //左侧列表展开与否
+  user:{},
+  roleInfo:{},//角色信息
+  enumList:{},//常用枚举列表
+  receivingInfo:{},//收货单信息
+  putInStorageInfo:{},//入库单信息
+  selectList:{},//常用下拉框数据列表
+  doAjaxSuccess:true,//操作成功，数据刷新用
+  //日期相关
+  pickerOptions:{
+    shortcuts: [{
+      text: '最近一周',
+      onClick(picker) {
+        const end = new Date();
+        const start = new Date();
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+        picker.$emit('pick', [start, end]);
+      }
+    }, {
+      text: '最近一个月',
+      onClick(picker) {
+        const end = new Date();
+        const start = new Date();
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+        picker.$emit('pick', [start, end]);
+      }
+    }, {
+      text: '最近三个月',
+      onClick(picker) {
+        const end = new Date();
+        const start = new Date();
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+        picker.$emit('pick', [start, end]);
+      }
+    }]
+  },
+}
+export default new Vuex.Store({
+  modules:{
+    moduleOrder,
+    moduleDrawing,
+      moduleDM
+  },
+  state,
+  mutations,
+  actions
+})

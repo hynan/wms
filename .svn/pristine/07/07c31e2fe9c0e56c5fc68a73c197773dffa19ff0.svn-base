@@ -1,0 +1,114 @@
+<template>
+  <div class="card-box warning-manage">
+    <div class="card-box-inner">
+    <div class="searchBar-main">
+      <el-date-picker
+        style="width: 95%;margin-bottom: 10px"
+        size="small"
+        v-model="searchParams.dateCreated"
+        type="daterange"
+        align="center"
+        unlink-panels
+        range-separator="--"
+        start-placeholder="报警开始日期"
+        end-placeholder="报警结束日期"
+        :picker-options="pickerOptions">
+      </el-date-picker>
+      <el-select clearable v-model="searchParams.orderType" placeholder="仓库" size="small" style="width:95%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.code">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料类别" size="small" style="width:95%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料编码" size="small" style="width:95%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="物料名称" size="small" style="width:95%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="报警类别" size="small" style="width:95%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.orderState" filterable placeholder="报警状态" size="small" style="width:95%">
+        <el-option
+          v-for="item in testData"
+          :key="item.code"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+
+      <div class="searchBar-foot" style="width: 27%">
+        <el-button type="primary" @click="search" icon="search" size="mini">搜索</el-button>
+      </div>
+    </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    name:"WarningManageSearchBar",
+    props:{
+      params:Object
+    },
+    mounted(){
+
+    },
+    data(){
+      return {
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        searchParams: Object.assign({},this.params),
+      }
+    },
+    methods:{
+      handleChange(value) {
+        console.log(value);
+      },
+      search(){
+        this.$emit("search",this.searchParams);
+      },
+      toAddStockTacking(){
+        this.$router.push("/stockTacking/stockTackingAdd");
+      }
+    },
+    computed:{
+      "pickerOptions":function () {
+        return this.$store.state.pickerOptions;
+      }
+    },
+
+  }
+</script>
+<style>
+  .warning-manage .searchBar-main .el-select{margin-bottom: 7px;}
+  .warning-manage .searchBar-main .el-date-editor{margin-bottom: 7px;}
+</style>

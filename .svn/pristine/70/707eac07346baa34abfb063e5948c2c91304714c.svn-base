@@ -1,0 +1,82 @@
+<template>
+  <div class="wait-deblocking-task">
+    <el-collapse @change="doAjax">
+      <el-collapse-item>
+        <template slot="title">
+          <div class="myTask-topTitle"><span style="color: white">待解锁的存货</span></div>
+        </template>
+        <div v-loading="loading"  element-loading-text="拼命加载中">
+          <el-table :data="tableData" border style="width: 100%" max-height="270" @row-click="rowCurrentChange">
+            <el-table-column label="物料编码" align="center" prop="materialCode" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="物料名称" align="center" prop="materialName" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="创建日期" align="center" prop="createDate" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="申请人" align="center" prop="applierName" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+    <el-dialog title="" :visible.sync="dialogVisible" v-if="dialogVisible" top="7vh">
+      <deblocking-info :id="currentId" @success="success"></deblocking-info>
+    </el-dialog>
+  </div>
+</template>
+<script>
+  import DeblockingInfo from "../../InventoryManagement/DeblockingInfo.vue"
+  export default{
+    name: 'WaitDeblockingInventory',
+    mounted(){
+    },
+    data(){
+      return{
+        currentId:"",
+        loading:true,
+        dialogVisible:false,
+        tableData:[
+//          {stockId:"12",id:11,date:"2017-04-27",order:"D1234",blueprint:"",order2:""}
+        ]
+      }
+    },
+    methods:{
+      success(){
+        this.dialogVisible = false;
+        this.doAjax([1,2]);
+      },
+      doAjax(val){
+        if (val.length > 0) {
+          this.loading = true;
+          this.$http.get("/ys-web-wms/myTask/getTaskList?type=waitDeblockingInventory").then(function (result) {
+            if (result.data.state == 200) {
+              let data = result.data.data;
+              if (data) {
+                this.tableData = data.waitDeblockingInventory ? data.waitDeblockingInventory : []
+              } else {
+                this.tableData = [];
+              }
+            } else {
+              this.$notify.error({
+                title: "待解锁的存货列表获取失败",
+                message: result.data.message
+              })
+            }
+            this.loading = false;
+          })
+        } else {
+          this.loading = true;
+        }
+      },
+      rowCurrentChange(val){
+        this.currentId = val.unlockApplyLogId;
+        this.dialogVisible = true;
+//        this.$router.push("/inventory/detail/"+val.materialCode+"/deblockingInfo?tourl=deblockingInfo");
+      }
+    },
+    components:{
+      "deblocking-info":DeblockingInfo
+    }
+  }
+</script>
+<style>
+ .wait-deblocking-task .el-dialog__body{  padding: 0px;}
+ .wait-deblocking-task .el-dialog__header{  padding: 0px;}
+ .wait-deblocking-task .el-dialog{ width:70%}
+</style>

@@ -1,0 +1,158 @@
+<template>
+  <div>
+    <div v-if="isPrint">
+      <stock-tacking-print :tableData="detailForm.tableData" @back="isPrint=false"></stock-tacking-print>
+    </div>
+    <div v-else>
+      <div class="right-topTitle" v-if="!isPrint">
+        单据号：SH201712040001
+      </div>
+      <div class="card-box right-content">
+        <div class="right-content-body">
+          <div class="right-content-body-topTitle">
+            新建盘点单
+          </div>
+          <div style="padding: 5px;height: 157px">
+            <span class="right-content-body-little-title">
+              基本信息
+            </span>
+            <el-form ref="form" :model="formData" label-width="160px" size="mini" style="width: 100%">
+              <el-form-item label="盘点单号:" class="right-content-body-tableForm">
+                <el-input size="mini"></el-input>
+              </el-form-item>
+              <el-form-item label="盘点仓库:" class="right-content-body-tableForm">
+                <el-select clearable v-model="formData.orderState" filterable placeholder="转出部门" style="width: 100%">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="仓库所属部门:" class="right-content-body-tableForm">
+                <el-select clearable v-model="formData.orderState" filterable placeholder="转入部门" size="mini"  style="width: 100%">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="物料类别:" class="right-content-body-tableForm">
+                <el-select clearable v-model="formData.orderState" filterable placeholder="转出仓库" size="mini" style="width: 100%">
+                  <el-option
+                    v-for="item in testData"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="入库创建日期（开始）:" class="right-content-body-tableForm">
+                <el-date-picker
+                  style="width: 100%"
+                  size="mini"
+                  v-model="formData.arrivalDate"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="入库创建日期（结束）:" class="right-content-body-tableForm">
+                <el-date-picker
+                  style="width: 100%"
+                  size="mini"
+                  v-model="formData.arrivalDate"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="盘点员:" class="right-content-body-tableForm">
+              </el-form-item>
+              <el-form-item label="盘点日期:" class="right-content-body-tableForm">
+                <el-date-picker
+                  style="width: 100%"
+                  size="mini"
+                  v-model="formData.arrivalDate"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div style="text-align: right;padding-right: 3%">
+            <el-button size="mini" type="primary">确认</el-button>
+          </div>
+          <!--明细信息-->
+          <div style="padding: 5px;">
+            <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+                明细信息
+            </span>
+            <el-table :data="detailForm.tableData" border style="width:100%" class="operation-table">
+              <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+          </div>
+          <div style="text-align: right;padding-right: 3%" class="right-content-body-foot">
+            <el-button size="mini" type="primary" @click="print">打印</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import StockTackingPrint from "./StockTackingPrint.vue"
+  export default{
+    name:"StockTackingAdd.vue",
+    mounted(){
+
+    },
+    data(){
+      return{
+        isPrint:false,
+        index:"",
+        detailForm:{
+          tableData:[{date:"asdf",state:"nomal"}]
+        },
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        formData:{
+          orderNum:"",
+          orderState:"",
+          orderSource:"",
+          warehouse:"",
+          foreignOrder:"",
+          arrivalDate:new Date()
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+        }
+      }
+    },
+    methods:{
+      print(){
+        this.isPrint = true;
+      }
+    },
+    components:{
+      "stock-tacking-print":StockTackingPrint
+    }
+  }
+</script>
+<style>
+
+</style>

@@ -1,0 +1,146 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="receivingList-table" style="height: 70%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="盘点日期" prop="checkDate" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="盘点单号" prop="checkBillCode"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="盘点单状态"   align="center" width="100">
+            <template slot-scope="scope">
+              <span>{{ scope.row.checkBillStatusKey | enumtext(checkStockBillStatus)}}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './StockTackingSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'StockTackingList',
+        mounted(){
+            this.tableHeight = document.body.clientHeight*0.68
+            this.doAjax()
+        },
+        data () {
+            return {
+                tableHeight:"",
+                count:0,
+                currentPage: 1,
+                searchParams:{
+                    checkWarehouseCode:'',
+                    checkDateBegin:"",//创建日期
+                    checkDateEnd:'',
+                    checkBillCode:"",//盘点单号
+                    checkBillStatusKey:"",//盘点状态
+                    materialCode:"",//物料编码
+                    materialCategoryId:'',
+                    warehouseDeptId:"",//仓库ID
+                    checkWarehouseCode:'',
+                    checkerId:'',
+                },
+                currentPage:1,
+                tableData:[],
+                currentRow: {
+                    buyId:0,
+                    instanceId:0
+                }
+            }
+        },
+        methods:{
+            search(val){
+                this.searchParams = val;
+                this.currentPage = 1
+                this.doAjax();
+            },
+            doAjax(){
+              if(this.$route.query.tourl){
+                this.searchParams.checkBillId = this.$route.params.id
+              }else{
+                this.searchParams.checkBillId = "";
+              }
+                this.$http.post('/ys-web-wms/check/getList',{data:JSON.stringify(this.searchParams),page:this.currentPage}).then(
+                    (res)=>{
+                        this.tableData=res.data.data?res.data.data.list:[]
+                        this.count = res.data.data?res.data.data.count:0
+                        if(this.tableData){
+                            let firstrow = this.tableData[0]
+                            this.rowCurrentChange(firstrow)
+                        }
+                    }
+                )
+            },
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.doAjax();
+            },
+            rowCurrentChange(val){
+                if(!val){
+                    return;
+                }
+                this.currentRow = val;
+                this.$store.commit('SET_RECEIVING_INFO',val)
+                let toPreurl  = "/stockTacking/detail/" + val.checkBillId+'/';
+                let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+                this.$router.push(toPreurl+modulePath);
+            },
+            highlightCurrent(val){
+                return (val.row.checkBillId==this.currentRow.checkBillId ? 'info-row' :'');
+            },
+        },
+        components:{
+            'search-bar':SearchBar,
+                SlideBar
+        },
+        watch: {
+            "$route": function(to,from) {
+            },
+            "$store.state.purchase":function (val) {
+                this.currentRow = val;
+            },
+            'is_refresh'(){
+                this.doAjax()
+            },
+            'currentInfo'(){
+                this.currentRow.checkBillStatusKey = this.currentInfo.checkBillStatusKey
+            }
+        },
+      computed:{
+          checkStockBillStatus(){
+              return this.$store.state.enumList.checkStockBillStatus;
+          },
+          is_refresh(){
+              return this.$store.state.moduleDM.is_refresh
+          },
+          currentInfo(){
+              return this.$store.state.moduleDM.currentRow
+          },
+      },
+  }
+</script>
+
+<style>
+
+</style>

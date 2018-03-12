@@ -1,0 +1,82 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="detailList" border style="width:98.2%" @row-click="rowCurrentChange">
+      <el-table-column prop="materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="receiptAmount" label="收货数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="actualStockInAmount" label="实际入库数量" width="97" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="productBatch" label="产品批次" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="stockBarcode" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="ownerName" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="shelfLife" label="保质期" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="produceDate" label="生产日期" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="homeSinglePrice" label="本币单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="homeMoneyAmount" label="本币金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="taxRate" label="税率" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="originPriceTaxAmount" label="原币价税合计" align="center" width="97" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+    <el-dialog title="" :visible.sync="dialogVisible" top="20vh" v-if="dialogVisible">
+      <putaway-information  :tableData="upShelfList"></putaway-information>
+    </el-dialog>
+  </div>
+</template>
+<script>
+  import PutawayInformation from "./PutawayInformationAlert.vue"
+  export default{
+    name:"Info",
+    mounted(){
+      this.id=this.$route.params.id;
+      this.getDetailList();
+    },
+    data(){
+      return{
+        id:"",
+        dialogVisible:false,
+        detailList:[],
+        upShelfList:[]
+      }
+    },
+    methods:{
+      getDetailList(){
+        this.$http.get("/ys-web-wms/putInStorageInfo/getStockInDetailList?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.detailList = result.data.data?result.data.data:[]
+          }else{
+            this.$notify.error({
+              title:"入库单明细信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      rowCurrentChange(row, event, column){
+        let id = row.stockInDetailId;
+        this.$http.get("/ys-web-wms/putInStorageInfo/getDetailUpShelfList?id="+id).then(function (result) {
+          if(result.data.state == 200){
+            this.upShelfList = result.data.data?result.data.data:[]
+            this.dialogVisible = true;
+          }else{
+            this.$notify.error({
+              title:"上架信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+
+      }
+    },
+    components:{
+      "putaway-information":PutawayInformation
+    }
+  }
+</script>
+<style>
+  .detail-table .el-dialog__header{padding: 0px}
+  .detail-table .el-dialog__body{padding: 0px}
+  /*.detail-table .el-dialog{width: 37%}*/
+  .detail-table .el-dialog__headerbtn{  top: 10px;}
+</style>

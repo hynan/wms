@@ -1,0 +1,74 @@
+<template>
+  <div>
+    <el-collapse @change="doAjax">
+      <el-collapse-item>
+        <template slot="title">
+          <div class="myTask-topTitle"><span style="color: white">待上架的入库单</span></div>
+        </template>
+        <div v-loading="loading"  element-loading-text="拼命加载中">
+          <el-table :data="tableData" border style="width: 100%" max-height="270" @current-change="rowCurrentChange">
+            <el-table-column label="入库单号" align="center" prop="stockInBillCode" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="创建日期" align="center" prop="createDate" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="入库类别" align="center" prop="stockInTypeKey" :show-overflow-tooltip="true">
+              <template slot-scope="scope">
+                {{scope.row.stockInTypeKey|enumtext(stockInType)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="创建人" align="center" prop="applierName" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </div>
+</template>
+<script>
+  export default{
+    name: 'WaitPutawayPutInStorage',
+    mounted(){
+    },
+    data(){
+      return{
+        loading:true,
+        tableData:[
+//          {id:11,date:"2017-04-27",order:"D1234",blueprint:"",order2:""}
+        ]
+      }
+    },
+    methods:{
+      doAjax(val){
+        if (val.length > 0) {
+          this.loading = true;
+          this.$http.get("/ys-web-wms/myTask/getTaskList?type=waitPutawayPutInStorage").then(function (result) {
+            if (result.data.state == 200) {
+              let data = result.data.data;
+              if (data) {
+                this.tableData = data.waitPutawayPutInStorage ? data.waitPutawayPutInStorage : []
+              } else {
+                this.tableData = [];
+              }
+            } else {
+              this.$notify.error({
+                title: "待上架的入库单列表获取失败",
+                message: result.data.message
+              })
+            }
+            this.loading = false;
+          })
+        } else {
+          this.loading = true;
+        }
+      },
+      rowCurrentChange(val){
+        this.$store.state.putInStorageInfo.warehouseId = val.warehouseId;
+        this.$router.push("/putInStorage/detail/"+val.stockInBillId+"/putaway?tourl=putaway");
+      }
+    },
+    computed:{
+      "stockInType":function () {
+        return this.$store.state.enumList.stockInType
+      }
+    }
+  }
+</script>
+<style>
+</style>

@@ -1,0 +1,120 @@
+//获取采购进度工具js，用于更新采购进度
+export default{
+  install(Vue,options)
+  {
+    Vue.prototype.getBuyBillsProgress = function (id,callBack) {
+      this.$http.get("/ys-web-purchms/common/getBuyBillsProgress?id=" + id).then(function (result) {
+        if(result.data.state == 200){
+          // type = result.data.data;
+          callBack (result.data.data)
+        }else{
+          return null
+        }
+      })
+    }
+
+    Vue.prototype.getBookBillsProgress = function (id,callBack) {
+      this.$http.get("/ys-web-purchms/common/getBookBillsProgress?id=" + id).then(function (result) {
+        if(result.data.state == 200){
+          // type = result.data.data;
+          callBack (result.data.data)
+        }else{
+          return null
+        }
+      })
+    }
+
+    Vue.prototype.getArrivalProgress = function (id,callBack) {
+      this.$http.get("/ys-web-purchms/common/getArrivalProgress?id=" + id).then(function (result) {
+        if(result.data.state == 200){
+          callBack (result.data.data)
+        }else{
+          return null
+        }
+      })
+    }
+
+    Vue.prototype.getNameById = function (id,list,callBack) {
+      if(id == 'undefined' || "" == id){
+        callBack ("")
+        return;
+      }
+      for(var i=0;i<list.length ;i++){
+        if(list[i].id == id){
+          callBack (list[i].name)
+          return;
+        }
+      }
+    }
+
+    Vue.prototype.getMaterialSubTypeById = function (id,callBack) {
+      this.$http.get("/ys-web-purchms/common/getMaterialSubTypeList?id="+id).then(function (result) {
+        if(result.data.state == 200){
+         callBack(result.data.data?result.data.data:[]);
+        }else{
+          callBack([])
+        }
+      })
+    }
+
+    Vue.prototype.strIsNull = function (str) {
+      if ( str == "" ) return true;
+      var regu = "^[ ]+$";
+      var re = new RegExp(regu);
+      return re.test(str);
+    }
+
+    Vue.prototype.delUploadFile = function (filePath) {
+      this.$http.post("/ys-web-purchms/deletefile",{path:filePath}).then(function (result) {
+        if(result.data.code == 200){
+          console.log(result.data.meesage)
+        }else{
+          console.log("文件删除失败")
+        }
+      })
+    }
+
+    Vue.prototype.checkForm = function (formName) {
+      var isCheck = "12";
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          isCheck = true;
+        } else {
+          console.log('error submit!!');
+          isCheck = false;
+        }
+      });
+      return isCheck;
+    }
+
+    Vue.prototype.accMul = function (arg1,arg2){
+      if(undefined == arg1 || undefined == arg2){
+        return 0;
+      }
+      var m=0,s1=arg1.toString(),s2=arg2.toString();
+      try{m+=s1.split(".")[1].length}catch(e){}
+      try{m+=s2.split(".")[1].length}catch(e){}
+      return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)
+    }
+
+    Vue.prototype.fomatFloat = function (src,pos){
+      return Math.round(src*Math.pow(10, pos))/Math.pow(10, pos);
+    }
+
+    Vue.prototype.isNumber = function (value) {
+      var patrn = /^(-)?\d+(\.\d+)?$/;
+      if (patrn.exec(value) == null || value == "") {
+        return false
+      } else {
+        return true
+      }
+    }
+
+    Vue.prototype.isNull = function ( str ){
+      if ( str == "" ) return true;
+      var regu = "^[ ]+$";
+      var re = new RegExp(regu);
+      return re.test(str);
+    }
+  }
+}

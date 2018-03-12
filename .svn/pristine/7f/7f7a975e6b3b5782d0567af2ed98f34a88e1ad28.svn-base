@@ -1,0 +1,122 @@
+<template>
+    <div class="myTask-main">
+      <div class="myTask-waterfall">
+        <div class="myTask-tableBox" v-if="roleInfo.stockInPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--待收货的收货单-->
+          <wait-receive-receiving-note ></wait-receive-receiving-note>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.stockInReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--//待审核的入库单-->
+          <wait-examine-put-in-storage></wait-examine-put-in-storage>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.upShelfPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待上架的入库单-->
+          <wait-putaway-put-in-storage></wait-putaway-put-in-storage>
+        </div>
+        <div class="myTask-tableBox">
+          <!--,//待解锁的存货-->
+          <wait-deblocking-inventory></wait-deblocking-inventory>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.stockOutReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待审核的出库单-->
+          <wait-examine-put-out-storage></wait-examine-put-out-storage>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.downShelfPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待下架的出库单-->
+          <wait-sold-out-put-out-storage></wait-sold-out-put-out-storage>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.stockOutConfirmPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待确认的出库单-->
+          <wait-confirm-put-out-storage></wait-confirm-put-out-storage>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.transferReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待审核的调拨单-->
+          <wait-examine-allocation-order></wait-examine-allocation-order>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.checkVerifyPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待核实的盘点单-->
+          <wait-verify-stock-tacking></wait-verify-stock-tacking>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.checkReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待审核的盘点单-->
+          <wait-examine-stock-tacking></wait-examine-stock-tacking>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.damageReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待审核的报损单-->
+          <wait-examine-reported-loss></wait-examine-reported-loss>
+        </div>
+        <div class="myTask-tableBox" v-if="roleInfo.sysAdmin||roleInfo.warehouseManager">
+          <!--,//待处理的报警-->
+          <wait-handle-warning></wait-handle-warning>
+        </div>
+      </div>
+    </div>
+</template>
+<script>
+  import WaitReceiveReceivingNote from "./receivingNote/WaitReceiveReceivingNote.vue"//待收货的收货单
+  import WaitExaminePutInStorage from "./putInStorage/WaitExaminePutInStorage.vue"//待审核的入库单
+  import WaitPutawayPutInStorage from "./putInStorage/WaitPutawayPutInStorage.vue"//待上架的入库单
+  import WaitDeblockingInventory from "./inventory/WaitDeblockingInventory.vue"//待解锁的存货
+  import WaitExaminePutOutStorage from "./putOutStorage/WaitExaminePutOutStorage.vue"//待审核的出库单
+  import WaitSoldOutPutOutStorage from "./putOutStorage/WaitSoldOutPutOutStorage.vue"//待下架的出库单
+  import WaitConfirmPutOutStorage from "./putOutStorage/WaitConfirmPutOutStorage.vue"//待确认的出库单
+  import WaitExamineAllocationOrder from "./allocation/WaitExamineAllocationOrder.vue"//待审核的调拨单
+  import WaitVerifyStockTacking from "./stockTacking/WaitVerifyStockTacking.vue"//待核实的盘点单
+  import WaitExamineStockTacking from "./stockTacking/WaitExamineStockTacking.vue"//待审核的盘点单
+  import WaitExamineReportedLoss from "./reportedLoss/WaitExamineReportedLoss.vue"//待审核的报损单
+  import WaitHandleWarning from "./warningManage/WaitHandleWarning.vue"//待处理的报警
+
+  export default{
+    name: 'MyTask',
+    mounted(){
+    },
+    data(){
+      return{
+      }
+    },
+    methods:{
+    },
+    computed:{
+      roleInfo:function(){
+        return this.$store.state.roleInfo;
+      },
+    },
+    components:{
+       WaitReceiveReceivingNote,//待收货的收货单
+       WaitExaminePutInStorage,//待审核的入库单
+       WaitPutawayPutInStorage,//待上架的入库单
+       WaitDeblockingInventory,//待解锁的存货
+       WaitExaminePutOutStorage,//待审核的出库单
+       WaitSoldOutPutOutStorage,//待下架的出库单
+       WaitConfirmPutOutStorage,//待确认的出库单
+       WaitExamineAllocationOrder,//待审核的调拨单
+       WaitVerifyStockTacking,//待核实的盘点单
+       WaitExamineStockTacking,//待审核的盘点单
+       WaitExamineReportedLoss,//待审核的报损单
+       WaitHandleWarning,//待处理的报警
+    }
+  }
+</script>
+<style>
+  .myTask-main .el-collapse-item__arrow{float: none;margin-left: 17px;line-height: 44px;}
+  .myTask-main .el-collapse-item__header{height: 44px;line-height: 44px;}
+  .myTask-topTitle{margin-top:-45px;height:44px;background-color: #20a0ff;padding-left: 37px;line-height: 44px;}
+  .myTask-tableBox .el-collapse-item__content{padding: 0px 0px}
+  .myTask-main {margin-bottom: 20px;}
+  .myTask-main table tr .cell{padding:5px;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .myTask-title{font-size: 17px;  color: white; height: 40px; text-align: center; background: #40595a; line-height: 40px;}
+  /*瀑布流层*/
+  .myTask-waterfall{
+    -moz-column-count:2; /* Firefox */
+    -webkit-column-count:2; /* Safari 和 Chrome */
+    column-count:2;
+  }
+  /*一个内容层*/
+  .myTask-tableBox{
+    padding: 12px 2% 0 2%;
+    /*padding-left: 3%;*/
+    -moz-page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    break-inside: avoid;
+  }
+</style>

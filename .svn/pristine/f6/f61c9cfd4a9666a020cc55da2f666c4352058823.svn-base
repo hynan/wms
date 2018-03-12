@@ -1,0 +1,51 @@
+<template>
+  <el-steps :active="steps.currProgressIndex?steps.currProgressIndex:0" align-center finish-status="success">
+    <el-step v-for="(item, key, index) in steps.progressNameArray?steps.progressNameArray:[]" v-bind:key="index" :title="item"></el-step>
+  </el-steps>
+</template>
+<script>
+  export default{
+    name: "Steps",
+    mounted(){
+      this.id = this.$route.params.id;
+      this.getInfo();
+    },
+    data(){
+      return {
+        id: "",
+        steps: {}
+      }
+    },
+    methods: {
+      getInfo(){
+        this.$http.get("/ys-web-wms/putOutStorageInfo/getInfo?id="+this.id).then(function (result) {
+          if (result.data.state == 200) {
+            let data = result.data.data;
+            if (data) {
+              this.steps = data.progressBar ? data.progressBar : {};
+            } else {
+              this.steps = {};
+            }
+          } else {
+            this.$notify.error({
+              title: "出库单信息获取失败",
+              message: result.data.message
+            })
+          }
+        })
+      },
+    },
+    watch: {
+      "$route.params.id":function () {
+        this.id = this.$route.params.id;
+        this.getInfo();
+      },
+      "$route.params.putOutStorageInfo.stockOutStatusKey":function () {
+        this.getInfo();
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

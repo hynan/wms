@@ -1,0 +1,117 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="receivingList-table" style="height: 56%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="物料编码" prop="buyCode" width="127" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="物料名称" prop="orderNum"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="型号" prop="applyBuyDate" width="100"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="库存数量" prop="buyProgressKey"  align="center" width="100">
+            <!--<template slot-scope="scope">-->
+              <!--<span>{{ scope.row.buyProgressKey|enumtext(buyProgress) }}</span>-->
+            <!--</template>-->
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox" style="margin: 30px auto">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-size="page.pageSize"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './InventorySearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'InventoryList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.56;
+    },
+    data () {
+      return {
+      tableHeight:"",
+      count:1,
+        currentPage: 1,
+        searchParams:{
+          dateCreated:"",//创建日期
+          orderNum:"",//入库单号
+          orderType:"",//入库类别
+          orderState:"",//单据状态
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          buyId:0,
+          instanceId:0
+        }
+      }
+    },
+    methods:{
+      search(val){
+        this.searchParams = val;
+        this.getPurchaseApplyList();
+      },
+      getPurchaseApplyList(){
+
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getPurchaseApplyList();
+      },
+      rowCurrentChange(val){
+        if(!val){
+          return;
+        }
+        this.currentRow = val;
+        this.$store.commit('SET_Purchase',val)
+        let toPreurl  = "/purchaseListManage/detail/" + val.buyId+'/';
+        let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+        if(val.buyProgressKey == 1){
+          this.$router.push(toPreurl+modulePath+"/waitToSubmit?instanceId="+val.instanceId);
+        }else{
+          this.$router.push(toPreurl+modulePath+"/isSubmit?instanceId="+val.instanceId);
+        }
+      },
+      highlightCurrent(val){
+        return (val.buyId==this.currentRow.buyId ? 'info-row' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+
+      },
+      "$store.state.purchase":function (val) {
+        this.currentRow = val;
+      }
+    },
+    computed:{
+
+    },
+  }
+</script>
+
+<style>
+
+</style>

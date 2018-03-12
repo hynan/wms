@@ -1,0 +1,28 @@
+<template>
+    <div class="navbtn-wrapper not-print">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="examine" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >审核</router-link>
+    </div>
+</template>
+<script>
+    export default {
+      name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+
+        }
+      },
+      computed:{
+        "info":function(){
+          return "/reportedLoss/detail/"+this.id+"/info";
+        },
+        "examine":function(){
+          return "/reportedLoss/detail/"+this.id+"/examine";
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

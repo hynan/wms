@@ -1,0 +1,136 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="receivingList-table" style="height: 60%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="物料编码" prop="materialCode" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="物料名称" prop="materialName"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="型号" prop="materialModel"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="库存数量" prop="stockAmount"  align="center"  :show-overflow-tooltip="true">
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page.pageNo"
+          :page-size="page.pageSize"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './InventorySearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'InventoryList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.56;
+      this.getInventoryList();
+    },
+    data () {
+      return {
+        tableHeight:"",
+        count:1,
+        searchParams:{
+          dateCreated:"",//创建日期
+          stockInDateBegin:"",//创建时间（起始值）
+          stockInDateEnd:"",//创建时间（结束值）
+          stockInCode:"",//入库单号
+          externalCode:"",//外来单号
+          receiptBillCode:"",//收货单号
+          vendorCode:"",//供应商编号
+          headOfficeOrderNum:"",//总公司订单号
+          branchOfficeOrderNum:"",//分公司订单号
+          materialOwnerId:"",//物料所有人id
+          materialOwnerName:"",//物料所有人名称
+          whBelongDeptId:"",//仓库所属部门id
+          warehouseId:"",//仓库id
+          materialCategoryCode:"",//物料类别编码
+          materialCode:"",//物料编码
+          materialName:"",//物料名称
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          materialCode:"",
+        }
+      }
+    },
+    methods:{
+      search(val){
+        this.searchParams = val;
+        this.getInventoryList();
+      },
+      getInventoryList(){
+        let dataStr = JSON.stringify(this.searchParams);
+        let pageStr = JSON.stringify(this.page)
+        this.$http.post("/ys-web-wms/inventoryList/getStockList",{data:dataStr,page:pageStr}).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              this.count = data.count;
+              this.tableData = data.list?data.list:[]
+            }else{
+              this.count = 0;
+              this.tableData = []
+            }
+          }else{
+            this.$notify.error({
+              title:"库存列表信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getInventoryList();
+      },
+      rowCurrentChange(val){
+        if(!val){
+          return;
+        }
+        this.currentRow = val;
+        this.$store.commit('SET_INVENTORY_INFO',val)
+        let toPreurl  = "/inventory/detail/" + val.materialCode+'/';
+        let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+        this.$router.push(toPreurl+modulePath);
+      },
+      highlightCurrent({row, rowIndex}){
+        return (row.materialCode==this.currentRow.materialCode ? 'info-row' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+
+      },
+    },
+    computed:{
+
+    },
+  }
+</script>
+
+<style>
+
+</style>

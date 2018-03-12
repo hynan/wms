@@ -1,0 +1,175 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="purchaseList-table" style="height: 70%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="采购单号" prop="buyCode" width="127" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="订单号" prop="orderNum"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="下单时间" prop="applyBuyDate" width="100"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="采购进度" prop="buyProgressKey"  align="center" width="100">
+            <template scope="scope">
+              <span>{{ scope.row.buyProgressKey|enumtext(buyProgress) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-size="page.pageSize"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox'></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './PurchaseSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'PurchaseList',
+    mounted(){
+      this.loadIframe();
+      this.getPurchaseApplyList();
+      this.tableHeight = document.body.clientHeight*0.7;
+    },
+    data () {
+      return {
+      tableHeight:"",
+      count:1,
+        currentPage: 1,
+        searchParams:{
+          buyCode:"",//采购单号
+          beginDate:"",//申请起始日期
+          endDate:"",//申请结束日期
+          buyProgressKey:null,//采购进度（key值）
+          applicantName:"",//申请人姓名
+          buyerName:"",//采购员姓名
+          materialMainTypeId:"",//物料大类Id
+          materialSubTypeId:"",//物料小类Id
+          materialName:""//物料名称
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          buyId:0,
+          instanceId:0
+        }
+      }
+    },
+    methods:{
+      loadIframe(){
+
+      },
+      search(val){
+        this.searchParams = val;
+        console.log(this.searchParams)
+//        return;
+        this.getPurchaseApplyList();
+      },
+      getPurchaseApplyList(){
+        if(this.$route.query.tourl){
+          this.searchParams.buyId = this.$route.params.id;
+        }
+        let dataStr = JSON.stringify(this.searchParams);
+        this.$http.post("/ys-web-purchms/purchaseList/getList",{data:dataStr,pageNo:this.page.pageNo,pageSize:this.page.pageSize}).then(function (result) {
+          if(result.data.state == 200){
+            if(result.data.data.list){
+              this.tableData = result.data.data.list;
+              this.count = result.data.data.count;
+            }else{
+              this.tableData = [];
+            }
+            this.count = result.data.data.count;
+//            if(this.$route.query.isAddPurchaseSuccess){
+//              this.$router.push("/purchaseListManage/detail/0/addPurchase");
+//              return;
+//            }
+            if(this.tableData.length >0 ){
+              this.rowCurrentChange(this.tableData[0])
+            }else{
+              this.$router.push("/purchaseListManage");
+            }
+          }else{
+            this.$notify.error({
+              title:"采购单列表信息获取失败",
+              message:result.data.message
+            })
+          }
+
+        })
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getPurchaseApplyList();
+      },
+      rowCurrentChange(val){
+        if(!val){
+          return;
+        }
+        this.currentRow = val;
+        this.$store.commit('SET_Purchase',val)
+        let toPreurl  = "/purchaseListManage/detail/" + val.buyId+'/';
+        let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+        if(val.buyProgressKey == 1){
+          this.$router.push(toPreurl+modulePath+"/waitToSubmit?instanceId="+val.instanceId);
+        }else{
+          this.$router.push(toPreurl+modulePath+"/isSubmit?instanceId="+val.instanceId);
+        }
+      },
+      highlightCurrent(val){
+        return (val.buyId==this.currentRow.buyId ? 'info-row' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+//        console.log(from)
+//        if('/purchaseListManage/detail/0/addPurchase' == from.fullPath){
+//          document.body.style.overflow = auto;
+////          location.reload()
+//        }
+        if(this.$route.params.id == 0){
+          this.currentRow ={buyId:0,instanceId:0}
+        }
+        if(this.$route.query.isAddPurchaseSuccess){
+          this.getPurchaseApplyList();
+        }
+      },
+      "$store.state.purchase":function (val) {
+        this.currentRow = val;
+      }
+    },
+    computed:{
+      buyProgress:function(){
+        return this.$store.state.enumList.buyProgressList;
+      }
+    },
+  }
+</script>
+
+<style>
+  .pageBox{ text-align: center; margin:15px auto;}
+  .el-table .info-row {
+    background: #c9e5f5;
+  }
+  .el-table td{ cursor: pointer; }
+  .purchaseList-table .el-table__row .cell{padding:5px;}
+</style>

@@ -1,0 +1,152 @@
+<template>
+  <div>
+    <p class="dataManagement-title">仓库基本信息</p>
+    <br/>
+    <table class="info-table dataManagement-table">
+        <tbody>
+            <tr>
+                <td>仓库编码：</td>
+                <td>{{info.whCode}}</td>
+                <td>仓库名称：</td>
+                <td>{{info.whName}}</td>
+            </tr>
+            <tr>
+                <td>仓库类型：</td>
+                <td>{{info.whTypeKey|enumtext(whType)}}</td>
+                <td>管理部门：</td>
+                <td>{{info.deptName}}</td>
+            </tr>
+            <tr>
+                <td>负责人：</td>
+                <td>{{info.principalName}}</td>
+                <td>联系电话：</td>
+                <td>{{info.linkPhone}}</td>
+            </tr>
+            <tr>
+                <td>所在地区：</td>
+                <td>{{info.location}}</td>
+                <td>物料类别：</td>
+                <td>{{info.materailCategoryName?info.materailCategoryName.join(","):''}}</td>
+            </tr>
+            <tr>
+                <td>创建日期：</td>
+                <td>{{info.createDate}}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>仓库地址：</td>
+                <td colspan="3">{{info.whAddress}}</td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">入库</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-tag v-for="item,index in stockInReviewerList" :key="index" size="mini">{{item.name}}</el-tag></td>
+                <td>上架员：</td>
+                <td><el-tag v-for="item,index in upShelfPersonList" :key="index" size="mini">{{item.name}}</el-tag></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">出库</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-tag v-for="item,index in stockOutReviewerList" :key="index" size="mini">{{item.name}}</el-tag></td>
+                <td>下架员：</td>
+                <td><el-tag v-for="item,index in downShelfPersonList" :key="index" size="mini">{{item.name}}</el-tag></td>
+            </tr>
+            <tr>
+                <td>确认员：</td>
+                <td><el-tag v-for="item,index in stockOutConfirmPersonList" :key="index" size="mini">{{item.name}}</el-tag></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">调拨</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-tag v-for="item,index in transferReviewerList" :key="index" size="mini">{{item.name}}</el-tag></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">盘点</td>
+            </tr>
+            <tr>
+                <td>核实员：</td>
+                <td><el-tag v-for="item,index in checkVerifyPersonList" :key="index" size="mini">{{item.name}}</el-tag></td>
+                <td>审核员：</td>
+                <td><el-tag v-for="item,index in checkReviewerList" :key="index" size="mini">{{item.name}}</el-tag></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">报损</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-tag v-for="item,index in damageReviewerList" :key="index" size="mini">{{item.name}}</el-tag></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</template>
+<script>
+  export default {
+    name:"StoreInfo",
+      mounted(){
+        this.doAjax();
+      },
+      data(){
+        return{
+            info:{},
+            stockInReviewerList:[],
+            stockOutConfirmPersonList:[],
+            stockOutReviewerList:[],
+            transferReviewerList:[],
+            upShelfPersonList:[],
+            damageReviewerList:[],
+            downShelfPersonList:[],
+            checkVerifyPersonList:[],
+            checkReviewerList:[]
+        }
+      },
+      methods:{
+          doAjax(){
+              this.$http.post('/ys-web-wms/store/getInfo',{id:this.$route.params.id}).then(
+                  (res)=>{
+                      this.info=Object.assign({},res.data.data.info)
+                      this.$store.commit('SET_CURRENTROW',this.info)
+                      this.stockInReviewerList=res.data.data.stockInReviewerList?res.data.data.stockInReviewerList:[],
+                          this.stockOutConfirmPersonList=res.data.data.stockOutConfirmPersonList?res.data.data.stockOutConfirmPersonList:[],
+                          this.stockOutReviewerList=res.data.data.stockOutReviewerList?res.data.data.stockOutReviewerList:[],
+                          this.transferReviewerList=res.data.data.transferReviewerList?res.data.data.transferReviewerList:[],
+                          this.upShelfPersonList=res.data.data.upShelfPersonList?res.data.data.upShelfPersonList:[],
+                          this.damageReviewerList=res.data.data.damageReviewerList?res.data.data.damageReviewerList:[],
+                          this.downShelfPersonList=res.data.data.downShelfPersonList?res.data.data.downShelfPersonList:[],
+                          this.checkVerifyPersonList=res.data.data.checkVerifyPersonList?res.data.data.checkVerifyPersonList:[]
+                            this.checkReviewerList=res.data.data.checkReviewerList?res.data.data.checkReviewerList:[]
+
+                  }
+              ).catch((e)=>{
+                  this.info={}
+              })
+          }
+      },
+      watch:{
+          '$route.params.id'(){
+              this.doAjax()
+          }
+      },
+      computed:{
+          whType(){
+              return this.$store.state.enumList.warehouseType
+          },
+      }
+  }
+</script>
+<style scoped>
+
+</style>

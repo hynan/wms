@@ -1,0 +1,145 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="receivingList-table" style="height: 70%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="创建日期" prop="createDate" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="出库单号" prop="stockOutCode"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="出库类别" prop="stockOutTypeKey"  align="center" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <span>{{ scope.row.stockOutTypeKey|enumtext(stockOutType) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="单据状态" prop="stockOutStatusKey"  align="center" :show-overflow-tooltip="true">
+            <template slot-scope="scope">stockOutType
+              <span>{{ scope.row.stockOutStatusKey|enumtext(stockOutBillStatus) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page.pageNo"
+          :page-size="page.pageSize"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './PutOutStorageSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'PutInStorageList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.7;
+      this.getPutOutStorageList();
+    },
+    data () {
+      return {
+        tableHeight:"",
+        count:0,
+        searchParams:{
+          dateCreated:"",//创建日期
+          createDateBegin:"",//创建日期（起始值）
+          createDateEnd:"",//创建日期（结束值）
+          stockOutCode:"",//出库单号
+          stockOutTypeKey:"",//出库类别  StockOutType
+          stockOutStatusKey:"",//单据状态 StockOutBillStatus
+          stockOutBillId:"",//出库单id
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          buyId:0,
+          instanceId:0
+        }
+      }
+    },
+    methods:{
+      search(val){
+        this.searchParams = val;
+        this.getPutOutStorageList();
+      },
+      getPutOutStorageList(){
+        let dataStr = JSON.stringify(this.searchParams);
+        this.$http.post("/ys-web-wms/putOutStorageList/getList",{data:dataStr}).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              this.count = data.count?data.count:0;
+              this.tableData = data.list?data.list:[];
+              if(this.tableData.length>0){
+                this.rowCurrentChange(this.tableData[0])
+              }
+            }else{
+              this.count = 0;
+              this.tableData = []
+            }
+          }else{
+            this.$notify.error({
+              title:"出库单列表查询失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getPutOutStorageList();
+      },
+      rowCurrentChange(val){
+        if(!val){
+          return;
+        }
+        this.currentRow = val;
+        this.$store.commit('SET_PUT_OUT_STORAGE',val)
+        let toPreurl  = "/putOutStorage/detail/" + val.stockOutBillId+'/';
+        let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+        this.$router.push(toPreurl+modulePath);
+      },
+      highlightCurrent({row,index}){
+        return (row.stockOutBillId==this.currentRow.stockOutBillId ? 'info-row' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+
+      },
+      "$store.state.purchase":function (val) {
+        this.currentRow = val;
+      }
+    },
+    computed:{
+    "stockOutType":function () {//出库类别
+      return this.$store.state.enumList.stockOutType;
+    },
+    "stockOutBillStatus":function () {//出库单状态
+      return this.$store.state.enumList.stockOutBillStatus;
+    }
+    },
+  }
+</script>
+
+<style>
+
+</style>

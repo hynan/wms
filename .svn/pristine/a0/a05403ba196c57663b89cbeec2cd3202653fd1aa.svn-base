@@ -1,0 +1,114 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="detailList" border style="width:98.2%" @row-click="rowCurrentChange">
+      <!--<el-table-column v-for="(item,index) in tableTitleList"  :key="index" :prop="item.rowName" :label="item.rowDesc" align="center" v-if="item.visible" :show-overflow-tooltip="true"></el-table-column>-->
+      <el-table-column prop="materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <!--<el-table-column prop="ownerName" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="headOfficeOrderNum" label="总公司订单号" width="97" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="branchOfficeOrderNum" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="storeArea" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="goodsAllocation" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+      <el-table-column prop="stockOutAmount" label="出库数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+    <el-dialog title="" :visible.sync="dialogVisible" top="20vh" v-if="dialogVisible">
+      <sold-out-information  :tableData="downShelfList"></sold-out-information>
+    </el-dialog>
+    <span class="right-content-body-little-title">
+            审核信息
+    </span>
+    <el-table :data="reviewList" border style="width:98.2%">
+      <el-table-column prop="reviewDate" label="审核时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="reviewerName" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="reveiwResultKey" label="审核结果" align="center" :show-overflow-tooltip="true">
+        <template slot-scope="scope">
+          {{scope.row.reveiwResultKey == 1?"通过":"拒绝"}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="refuseReason" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+  </div>
+</template>
+<script>
+  import SoldOutInformationAlert from "./SoldOutInformationAlert.vue"
+  export default{
+    name:"Info",
+    mounted(){
+      this.id=this.$route.params.id;
+      this.getInfo();
+    },
+    data(){
+      return{
+        id:"",
+        tableTitleList:[],
+        dialogVisible:false,
+        detailList:[],//明细信息
+        reviewList:[],//审核信息
+        downShelfList:[],//下架信息
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/putOutStorageInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              this.detailList = data.detailList?data.detailList:[];
+              this.reviewList = data.reviewList?data.reviewList:[];
+              let _this = this;
+              this.getPutOutStorageTableTittle(data.basicInfo.stockOutTypeKey,function (res) {
+                _this.tableTitleList = res;
+              })
+            }else{
+              this.detailList = [];
+              this.reviewList = [];
+            }
+          }else{
+            this.$notify.error({
+              title:"出库单信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      rowCurrentChange(row, event, column){
+        this.$http.get("/ys-web-wms/putOutStorageInfo/getDetailDownShelfList?id="+row.stockOutDetailId).then(function (result) {
+          if(result.data.state == 200){
+            this.downShelfList = result.data.data?result.data.data:[];
+            this.dialogVisible = true;
+          }else{
+            this.$notify.error({
+              title:"出库单明细下架情况获取失败",
+              message:result.data.message
+            })
+            this.downShelfList = [];
+          }
+        })
+
+      }
+    },
+    components:{
+      "sold-out-information":SoldOutInformationAlert
+    },
+    watch:{
+      "$route.params.id":function () {
+        this.id = this.$route.params.id
+        this.getInfo();
+      },
+      "$store.state.putOutStorageInfo.stockOutStatusKey":function () {
+        this.getInfo();
+      }
+    }
+  }
+</script>
+<style>
+  .detail-table .el-dialog__header{padding: 0px}
+  .detail-table .el-dialog__body{padding: 0px}
+  /*.detail-table .el-dialog{width: 37%}*/
+  .detail-table .el-dialog__headerbtn{  top: 10px;}
+</style>

@@ -1,0 +1,66 @@
+<template>
+    <div>
+        <el-popover
+                ref="mypopover"
+                placement="bottom-start"
+                trigger="click"
+                popper-class="materiel-popover">
+            <el-tree ref="tree" @check-change="handleCheckChange" :data="list" :props="defaultProps" show-checkbox node-key="code"></el-tree>
+            <el-button :class="selected&&selected.length>0?'el-icon-edit-outline':'el-icon-plus'" size="mini" slot="reference"></el-button>
+        </el-popover>
+        <!--    <div style="margin-top:5px"><el-tag v-for="item,index in selected" :key="index" size="mini" style="margin:0 2px 2px 0">{{item.label}}</el-tag></div> -->
+    </div>
+</template>
+<script>
+    export default{
+        name:'MaterielSelect',
+        props:{
+            value:{
+            }
+        },
+        mounted(){
+            this.checkSelected()
+        },
+        data(){
+            return{
+                selected:[],
+                defaultProps: {
+                    children: 'childList',
+                    label: 'name'
+                }
+            }
+        },
+        methods:{
+            handleCheckChange(){
+                this.selected = this.$refs['tree'].getCheckedNodes(true)
+                let arry = []
+                console.log(this.selected)
+                this.selected.map((item)=>{
+                    arry.push(item.code)
+                })
+                this.$emit('input',arry.join(","))
+            },
+            checkSelected(){
+                if(this.value)
+                    this.$nextTick(()=>{
+                        let _this = this
+                        this.value.map((item)=>{
+                            _this.$refs['tree'].setChecked(item,true)
+                        })
+                    })
+            }
+        },
+        computed:{
+          list(){
+              return this.$store.state.selectList.materialCategoryTree
+          },
+        },
+        watch:{
+            'value'(){
+            }
+        }
+    }
+</script>
+<style>
+
+</style>

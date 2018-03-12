@@ -1,0 +1,24 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import moduleOrder from './order'
+import moduleDrawing from './drawings'
+import mutations from './mutations'
+
+import * as actions from './actions'
+Vue.use(Vuex)
+const state = {
+  slideFlag:true, //左侧列表展开与否
+  user:{},
+  roleInfo:{},//角色信息
+  enumList:{},//常用枚举列表
+  firstLoadIframe:true,
+}
+export default new Vuex.Store({
+  modules:{
+    moduleOrder,
+    moduleDrawing
+  },
+  state,
+  mutations,
+  actions
+})

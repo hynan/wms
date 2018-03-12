@@ -1,0 +1,91 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：SH201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          收货
+        </div>
+        <div style="padding: 5px;">
+          <span class="right-content-body-little-title">明细信息</span>
+          <el-form :model="detailForm" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width:100%" class="operation-table">
+              <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="质检员" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="到货数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="合格数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="不合格描述" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="收货备注" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div style="height: 50px">
+            <el-button size="mini" type="primary" style="float: right;margin: 5px 17px 20px 0px;">保存</el-button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Receiving",
+    mounted:function () {
+
+    },
+    data(){
+      return{
+        test:"",
+        detailForm:{
+          tableData:[
+            {date:"----"},
+            {date:"----"},
+            {date:"----"},
+            {date:"----"},
+            {date:"----"},
+            {date:"----"},
+          ]
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+        }
+      }
+    },
+    methods:{
+
+    },
+    components:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

@@ -1,0 +1,53 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <el-row style="padding: 5px;margin-top: 10px">
+          <steps></steps>
+        </el-row>
+        <div style="padding: 5px;">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table></detail-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "./Info.vue"
+  import DetailTable from "./DetailTable.vue"
+  import Steps from "./Steps.vue"
+  export default{
+    name:"OutBoundOrderInfo",
+    mounted(){
+
+    },
+    data(){
+      return{
+
+      }
+    },
+    methods:{
+
+    },
+    components:{
+      "info":Info,
+      "steps":Steps,
+      "detail-table":DetailTable
+    }
+  }
+</script>
+<style>
+
+</style>

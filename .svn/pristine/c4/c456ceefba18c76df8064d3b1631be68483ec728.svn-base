@@ -1,0 +1,51 @@
+<template>
+  <el-table :data="infoData.tableData" border style="width:100%">
+      <el-table-column v-for="(item,index) in infoData.titleData"  :key="index" :prop="item.date.value" :label="item.date.name" align="center" :show-overflow-tooltip="true"></el-table-column>
+    <!--<el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="质检员" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="到货数量" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="合格数量" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="不合格数量" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+    <!--<el-table-column prop="date" label="不合格描述" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+  </el-table>
+</template>
+<script>
+  export default{
+    name:"DetailTable",
+//    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+        test:"name",
+        infoData:{
+          tableData:[
+            {name:"123",code:"456"},
+            {name:"123",code:"456"},
+            {name:"123",code:"456"},
+            {name:"123",code:"456"}
+          ],
+          titleData:[
+            {date:{name:"测试1",value:"name",show:true},date2:{name:"测试2",value:"898",show:true},state:"nomal"},
+            {date:{name:"测试2",value:"code",show:true},date2:{name:"测试2",value:"898",show:true},state:"nomal"},
+          ]
+        },
+        titleData:[
+          {date:{name:"测试1",value:"name",show:true},date2:{name:"测试2",value:"898",show:true},state:"nomal"},
+          {date:{name:"测试2",value:"code",show:true},date2:{name:"测试2",value:"898",show:true},state:"nomal"},
+        ],
+      }
+    },
+    methods:{
+
+    }
+
+  }
+</script>
+<style>
+
+</style>

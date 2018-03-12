@@ -1,0 +1,36 @@
+<template>
+  <div class="">
+    <div class="">
+        <!--<top-nav :id="id"></top-nav>-->
+        <router-view ></router-view>
+    </div>
+  </div>
+</template>
+<script>
+
+  export default {
+    name:"PutInStorageDetail",
+    mounted:function(){
+      this.id = this.$route.params.id;
+    },
+    data(){
+      return {
+        id:0,
+      }
+    },
+    methods:{
+    },
+    components:{
+
+    },
+    watch:{
+      "$route": function(){
+        this.id = this.$route.params.id;
+        this.state = this.$route.params.state;
+      }
+    }
+  }
+</script>
+<style scoped>
+
+</style>

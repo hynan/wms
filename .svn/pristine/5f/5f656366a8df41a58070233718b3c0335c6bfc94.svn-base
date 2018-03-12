@@ -1,0 +1,50 @@
+<template>
+  <div>
+    <el-collapse @change="doAjax">
+      <el-collapse-item>
+        <template slot="title">
+          <div class="myTask-topTitle"><span style="color: white">待收货的收货单</span></div>
+        </template>
+        <div v-loading="loading"  element-loading-text="拼命加载中">
+          <el-table :data="tableData" border style="width: 100%" max-height="270" @current-change="rowCurrentChange">
+            <el-table-column label="单据号" align="center" prop="title" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="创建日期" align="center" prop="askPersonName" :show-overflow-tooltip="true">
+            </el-table-column>
+            <el-table-column label="外来单号" align="center" prop="askTime" :show-overflow-tooltip="true">
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
+  </div>
+</template>
+<script>
+  export default{
+    name: 'WaitReceiveReceivingNote',
+    mounted(){
+    },
+    data(){
+      return{
+        loading:true,
+        tableData:[
+//          {id:11,pauseDate:"2017-04-27",prodNumber:"D1234",blueprint:"",machineModel:"",pauseReason:"待上传"}
+        ]
+      }
+    },
+    methods:{
+      doAjax(val){
+        if (val.length > 0) {
+          this.loading = true;
+        } else {
+          this.loading = true;
+        }
+      },
+      rowCurrentChange(val){
+        this.$router.push("/receivingInspection/detail/"+val.id+"/receiving?tourl=receiving");
+      }
+    }
+  }
+</script>
+<style>
+</style>

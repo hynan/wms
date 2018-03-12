@@ -1,0 +1,343 @@
+<template>
+    <div>
+        <p class="dataManagement-title">{{isAdd?'添加仓库':'修改仓库'}}</p>
+        <br/>
+        <el-form :model="form" ref="storeForm" :rules="rules">
+        <table class="info-table dataManagement-table">
+            <tbody>
+            <tr>
+                <td>仓库名称：</td>
+                <td><el-form-item prop="whName"><el-input size="small" v-model="form.whName"></el-input></el-form-item></td>
+                <td>仓库类型：</td>
+                <td><el-select size="small" v-model="form.whTypeKey">
+                    <el-option v-for="item in whType" :value="item.code" :key="item.id" :label="item.name"></el-option>
+                </el-select></td>
+            </tr>
+            <tr>
+                <td>管理部门：</td>
+                <td><el-select size="small" v-model="form.deptId" @change="getDeptlName"><el-option v-for="item in warehouseDeptList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td>负责人：</td>
+                <td><el-select size="small" v-model="form.principalId" @change="getPrincipalName"><el-option v-for="item in warehousePricipalList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+            </tr>
+            <tr>
+                <td>联系电话：</td>
+                <td><el-input size="small" v-model="form.linkPhone"></el-input></td>
+                <td>所在地区：</td>
+                <td><provinces-select size="small" v-model="form.location"></provinces-select></td>
+            </tr>
+            <tr>
+                <td>物料类别：</td>
+                <td>
+                    <materiel-select v-model="form.materailTypeId"></materiel-select>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>仓库地址：</td>
+                <td colspan="3"><el-input size="small" v-model="form.whAddress"></el-input></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">入库</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-select size="small" multiple v-model="stockInReviewerList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td>上架员：</td>
+                <td><el-select size="small" multiple v-model="upShelfPersonList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">出库</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-select size="small" multiple v-model="stockOutReviewerList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td>下架员：</td>
+                <td><el-select size="small" multiple v-model="downShelfPersonList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+            </tr>
+            <tr>
+                <td>确认员：</td>
+                <td><el-select size="small" multiple v-model="stockOutConfirmPersonList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">调拨</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-select size="small" multiple v-model="transferReviewerList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">盘点</td>
+            </tr>
+            <tr>
+                <td>核实员：</td>
+                <td><el-select size="small" multiple v-model="checkVerifyPersonList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td>审核员：</td>
+                <td><el-select size="small" multiple v-model="checkReviewerList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;font-weight: bolder;background-color: #f5f7fa">报损</td>
+            </tr>
+            <tr>
+                <td>审核员：</td>
+                <td><el-select size="small" multiple v-model="damageReviewerList"><el-option v-for="item in userList" :key="item.id" :label="item.name" :value="item.id"></el-option></el-select></td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        </el-form>
+        <div style="text-align:right;margin-top:10px">
+            <el-button type="primary" size="mini" @click="submit" :disabled="uploading">保存</el-button>
+            <el-button @click="goBack" size="mini" v-if="!isAdd">取消</el-button>
+        </div>
+    </div>
+</template>
+<script>
+    import MaterielSelect from '../MaterielSelect.vue'
+    import ProvincesSelect from "../../../common/area/ProvincesSelect";
+    export default {
+        name:"Edit",
+        mounted(){
+            if(!this.isAdd){
+                this.doAjax()
+            }
+        },
+        data(){
+            var validatePass = (rule, value, callback) => {
+                if (!/^\S+$/.test(value)) {
+                  callback(new Error(''));
+                } else {
+                  callback();
+                }
+              };
+            return{
+                form:{
+                    deptId:'',
+                    whTypeKey:'',
+                    whName:'',
+                    deptName:'',
+                    principalId:'',
+                    principalName:'',
+                    linkPhone:'',
+                    location:'',
+                    materailTypeId:'',
+                    whAddress:'',
+                     entryAuditorIds:'',		//入库审核员ids
+             entryShelfmanIds:'',		//入库上架员ids
+             outAuditorIds:'',		//出库审核员ids
+             outShelfmanIds:'',		//出库下架员ids
+             outConfirmIds:'',		//出库确认员ids
+             transferAuditorIds:'',		//调拨审核员ids
+             cyclecountVerifyIds:'',		//盘点核实员ids
+                    cyclecountAuditorIds:'',
+             reportAuditorIds:'',
+                },
+                stockInReviewerList:[],
+                stockOutConfirmPersonList:[],
+                stockOutReviewerList:[],
+                transferReviewerList:[],
+                upShelfPersonList:[],
+                damageReviewerList:[],
+                downShelfPersonList:[],
+                checkVerifyPersonList:[],
+                checkReviewerList:[],
+                rules:{
+                    whName:[{validator:validatePass,message:'请输入名称',trigger:'blur'}],
+                },
+                uploading:false
+            }
+        },
+        methods:{
+            goBack(){
+                this.$router.push("/dataManagement/store/detail/store/"+this.$route.params.id+"/info")
+            },
+            doAjax(){
+                this.$http.post('/ys-web-wms/store/getInfo',{id:this.$route.params.id}).then(
+                    (res)=>{
+                        if(res.data){
+                            this.form=Object.assign({
+                                deptId:'',
+                                whTypeKey:'',
+                                whName:'',
+                                deptName:'',
+                                principalId:'',
+                                principalName:'',
+                                linkPhone:'',
+                                location:'',
+                                materailTypeId:'',
+                                whAddress:'',
+                                entryAuditorIds:'',		//入库审核员ids
+                                entryShelfmanIds:'',		//入库上架员ids
+                                outAuditorIds:'',		//出库审核员ids
+                                outShelfmanIds:'',		//出库下架员ids
+                                outConfirmIds:'',		//出库确认员ids
+                                transferAuditorIds:'',		//调拨审核员ids
+                                cyclecountVerifyIds:'',		//盘点核实员ids
+                                cyclecountAuditorIds:'',
+                                reportAuditorIds:'',
+                            },res.data.data.info)
+                        this.form.materailTypeId = res.data.data.info.materailCategoryCode
+                        this.stockInReviewerList=res.data.data.stockInReviewerList?this.parseList(res.data.data.stockInReviewerList):[],
+                            this.stockOutConfirmPersonList=res.data.data.stockOutConfirmPersonList?this.parseList(res.data.data.stockOutConfirmPersonList):[],
+                            this.stockOutReviewerList=res.data.data.stockOutReviewerList?this.parseList(res.data.data.stockOutReviewerList):[],
+                            this.transferReviewerList=res.data.data.transferReviewerList?this.parseList(res.data.data.transferReviewerList):[],
+                            this.upShelfPersonList=res.data.data.upShelfPersonList?this.parseList(res.data.data.upShelfPersonList):[],
+                            this.damageReviewerList=res.data.data.damageReviewerList?this.parseList(res.data.data.damageReviewerList):[],
+                            this.downShelfPersonList=res.data.data.downShelfPersonList?this.parseList(res.data.data.downShelfPersonList):[],
+                            this.checkVerifyPersonList=res.data.data.checkVerifyPersonList?this.parseList(res.data.data.checkVerifyPersonList):[]
+                            this.checkReviewerList=res.data.data.checkReviewerList?this.parseList(res.data.data.checkReviewerList):[]
+                    }
+                    }
+                )
+            },
+            submit(){
+                if(!this.form.materailTypeId){
+                    this.$message({
+                        'type': 'warning',
+                        message: "请选择物料类别",
+                        'showClose': true
+                    });
+                    return false
+                }
+                let url = "editStore"
+                if(this.isAdd)
+                    url = "addStore"
+                this.$refs['storeForm'].validate((valid)=>{
+                    if(valid){
+                        this.uploading = true
+                        this.$http.post("/ys-web-wms/store/"+url, {params: JSON.stringify(this.form),id:this.$route.params.id})
+                            .then((response) => {
+                                if (response.data.data.status == '200') {
+                                    this.$message({
+                                        'type': 'success',
+                                        message: "操作成功",
+                                        'showClose': true
+                                    });
+                                    if(this.isAdd){
+                                        this.$router.push('/dataManagement')
+                                    }else{
+                                        this.$router.push('/dataManagement/store/detail/store/'+this.$route.params.id+'/info')
+                                    }
+                                } else {
+                                    this.$message({
+                                        'type': 'error',
+                                        message: "操作失败，,请重试或联系管理",
+                                        'showClose': true
+                                    });
+                                    this.uploading = false
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                this.uploading = false
+                            });
+                    }else{
+                        this.$nextTick(()=> {
+                            document.getElementsByClassName("el-form-item__error")[0].parentNode.getElementsByClassName('el-input__inner')[0].scrollIntoView()
+                            document.getElementsByClassName("el-form-item__error")[0].parentNode.getElementsByClassName('el-input__inner')[0].focus()
+                        })
+                    }
+                })
+            },
+            getPrincipalName(val){
+                this.warehousePricipalList.map((item)=>{
+                    if(item.id == val){
+                        this.form.principalName = item.name
+                    }
+                })
+            },
+            getDeptlName(val){
+                this.warehouseDeptList.map((item)=>{
+                    if(item.id == val){
+                        this.form.deptName = item.name
+                    }
+                })
+            },
+            parseList(val){
+                let arry=[]
+                if(val){
+                    for(let i of val){
+                        arry.push(i.id)
+                    }
+                }
+                return arry
+            }
+        },
+        computed:{
+            isAdd(){
+                return this.$route.name == 'storeAdd'
+            },
+            whType(){
+                return this.$store.state.enumList.warehouseType
+            },
+            userList(){
+                return this.$store.state.selectList.allPersons
+            },
+            warehousePricipalList(){
+                return this.$store.state.selectList.warehousePricipalList
+            },
+            warehouseDeptList(){
+                return this.$store.state.selectList.warehouseDeptList
+            }
+        },
+        components:{
+            ProvincesSelect,
+            MaterielSelect
+        },
+        watch:{
+            stockInReviewerList(){
+                if(this.stockInReviewerList){
+                        this.form.entryAuditorIds = this.stockInReviewerList.join(",")
+                }
+            },
+            upShelfPersonList(){
+                if(this.upShelfPersonList){
+                    this.form.entryShelfmanIds = this.upShelfPersonList.join(",")
+                }
+            },
+            stockOutReviewerList(){
+                if(this.stockOutReviewerList){
+                    this.form.outAuditorIds = this.stockOutReviewerList.join(",")
+                }
+            },
+            downShelfPersonList(){
+                if(this.downShelfPersonList){
+                    this.form.outShelfmanIds = this.downShelfPersonList.join(",")
+                }
+            },
+            stockOutConfirmPersonList(){
+                if(this.stockOutConfirmPersonList){
+                    this.form.outConfirmIds = this.stockOutConfirmPersonList.join(",")
+                }
+            },
+            checkVerifyPersonList(){
+                if(this.checkVerifyPersonList){
+                    this.form.cyclecountVerifyIds = this.checkVerifyPersonList.join(",")
+                }
+            },
+            transferReviewerList(){
+                if(this.transferReviewerList){
+                    this.form.transferAuditorIds = this.transferReviewerList.join(",")
+                }
+            },
+            damageReviewerList(){
+                if(this.damageReviewerList){
+                    this.form.reportAuditorIds = this.damageReviewerList.join(",")
+                }
+            },
+            checkReviewerList(){
+                if(this.checkReviewerList){
+                    this.form.cyclecountAuditorIds = this.checkReviewerList.join(",")
+                }
+            },
+        }
+    }
+</script>
+<style scoped>
+
+</style>

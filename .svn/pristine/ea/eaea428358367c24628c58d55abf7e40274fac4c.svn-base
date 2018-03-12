@@ -1,0 +1,52 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="tableData" border style="width:98.2%">
+      <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="报损数量" width="97" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="报损单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="报损金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="报损原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="产品批次" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="订单号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="入库创建日期" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    props:["tableData"],
+    mounted(){
+
+    },
+    data(){
+      return{
+        dialogVisible:false,
+      }
+    },
+    methods:{
+
+    },
+    components:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

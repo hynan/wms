@@ -1,0 +1,65 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import moduleOrder from './order'
+import moduleDrawing from './drawings'
+import mutations from './mutations'
+import moduleDM from './dataManagement'
+
+import * as actions from './actions'
+Vue.use(Vuex)
+const state = {
+  slideFlag:true, //左侧列表展开与否
+  user:{},
+  roleInfo:{},//角色信息
+  enumList:{},//常用枚举列表
+  receivingInfo:{},//收货单信息
+  putInStorageInfo:{},//入库单信息
+  putOutStorageInfo:{},//出库单信息
+  inventoryInfo:{},//库存信息
+  selectList:{},//常用下拉框数据列表
+  listDoAjax:true,//列表刷新
+  doAjaxSuccess:true,//操作成功，数据刷新用
+    displayItems:{
+        damageDescs:[],
+        checkDescs:[],
+        stockInDescs:[],
+        stockOutDescs:[],
+        transferDescs:[]
+    },//字段显示列表
+  //日期相关
+  pickerOptions:{
+    disabledDate(time) {
+      return time.getTime() > Date.now();
+    },
+    shortcuts: [{
+      text: '今天',
+      onClick(picker) {
+        picker.$emit('pick', new Date());
+      }
+    }, {
+      text: '昨天',
+      onClick(picker) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24);
+        picker.$emit('pick', date);
+      }
+    }, {
+      text: '一周前',
+      onClick(picker) {
+        const date = new Date();
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+        picker.$emit('pick', date);
+      }
+    }]
+  },
+}
+export default new Vuex.Store({
+  modules:{
+    moduleOrder,
+    moduleDrawing,
+      moduleDM
+  },
+  state,
+  mutations,
+  actions
+})

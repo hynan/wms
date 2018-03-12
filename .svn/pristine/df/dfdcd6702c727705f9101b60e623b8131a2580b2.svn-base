@@ -1,0 +1,77 @@
+<template>
+  <div>
+  <div class="right-topTitle-two">
+    单据号：{{infoData.receiptBillCode}}
+  </div>
+    <el-form label-width="130px" size="mini" style="width: 100%">
+      <el-form-item label="单据来源:" class="right-content-body-tableForm">
+        {{ infoData.receiptBillSourceKey|enumtext(billSource) }}
+      </el-form-item>
+      <el-form-item label="外来单号:" class="right-content-body-tableForm">
+        {{infoData.externalBillCode}}
+      </el-form-item>
+      <el-form-item label="入库仓库:" class="right-content-body-tableForm">
+        {{infoData.warehouseName}}
+      </el-form-item>
+      <el-form-item label="单据状态:" class="right-content-body-tableForm">
+        {{ infoData.receiptBillStatusKey|enumtext(receiptBillStatus) }}
+      </el-form-item>
+      <el-form-item label="创建人:" class="right-content-body-tableForm">
+        {{infoData.creatorName}}
+      </el-form-item>
+      <el-form-item label="创建日期:" class="right-content-body-tableForm">
+        {{infoData.generateTime}}
+      </el-form-item>
+      <el-form-item label="到货日期:" class="right-content-body-tableForm">
+        {{infoData.arrivalDate}}
+      </el-form-item>
+      <el-form-item label="" class="right-content-body-tableForm" style="height: 32px;">
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    props:["id"],
+    mounted(){
+      this.getInfo()
+    },
+    data(){
+      return{
+        infoData:{}
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/recivingInspectionInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.infoData = result.data.data?result.data.data:{};
+          }else {
+            this.$notify.error({
+              title:"收货单详情获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    computed:{
+      "billSource":function () {//收货单据来源
+        return this.$store.state.enumList.billSource;
+      },
+      "receiptBillStatus":function () {//收货单状态
+        return this.$store.state.enumList.receiptBillStatus;
+      }
+    },
+    watch:{
+      "id":function () {
+        this.getInfo();
+      }
+    }
+
+  }
+</script>
+<style>
+
+</style>

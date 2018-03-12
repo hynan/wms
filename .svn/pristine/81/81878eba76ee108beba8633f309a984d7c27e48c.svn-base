@@ -1,0 +1,215 @@
+<template>
+  <div>
+    <div v-if="isPrint">
+      <stock-tacking-print :tableData="detailForm.tableData" @back="isPrint=false"></stock-tacking-print>
+    </div>
+    <div v-else>
+      <div class="card-box right-content">
+        <div class="right-content-body">
+          <div class="right-content-body-topTitle">
+            新建盘点单
+          </div>
+          <div style="padding: 5px;height: 157px">
+            <span class="right-content-body-little-title">
+              基本信息
+            </span>
+            <el-form ref="form" :model="formData" label-width="160px" size="mini" style="width: 100%">
+              <el-form-item label="盘点仓库:" class="right-content-body-tableForm">
+                <el-select clearable v-model="formData.checkWarehouseId" filterable placeholder="盘点仓库" style="width: 100%" >
+                  <el-option
+                    v-for="item in whList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="仓库所属部门:" class="right-content-body-tableForm">
+                <el-select clearable v-model="formData.warehouseDeptId" filterable placeholder="仓库所属部门" size="mini"  style="width: 100%" @change="deptChange">
+                  <el-option
+                    v-for="item in warehouseDeptList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="入库创建日期（开始）:" class="right-content-body-tableForm">
+                <el-date-picker
+                  style="width: 100%"
+                  size="mini"
+                  v-model="formData.stockInDateBegin"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="入库创建日期（结束）:" class="right-content-body-tableForm">
+                <el-date-picker
+                  style="width: 100%"
+                  size="mini"
+                  v-model="formData.stockInDateEnd"
+                  type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="物料类别:" class="right-content-body-tableForm">
+                <el-select clearable v-model="formData.materialCategoryIds" filterable placeholder="物料类别" size="mini" style="width: 100%" multiple collapse-tags>
+                  <el-option
+                          v-for="item in materialCategoryList"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
+          <div style="text-align: right;padding-right: 3%">
+            <el-button size="mini" type="primary" @click="getList">获取明细</el-button>
+          </div>
+          <!--明细信息-->
+          <div style="padding: 5px;">
+            <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+                明细信息
+            </span>
+            <el-table :data="list" border style="width:100%" class="operation-table">
+              <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="modelType" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockAmount" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="singlePrice" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockMoneyAmount" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="unitName" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+          </div>
+          <div style="text-align: right;padding-right: 3%" class="right-content-body-foot">
+            <el-button size="mini" type="primary" @click="submit" :disabled="uploading">提交</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import StockTackingPrint from "./StockTackingPrint.vue"
+  export default{
+    name:"StockTackingAdd",
+    mounted(){
+
+    },
+    data(){
+      return{
+        isPrint:false,
+          list:[],
+        formData:{
+            /** 仓库所属部门ID */
+             warehouseDeptId:'',
+        /** 仓库所属部门名称 */
+         warehouseDeptName:'',
+        /** 盘点仓库ID */
+         checkWarehouseId:'',
+        /** 盘点仓库名称 */
+         checkWarehouseName:'',
+        /** 物料类别ID集合 */
+         materialCategoryIds:[],
+        /** 入库创建日期：起始值 */
+         stockInDateBegin:'',
+        /** 入库创建日期：结束值 */
+         stockInDateEnd:'',
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+        },
+          uploading:false
+      }
+    },
+    methods:{
+        deptChange(val){
+            for (let i of this.warehouseDeptList) {
+                if (i.id == val) {
+                    this.formData.warehouseDeptName = i.name
+                }
+            }
+        },
+      print(){
+        this.isPrint = true;
+      },
+        getList(){
+            if(!this.formData.checkWarehouseId){
+                this.$message({
+                    'type': 'warning',
+                    message: "请选择仓库",
+                    'showClose': true
+                });
+                return false
+            }
+            this.$http.post('/ys-web-wms/check/getAddList',{params: JSON.stringify(this.formData)}).then(
+                (res)=>{
+                    this.list=res.data.data?res.data.data:[]
+                }
+            )
+        },
+        submit(){
+            if(!this.list||this.list.length<1){
+                this.$message({
+                    'type': 'warning',
+                    message: "没有可盘点明细",
+                    'showClose': true
+                });
+                return false
+            }
+            this.$http.post("/ys-web-wms/check/add", {params: JSON.stringify(this.formData)})
+                .then((response) => {
+                    if (response.data.data.status == '200') {
+                        this.$message({
+                            'type': 'success',
+                            message: "操作成功",
+                            'showClose': true
+                        });
+                        this.$store.commit('IS_REFRESH')
+                    } else {
+                        this.$message({
+                            'type': 'error',
+                            message: response.data.data.message,
+                            'showClose': true
+                        });
+                        this.uploading = false
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    this.uploading = false
+                });
+        },
+    },
+      computed:{
+          warehouseDeptList(){
+              return this.$store.state.selectList.warehouseDeptList;
+          },
+          "whList":function () {
+              return this.$store.state.selectList.warehouseList;
+          },
+          materialCategoryList(){
+              return this.$store.state.selectList.materialCategoryList
+          },
+      },
+    components:{
+      "stock-tacking-print":StockTackingPrint
+    },
+      watch:{
+        'formData': {
+            handler() {   //特别注意，不能用箭头函数，箭头函数，this指向全局
+              if(this.list&&this.list.length>0)  this.list = []
+            },
+            deep: true    //深度监听
+        }
+      }
+  }
+</script>
+<style>
+
+</style>

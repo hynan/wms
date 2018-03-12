@@ -1,0 +1,150 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="receivingList-table" style="height: 63%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="创建日期" prop="createDate"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="入库单号" prop="stockInBillCode"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="入库类别" prop="stockInTypeKey"   align="center" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <span>{{ scope.row.stockInTypeKey|enumtext(stockInType) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="单据状态" prop="stockInBillStatusKey"  align="center"  :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <span>{{ scope.row.stockInBillStatusKey|enumtext(stockInBillStatus) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page.pageNo"
+          :page-size="page.pageSize"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './PutInStorageSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'PutInStorageList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.63;
+      this.getPutInStorageList();
+    },
+    data () {
+      return {
+        tableHeight:"",
+        count:0,
+        searchParams:{
+          dateCreated:"",//创建日期
+          createDateBegin:"",//创建开始日期
+          createDateEnd:"",//创建结束日期
+          stockInBillCode:"",//入库单号
+          stockInTypeKey:"",//入库类别
+          stockInBillStatusKey:"",//单据状态
+          stockInBillId:"",//入库单id
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          buyId:0,
+          instanceId:0
+        }
+      }
+    },
+    methods:{
+      search(val){
+        this.searchParams = val;
+        this.getPutInStorageList();
+      },
+      getPutInStorageList(){
+        if(this.$route.query.tourl){
+          this.searchParams.stockInBillId = this.$route.params.id
+        }else{
+          this.searchParams.stockInBillId = "";
+        }
+        let dataStr = JSON.stringify(this.searchParams);
+        let pageStr = JSON.stringify(this.page);
+        this.$http.post("/ys-web-wms/putInStorageList/getList",{data:dataStr,page:pageStr}).then(function (result) {
+          if(result.data.state == 200){
+            if(result.data.data){
+              let data = result.data.data;
+              this.count = data.count?data.count:0;
+              this.tableData = data.list?data.list:[];
+              if(this.tableData.length>0){
+                this.rowCurrentChange(this.tableData[0])
+              }
+            }else{
+              this.count = 0;
+              this.tableData = []
+            }
+          }else{
+
+          }
+        });
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getPutInStorageList();
+      },
+      rowCurrentChange(val){
+        if(!val){
+          return;
+        }
+        this.currentRow = val;
+        this.$store.commit('SET_PUT_IN_STORAGE_INFO',val)
+        let toPreurl  = "/putInStorage/detail/" + val.stockInBillId+'/';
+        let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+        this.$router.push(toPreurl+modulePath);
+      },
+      highlightCurrent({row, rowIndex}){
+        return (row.stockInBillId==this.currentRow.stockInBillId ? 'info-row' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      SlideBar
+    },
+    watch: {
+      "$store.state.doAjaxSuccess":function () {
+        this.getPutInStorageList();
+      },
+      "$route": function(to,from) {
+        if(from.path == "/putInStorage/godownEntryAdd"){
+          this.getPutInStorageList();
+        }
+      }
+    },
+    computed:{
+      "stockInType":function () {//入库类别
+        return this.$store.state.enumList.stockInType;
+      },
+      "stockInBillStatus":function () {//入库单状态
+        return this.$store.state.enumList.stockInBillStatus;
+      }
+    },
+  }
+</script>
+
+<style>
+
+</style>

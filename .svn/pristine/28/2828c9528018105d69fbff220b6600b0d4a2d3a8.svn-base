@@ -1,0 +1,83 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="print-title">
+          调拨单
+        </div>
+        <div style="padding: 5px;height: 237px">
+          <!--<span class="right-content-body-little-title">基本信息</span>-->
+          <info :info="info.basicInfo"></info>
+        </div>
+        <div style="padding: 5px;">
+          <!--<span class="right-content-body-little-title">明细信息</span>-->
+          <detail-table :tableData="info.detailList"></detail-table>
+        </div>
+        <div style="padding: 5px;">
+          <!--<span class="right-content-body-little-title">审核信息</span>-->
+          <el-table :data="info.reviewList" border  style="width: 98%;margin:5px auto">
+            <el-table-column prop="reviewDate" label="审核时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="reviewerName" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="reveiwResultKey" label="审核结果" align="center" :show-overflow-tooltip="true">
+              <span slot-scope="sp">{{sp.row.reveiwResultKey|enumtext(YesNo)}}</span>
+            </el-table-column>
+            <el-table-column prop="refuseReason" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+        <div class="not-print" style="height: 40px;padding-right: 2%">
+          <el-button size="mini" style="float: right;margin: 10px;" type="primary" @click="print">打印</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../allocationInfo/Info.vue"
+  import DetailTable from "../allocationInfo/DetailTable.vue"
+  export default{
+    name:"AllocationPrint",
+      mounted(){
+          this.doAjax()
+      },
+      data(){
+          return{
+              info:{
+                  basicInfo:{},
+                  detailList:[],
+                  reviewList:[]
+              },
+      }
+    },
+    methods:{
+      print(){
+        window.print();
+      },
+            doAjax(){
+                this.$http.post('/ys-web-wms/transfer/getInfo',{id:this.$route.params.id}).then(
+                    (res)=>{
+                        this.info=Object.assign({
+                            basicInfo:{},
+                            detailList:[],
+                            reviewList:[]
+                        },res.data.data)
+                    }
+                )
+            }
+        },
+        computed:{
+            YesNo(){
+                return this.$store.state.enumList.YesNo
+            },
+        },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable
+    }
+  }
+</script>
+<style>
+
+</style>

@@ -1,0 +1,61 @@
+<template>
+  <div class="out-bound-order-del">
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <el-dialog title="" :visible.sync="dialogVisible" top="20vh">
+        <del-alert @close="dialogVisible = false"></del-alert>
+      </el-dialog>
+      <div class="right-content-body">
+        <el-row style="padding: 5px;margin-top: 10px">
+          <steps></steps>
+        </el-row>
+        <div style="padding: 5px;height: 257px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table></detail-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../outBoundOrderInfo/Info.vue"
+  import Steps from "../outBoundOrderInfo/Steps.vue"
+  import DetailTable from "../outBoundOrderInfo/DetailTable.vue"
+  import DelMessageAlert from "./DelMessageAlert.vue"
+  export default{
+    name:"OutBoundOrderDel",
+    mounted(){
+
+    },
+    data(){
+      return{
+        dialogVisible:true,
+      }
+    },
+    methods:{
+
+    },
+    components:{
+      "info":Info,
+      "steps":Steps,
+      "detail-table":DetailTable,
+      "del-alert":DelMessageAlert
+    }
+  }
+</script>
+<style>
+  .out-bound-order-del .el-dialog__header{padding: 0px}
+  .out-bound-order-del .el-dialog__body{padding: 0px}
+  .out-bound-order-del .el-dialog{width: 37%}
+  .out-bound-order-del .el-dialog__close{display: none}
+</style>

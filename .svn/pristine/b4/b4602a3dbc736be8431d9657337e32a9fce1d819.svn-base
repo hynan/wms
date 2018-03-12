@@ -1,0 +1,44 @@
+<template>
+  <div class="detail-table">
+    <el-table :data="tableData" border  style="width: 98%;margin:5px auto">
+      <el-table-column prop="materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialName" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="materialCode" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="modelNum" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="ownerName" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="centralOrderNum" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="filialeOrderNum" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="productBatch" label="产品批次" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="storeAreaCode" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="goodsAllocationCode" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="stockInDate" label="入库时间" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="stockBarcode" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="transferAmount" label="调拨数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column prop="measureUnit" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+    </el-table>
+  </div>
+</template>
+<script>
+    export default{
+        name:"Info",
+        props:["tableData"],
+        mounted(){
+
+        },
+        data(){
+            return{
+                dialogVisible:false,
+            }
+        },
+        methods:{
+
+        },
+        components:{
+
+        }
+    }
+</script>
+<style>
+
+</style>

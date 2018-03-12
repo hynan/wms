@@ -1,0 +1,139 @@
+<template>
+  <div class="card-box">
+    <div class="card-box-inner">
+    <div class="purchaseSearchBar-main">
+      <el-input v-model="searchParams.buyCode" style="width:32%" placeholder="采购单号" size="small"></el-input>
+      <!--<el-input v-model="searchParams.buyerName" style="width:30%" placeholder="采购员" size="small"></el-input>-->
+      <el-select clearable v-model="searchParams.buyerName" filterable placeholder="采购员" size="small" style="width:32%">
+        <el-option
+          v-for="item in buyerList"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.buyProgressKey" placeholder="采购进度" size="small" style="width:32%">
+        <el-option
+          v-for="item in buyProgress"
+          :label="item.name"
+          :value="item.code">
+        </el-option>
+      </el-select>
+      <!--<el-input v-model="searchParams.applicantName" style="width:32%" placeholder="申请人" size="small"></el-input>-->
+      <el-select clearable v-model="searchParams.applicantName" filterable placeholder="申请人" size="small" style="width:32%">
+        <el-option
+          v-for="item in buyApplierList"
+          :label="item.name"
+          :value="item.name">
+        </el-option>
+      </el-select>
+      <el-date-picker
+        style="width:32%"
+        v-model="searchParams.beginDate"
+        type="datetime"
+        size="small"
+        placeholder="申请起始时间"
+        :picker-options="pickerOptions0">
+      </el-date-picker>
+      <el-date-picker
+        style="width:32%"
+        v-model="searchParams.endDate"
+        type="datetime"
+        size="small"
+        placeholder="申请结束时间"
+        :picker-options="pickerOptions0">
+      </el-date-picker>
+      <el-cascader
+        size="small"
+        style="width:32%"
+        :options="materialType"
+        :props="materialTypeProps"
+        clearable
+        change-on-select
+        v-model="materialMainType"
+        placeholder="物料类别"
+        @active-item-change="handleChange">
+      </el-cascader>
+      <el-input v-model="searchParams.materialName" style="width:32%" placeholder="物料名称" size="small"></el-input>
+
+      <div class="purchaseSearchBar-foot">
+        <el-button type="primary" @click="search" icon="search" size="small">搜索</el-button>
+        <el-button type="primary" @click="toAddPurchase" size="small" style="margin-left: 0px;">采购申请</el-button>
+      </div>
+    </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    name:"PurchaseSearchBar",
+    props:{
+      params:Object
+    },
+    mounted(){
+
+    },
+    data(){
+      return {
+        materialTypeProps:{value:"id",label:"name",children:"children"},
+        searchParams: Object.assign({},this.params),
+        materialMainType:[]
+      }
+    },
+    methods:{
+      pickerOptions0: {
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7;
+        }
+      },
+      handleChange(value) {
+        console.log(value);
+      },
+      search(){
+        if(this.searchParams.endDate != ""){
+          this.searchParams.endDate = this.searchParams.endDate.getTime();
+        }
+        if(this.searchParams.beginDate != ""){
+          this.searchParams.beginDate = this.searchParams.beginDate.getTime();
+        }
+        if(this.materialMainType.length == 0){
+          this.searchParams.materialMainTypeId = "";
+          this.searchParams.materialSubTypeId = ""
+        }
+        if(this.materialMainType.length == 1){
+          this.searchParams.materialMainTypeId = this.materialMainType[0]
+        }
+        if(this.materialMainType.length == 2){
+          this.searchParams.materialMainTypeId = this.materialMainType[0];
+          this.searchParams.materialSubTypeId = this.materialMainType[1]
+        }
+        this.searchParams.buyId = "";
+        this.$emit("search",this.searchParams);
+      },
+      toAddPurchase(){
+        this.$router.push("/purchaseListManage/detail/0/addPurchase");
+      }
+    },
+    computed:{
+      buyProgress:function(){
+        return this.$store.state.enumList.buyProgressList;
+      },
+      materialType:function () {
+        return this.$store.state.materialType
+      },
+      buyerList:function(){
+        return this.$store.state.personList.buyerList;
+      },
+      buyApplierList:function(){
+        return this.$store.state.personList.buyApplierList;
+      },
+    },
+
+  }
+</script>
+<style>
+  .purchaseSearchBar-main {padding: 7px;}
+  .purchaseSearchBar-main .el-input{margin-bottom: 3px;}
+  .purchaseSearchBar-main .el-select{margin-bottom: 3px;}
+  .purchaseSearchBar-foot{ float:right; width: 34%; margin-top: 1px;}
+  .purchaseSearchBar-foot .el-dialog__header{text-align: left;}
+</style>

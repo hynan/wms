@@ -1,0 +1,124 @@
+<template>
+    <div class="dataManagement-body">
+        <el-row>
+            <el-col id="leftMainBox" :span="5" >
+                <el-card style="min-height:500px;max-height: 800px">
+                    <div class="search-div">
+                        <div class="search-div-inner">
+                            <el-input size="mini" placeholder="仓库名称" v-model="searchParam.whName"></el-input>
+                        </div>
+                        <div class="search-div-inner">
+                            <el-input size="mini" placeholder="库区编码" v-model="searchParam.storeAreaCode"></el-input>
+                        </div>
+                        <div class="search-div-inner">
+                            <el-input size="mini" placeholder="货柜编码" v-model="searchParam.shelfCode"></el-input>
+                        </div>
+                        <div class="search-div-inner">
+                            <el-input size="mini" placeholder="货位编码" v-model="searchParam.goodsAllocationCode"></el-input>
+                        </div>
+                        <div style="text-align:right" class="search-div-inner">
+                            <el-button type="success" size="mini" @click="storeAdd">添加仓库</el-button>
+                            <el-button type="primary" size="mini" @click="doAjax">搜索</el-button>
+                        </div>
+                    </div>
+                    <div style="margin:10px 0;">
+                        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" :default-expanded-keys="expandKeys" node-key="id" :highlight-current="true" :expand-on-click-node="false" class="store-tree" ref="storeTree"></el-tree>
+                    </div>
+                </el-card>
+            </el-col>
+            <el-col id='rightMainBox' :span="19" >
+                <transition name="fade">
+                    <router-view></router-view>
+                </transition>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+<script>
+    export default {
+        name:'StoreManagement',
+        mounted(){
+            this.doAjax()
+        },
+        data(){
+            return{
+                data: [],
+                defaultProps: {
+                    children: 'list',
+                    label: 'name'
+                },
+                searchParam:{
+                    whName:'',
+                    storeAreaCode:'',
+                    shelfCode:'',
+                    goodsAllocationCode:''
+                },
+                currentNode:{}
+            }
+        },
+        methods:{
+            handleNodeClick(obj,node,vnode){
+                this.currentNode = node
+                if(node.level==1){
+                    this.$router.push("/dataManagement/store/detail/store/"+obj.id+"/info")
+                }else if(node.level==2){
+                    this.$router.push("/dataManagement/store/detail/area/"+obj.id+"/info")
+                }else if(node.level==3){
+                    this.$router.push("/dataManagement/store/detail/container/"+obj.id+"/info")
+                }else{
+                    this.$router.push("/dataManagement/store/detail/location/"+obj.id+"/info")
+                }
+            },
+            storeAdd(){
+                this.$router.push('/dataManagement/store/detail/storeAdd')
+            },
+            doAjax(){
+                this.$http.post('/ys-web-wms/store/getList',{data:JSON.stringify(this.searchParam)}).then(
+                    (res)=>{
+                        this.data=res.data.data?res.data.data:[]
+                        if(this.data){
+                            let firstrow = this.data[0]
+                            this.handleNodeClick(firstrow,{data:firstrow,level:1},)
+                        }
+                    }
+                )
+            }
+        },
+        computed:{
+            currentInfo(){
+                return this.$store.state.moduleDM.currentRow
+            },
+            is_refresh(){
+                return this.$store.state.moduleDM.is_refresh
+            },
+            expandKeys(){
+                return this.$store.state.moduleDM.expandKeys
+             }
+        },
+        watch:{
+            'is_refresh'(){
+                this.$http.post('/ys-web-wms/store/getList',{data:JSON.stringify(this.searchParam)}).then(
+                    (res)=>{
+                        this.data=res.data.data?res.data.data:[]
+                    }
+                )
+            },
+            '$route'(to,from){
+                if(to.name === 'store'){
+                    this.doAjax()
+                }
+            },
+            currentInfo(){
+                if( this.currentNode.level==1){
+                    this.currentNode.data.name = this.currentInfo.whName
+                }else if( this.currentNode.level==2){
+                    this.currentNode.data.name = this.currentInfo.storeAreaName
+                }else if( this.currentNode.level==3){
+                    this.currentNode.data.name = this.currentInfo.shelfName
+                }
+            }
+        }
+    }
+</script>
+<style>
+</style>

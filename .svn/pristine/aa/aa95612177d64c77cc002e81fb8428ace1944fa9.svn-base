@@ -1,0 +1,142 @@
+<template>
+  <div class="card-box">
+    <div class="card-box-inner">
+    <div class="searchBar-main">
+      <el-date-picker
+        style="width: 47%"
+        size="small"
+        v-model="searchParams.stockInDateBegin"
+        align="right"
+        type="date"
+        placeholder="入库单创建开始日期"
+        :picker-options="pickerOptions">
+      </el-date-picker>
+      <el-date-picker
+        style="width: 47%"
+        size="small"
+        v-model="searchParams.stockInDateEnd"
+        align="right"
+        type="date"
+        placeholder="入库单创建结束日期"
+        value-format="yyyy-MM-dd 23:59:59"
+        :picker-options="pickerOptions">
+      </el-date-picker>
+      <el-input v-model="searchParams.stockInCode" placeholder="入库单号" size="mini" style="width: 32%"></el-input>
+      <el-input clearable v-model="searchParams.externalCode" placeholder="外来单号" size="mini" style="width:32%">
+      </el-input>
+      <el-input clearable v-model="searchParams.receiptBillCode" filterable placeholder="收货单号" size="mini" style="width:32%">
+      </el-input>
+      <el-select clearable v-model="searchParams.vendorCode" filterable placeholder="供应商编号" size="mini" style="width:32%">
+        <el-option
+          v-for="item in vendorCodeList"
+          :key="item"
+          :label="item"
+          :value="item">
+        </el-option>
+      </el-select>
+      <el-input clearable v-model="searchParams.headOfficeOrderNum" filterable placeholder="总公司订单号" size="mini" style="width:32%">
+      </el-input>
+      <el-input clearable v-model="searchParams.branchOfficeOrderNum" filterable placeholder="分公司订单号" size="mini" style="width:32%">
+      </el-input>
+      <el-select clearable v-model="searchParams.materialOwnerId" filterable placeholder="物料所有人" @change="materialOwnerChange" size="mini" style="width:32%">
+        <el-option
+          v-for="item in allPersons"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.whBelongDeptId" filterable placeholder="仓库所属部门" size="mini" style="width:32%">
+        <el-option
+          v-for="item in warehouseDeptList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.warehouseId" filterable placeholder="仓库" size="mini" style="width:32%">
+        <el-option
+          v-for="item in warehouseList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-select clearable v-model="searchParams.materialCategoryCode" filterable placeholder="物料类别" size="mini" style="width:32%">
+        <el-option
+          v-for="item in materialCategoryList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      <el-input clearable v-model="searchParams.materialCode" filterable placeholder="物料编码" size="mini" style="width:32%">
+      </el-input>
+      <el-input clearable v-model="searchParams.materialName" filterable placeholder="物料名称" size="mini" style="width:32%">
+      </el-input>
+
+      <div class="searchBar-foot" style="width: 17%;">
+        <el-button type="primary" @click="search" icon="search" size="mini">搜索</el-button>
+      </div>
+    </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default {
+    name:"InventorySearchBar",
+    props:{
+      params:Object
+    },
+    mounted(){
+
+    },
+    data(){
+      return {
+        searchParams: Object.assign({},this.params),
+      }
+    },
+    methods:{
+      materialOwnerChange(val){
+        let _this = this;
+        this.getNameById(val,this.allPersons,function (result) {
+          _this.searchParams.materialOwnerName = result;
+        });
+      },
+      search(){
+//        if(this.searchParams.dateCreated == "" || this.searchParams.dateCreated == null){
+//          this.searchParams.stockInDateBegin = "";
+//          this.searchParams.stockInDateEnd = "";
+//        }else{
+//          this.searchParams.stockInDateBegin = this.searchParams.dateCreated[0];
+//          this.searchParams.stockInDateEnd = this.searchParams.dateCreated[1];
+//        }
+        this.$emit("search",this.searchParams);
+      },
+    },
+    computed:{
+      "pickerOptions":function () {
+        return this.$store.state.pickerOptions;
+      },
+      "warehouseList":function () {//仓库列表
+        return this.$store.state.selectList.warehouseList
+      },
+      "warehouseDeptList":function () {//仓库部门列表
+        return this.$store.state.selectList.warehouseDeptList
+      },
+      "materialCategoryList":function () {//物料类别列表
+        return this.$store.state.selectList.materialCategoryList
+      },
+      "allPersons":function () {//仓库管理相关人员
+        return this.$store.state.selectList.allPersons
+      },
+      "vendorCodeList":function () {//供应商编号列表
+        return this.$store.state.selectList.vendorCodeList
+      }
+    },
+
+  }
+</script>
+<style>
+
+</style>

@@ -1,0 +1,170 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px" v-if="!toSoldOut">
+          <el-button size="mini" style="float: right;margin: 0px 10px 10px 10px;" type="primary" @click="soldOut">下架</el-button>
+          <el-table :data="detailForm.tableData" border style="width: 100%">
+            <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="仓库" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="下架数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="货存条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="下架员" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="date" label="下架时间" align="center" :show-overflow-tooltip="true"></el-table-column>
+          </el-table>
+        </div>
+        <div style="padding: 5px" v-else>
+          <el-form :model="detailForm" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width: 100%" class="operation-table">
+              <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="存货条码" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="下架数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date"></el-input>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="请选择" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+          <div style="height: 40px">
+          <el-button size="mini" style="float: right;margin: 10px;" type="primary" @click="save">保存</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"SoldOut",
+    mounted(){
+
+    },
+    data(){
+      return{
+        toSoldOut:false,
+        detailForm:{
+          tableData:[{date:"asdf",state:"nomal"}]
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+        },
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+      }
+    },
+    methods:{
+      soldOut(){
+        this.toSoldOut = true;
+      },
+      save(){
+        this.toSoldOut = false;
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

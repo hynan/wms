@@ -1,0 +1,57 @@
+<template>
+  <div class="receiving-note-del">
+    <div class="right-topTitle">
+
+    </div>
+    <el-dialog title="" :visible.sync="dialogVisible" top="20vh">
+      <del-alert :id="id"></del-alert>
+    </el-dialog>
+    <div class="card-box right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px;height: 172px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info  :id="id"></info>
+        </div>
+        <div style="padding: 5px;">
+          <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+              明细信息
+          </span>
+          <detail-table :id="id"></detail-table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import DelMessageAlert from "./DelMessageAlert.vue"
+  import Info from "../receivingNoteInfo/Info.vue"
+  import DetailTable from "../receivingNoteInfo/DetailTable.vue"
+  export default{
+    name:"ReceivingNoteDetail",
+    mounted(){
+      this.id = this.$route.params.id;
+    },
+    data(){
+      return{
+        id:"",
+        dialogVisible:true,
+      }
+    },
+    methods:{
+
+    },
+    components:{
+      "del-alert":DelMessageAlert,
+      "info":Info,
+      "detail-table":DetailTable
+    }
+  }
+</script>
+<style>
+  .receiving-note-del .el-dialog__header{padding: 0px}
+  .receiving-note-del .el-dialog__body{padding: 0px}
+  .receiving-note-del .el-dialog{width: 37%}
+  .receiving-note-del .el-dialog__close{display: none}
+</style>

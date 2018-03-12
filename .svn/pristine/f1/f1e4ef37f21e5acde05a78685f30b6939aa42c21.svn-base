@@ -1,0 +1,95 @@
+<template>
+  <div class="toExamine">
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <detail-table></detail-table>
+        </div>
+        <div style="padding: 5px;height: 210px;margin-top: -10px;" class="toExamine-submit" v-if="$store.state.putInStorageInfo.stockInBillStatusKey=='2'">
+          <el-form label-width="130px" size="mini" style="width: 98.2%;margin:-1px 0px 0px 0px;">
+            <el-form-item label="是否同意:" class="right-content-body-tableForm" style="width:99.8%">
+              <el-switch
+                v-model="agree"
+                active-text="同意"
+                inactive-text="拒绝">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="拒绝原因:" class="right-content-body-tableForm" v-if="!agree" style="width:99.8%">
+              <el-input size="mini" v-model="reviewData.refuseReason"></el-input>
+            </el-form-item>
+          </el-form>
+          <el-button size="mini" type="primary" style="float: right;margin: 10px" @click="submit">提交</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../godownEntryInfo/Info.vue"
+  import DetailTable from "../godownEntryInfo/DetailTable.vue"
+  export default{
+    name:"ToExamine",
+    mounted(){
+      this.reviewData.billId = this.$route.params.id;
+    },
+    data(){
+      return{
+        agree:true,
+        reviewData:{
+          billId:"",//单据id
+          refuseReason:"",//拒绝原因
+          doesAgreeFlag:"",//是否同意
+        }
+      }
+    },
+    methods:{
+      submit(){
+        if(this.agree){
+          this.reviewData.refuseReason = "";
+          this.reviewData.doesAgreeFlag = "1";
+        }else{
+          this.reviewData.doesAgreeFlag = "2";
+        }
+        let dataStr = JSON.stringify(this.reviewData);
+        this.$http.post("/ys-web-wms/putInStorageExamine/toExamine",{data:dataStr}).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:"审核成功",
+              type:"success",
+              showClose:true
+            })
+            let _this = this;
+            this.getPutInStorageStatus(this.reviewData.billId,function (res) {
+              _this.$store.state.putInStorageInfo.stockInBillStatusKey = res;
+            })
+            this.$router.push("/putInStorage/detail/"+this.reviewData.billId+"/info")
+          }else{
+            this.$notify.error({
+              title:"审核失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable
+    }
+  }
+</script>
+<style>
+  .toExamine-submit .right-content-body-tableForm{margin-left: 0px}
+</style>

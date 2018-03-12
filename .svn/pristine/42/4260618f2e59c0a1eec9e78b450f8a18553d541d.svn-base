@@ -1,0 +1,100 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <el-row style="padding: 5px;margin-top: 10px">
+          <el-steps :active="progressBar.currProgressIndex?progressBar.currProgressIndex:0" align-center finish-status="success">
+            <el-step v-for="(item, key, index) in progressBar.progressNameArray?progressBar.progressNameArray:[]" v-bind:key="index" :title="item"></el-step>
+          </el-steps>
+        </el-row>
+        <div style="padding: 5px;">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <div>
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          </div>
+          <detail-table></detail-table>
+        </div>
+        <!--<div style="padding: 5px">-->
+          <!--<span class="right-content-body-little-title">-->
+            <!--审核信息-->
+          <!--</span>-->
+          <!--<el-table :data="reviewList" border style="width:98.2%">-->
+            <!--<el-table-column prop="reviewDate" label="审核时间" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+            <!--<el-table-column prop="reviewerName" label="审核人" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+            <!--<el-table-column prop="reveiwResultKey" label="审核结果" align="center" :show-overflow-tooltip="true">-->
+              <!--<template slot-scope="scope">-->
+                <!--{{scope.row.reveiwResultKey == 1?"通过":"拒绝"}}-->
+              <!--</template>-->
+            <!--</el-table-column>-->
+            <!--<el-table-column prop="refuseReason" label="拒绝原因" align="center" :show-overflow-tooltip="true"></el-table-column>-->
+           <!--</el-table>-->
+        <!--</div>-->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "./Info.vue"
+  import DetailTable from "./DetailTable.vue"
+  export default{
+    name:"GodownEntryInfo",
+    mounted(){
+      this.id = this.$route.params.id
+      this.getInfo();
+    },
+    data(){
+      return{
+        id:"",
+        basicInfo:{},
+        progressBar:{},
+        reviewList:[],
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/putInStorageInfo/getInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            if(result.data.data){
+              let data = result.data.data;
+              this.basicInfo = data.basicInfo?data.basicInfo:{};
+              this.progressBar = data.progressBar?data.progressBar:{};
+              this.reviewList = data.reviewList?data.reviewList:[];
+            }else{
+              this.basicInfo = {};
+              this.progressBar = {};
+              this.reviewList = [];
+            }
+          }else{
+            this.$notify.error({
+              title:"入库单详情获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable
+    },
+    watch:{
+      "$route.params.id":function () {
+        this.id = this.$route.params.id
+        this.getInfo();
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

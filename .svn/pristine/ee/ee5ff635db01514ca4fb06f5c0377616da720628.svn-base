@@ -1,0 +1,266 @@
+<template>
+  <div class="inventory">
+    <div class="right-topTitle" style="font-size: 12px;padding-left: 20px;">
+      报损数量：{{detailForm.damageAmount}}  &nbsp;&nbsp;&nbsp;&nbsp;
+      库存数量：{{detailForm.stockAmount}}  &nbsp;&nbsp;&nbsp;&nbsp;
+      锁定数量：{{detailForm.lockAmount}}
+    </div>
+    <div class="dialog-alert">
+      <el-dialog title="" :visible.sync="dialogVisible" v-if="dialogVisible">
+        <deblocking-alert @cancel="dialogVisible=false"  @submit="deblockingSubmit"></deblocking-alert>
+      </el-dialog>
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          明细信息
+        </div>
+        <div style="padding: 5px;">
+          <el-form :model="detailForm" ref="detailForm" :inline-message="true">
+            <el-table :data="detailForm.detailList" border style="width: 100%;" class="operation-table" :row-class-name="tableRowClassName" :cell-class-name="tableCellClassName">
+              <el-table-column label="操作" fixed align="center" width="123" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <div  v-if="scope.row.state!='edit'">
+                    <el-col  :span="12" v-if="scope.row.applyingStatus">
+                      <el-button size="mini" type="text" :disabled="true">解锁申请中</el-button>
+                    </el-col>
+                    <el-col  :span="10" v-else>
+                      <el-button size="mini" type="text" v-if="scope.row.isLock" @click="deblocking(scope.row)">解锁</el-button>
+                    </el-col>
+                    <el-col :span="(scope.row.applyingStatus || scope.row.isLock)?12:24">
+                    <el-button size="mini" type="text" @click="toChange(scope.row)">货位调整</el-button>
+                    </el-col>
+                  </div>
+                  <div v-else>
+                    <el-button size="mini" type="text" @click="submit(scope.row,'detailForm')">确定</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="subareaCode" label="库区" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.storeAreaId'"  :rules="{ required: true, message: '请选择库区', trigger: 'change' }"  v-if="scope.row.state=='edit'">
+                    <el-select clearable v-model="scope.row.subareaCode" @change="subareaCodeChange(scope.row)" filterable placeholder="库区" size="mini">
+                      <el-option
+                        v-for="item in scope.row.storeAreas"
+                        :key="item.code"
+                        :label="item.code"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.subareaCode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="storagebinCode" label="货位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'detailList.'+scope.$index+'.storagebinCode'" :rules="{ required: true, message: '请选择货位', trigger: 'change' }" v-if="scope.row.state=='edit'">
+                    <el-select clearable v-model="scope.row.storagebinCode" filterable placeholder="货位" size="mini">
+                      <el-option
+                        v-for="item in scope.row.goodsAllocations"
+                        :key="item.code"
+                        :label="item.code"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.storagebinCode}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="materialCategoryName" label="物料类别" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="specification" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="unitName" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockInDate" label="入库日期" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockInCode" label="入库单号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="externalCode" label="外来单号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="productBatch" label="产品批次" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="materialOwnerName" label="物料所有人" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockBarcode" label="存货条码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="vendorCode" label="供应商编号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="headOfficeOrderNum" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="branchOfficeOrderNum" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="externalDemand" label="外协要求" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="technology" label="工艺" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="warehouseDeptName" label="仓库所属部门" width="90" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="warehouseName" label="仓库" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="stockAmount" label="数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+          </el-form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import DeblockingAlert from "./DeblockingAlert.vue"
+  export default{
+    name:"InventoryInfo",
+    mounted(){
+      this.id = this.$route.params.id;
+      this.getInfo();
+    },
+    data(){
+      return{
+        id:"",
+        dialogVisible:false,
+        currentDetail:{},
+        detailForm:{
+          damageAmount:"",//报损数量
+          stockAmount:"",//库存数量
+          lockAmount:"",//锁定数量
+          detailList:[],
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+          ],
+        }
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/inventoryInfo/getInfo?code="+this.id+"&&warehouseId="+this.$store.state.inventoryInfo.warehouseId).then(function (result) {
+          if(result.data.state == 200){
+            let data = result.data.data;
+            if(data){
+              let list = data.detailList?data.detailList:[];
+              if(list.length>0){
+                for(var i=0;i<list.length;i++){
+                  list[i].state = "nomal";
+                  if(list[i].materialOwnerName){
+                    list[i].isLock = true;
+                  }else{
+                    list[i].isLock = false;
+                  }
+                  list[i].storeAreas = [];//库区列表
+                  list[i].goodsAllocations = [];//货位列表
+                }
+              }
+              this.detailForm = {
+                    specification:data.specification?data.specification:"",//规格
+                    unitName:data.unitName?data.unitName:"",//单位
+                    damageAmount:data.damageAmount?data.damageAmount:"",//报损数量
+                    stockAmount:data.stockAmount?data.stockAmount:"",//库存数量
+                    lockAmount:data.lockAmount?data.lockAmount:"",//锁定数量
+                    detailList:list,
+                }
+            }
+          }else{
+            this.$notify.error({
+              title:"库存详细信息获取失败",
+              message:result.data.message
+            })
+          }
+        });
+      },
+      tableCellClassName({row, column, rowIndex, columnIndex}){
+        if(columnIndex == 0){
+          return "cell-button-style";
+        }
+        return '';
+      },
+      tableRowClassName({row, rowIndex}) {
+        if (row.isLock) {
+          return 'lock-style';
+        } else{
+          return 'unLock-style';
+        }
+      },
+      deblocking(row){
+        this.currentDetail = row;
+        this.dialogVisible = true;
+      },
+      deblockingSubmit(unlockDesc){
+        let submitData = {
+          tstockId:this.currentDetail.stockId,
+          unlockDesc:unlockDesc,
+          materialOwnerId:this.currentDetail.materialOwnerId,
+        };
+        let dataStr = JSON.stringify(submitData);
+        this.$http.post("/ys-web-wms/inventoryInfo/unlockApply",{data:dataStr}).then(function (result) {
+          if(result.data.state == 200){
+            this.$message({
+              message:"提交成功",
+              type:"success",
+              showClose:true
+            })
+            this.currentDetail.applyingStatus = true;
+            this.dialogVisible = false;
+          }else{
+            this.$notify.error({
+              title:"提交失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      toChange(row){
+        let _this = this;
+        this.getStoreAreas(row.warehouseId,function (result) {
+          row.storeAreas = result;//库区列表
+          let list = result;
+          for(var i=0;i<list.length;i++){
+            if(row.subareaCode == list[i].code){
+              row.storeAreaId = list[i].id;
+              _this.getGoodsAllocations(row.storeAreaId,function (res) {
+                row.goodsAllocations = res;//货位列表
+                row.state = "edit"
+              })
+              return;
+            }
+          }
+        })
+      },
+      //库区改变时触发
+      subareaCodeChange(row){
+        let _this = this;
+        row.storagebinCode = "";
+        row.goodsAllocations = [];
+        let list = row.storeAreas;
+        for(var i=0;i<list.length;i++){
+          if(row.subareaCode == list[i].code){
+            row.storeAreaId = list[i].id;
+            this.getGoodsAllocations(row.storeAreaId,function (res) {//根据库区id获取货位列表
+              row.goodsAllocations = res;
+            });
+            return;
+          }
+        }
+
+
+      },
+      submit(row,formName){
+        if(this.checkForm(formName)){
+          this.$http.get("/ys-web-wms/inventoryInfo/adjustAllocation?id="+row.stockId+"&&code="+row.storagebinCode).then(function (result) {
+            if(result.data.state == 200){
+              this.$message({
+                message:"调整成功",
+                type:"success",
+                showClose:true
+              })
+              row.state = "nomal"
+            }else{
+              this.$notify.error({
+                title:"货位调整失败",
+                message:result.data.message
+              })
+            }
+          })
+        }
+      }
+    },
+    components:{
+      'deblocking-alert':DeblockingAlert
+    },
+    watch:{
+      "$route.params.id":function () {
+        this.id = this.$route.params.id;
+        this.getInfo();
+      }
+    }
+  }
+</script>
+<style>
+  .inventory .lock-style{background-color: #c1bcb6}
+  .inventory .unLock-style{background-color: #7deab4}
+  .inventory .cell-button-style{background-color: white;padding: 2px 0px;}
+</style>

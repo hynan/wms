@@ -1,0 +1,56 @@
+<template>
+    <div class="navbtn-wrapper">
+      <router-link :to="info" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >详情</router-link>
+      <router-link :to="verify" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.checkVerifyPerson||roleInfo.sysAdmin||roleInfo.warehouseManager">核实</router-link>
+      <router-link :to="examine" tag="button" class="el-button el-button--mini" active-class="el-button--primary" v-if="roleInfo.checkReviewer||roleInfo.sysAdmin||roleInfo.warehouseManager">审核</router-link>
+      <router-link :to="inventoryProfit" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >盘盈入库</router-link>
+      <router-link :to="inventoryLosses" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >盘亏出库</router-link>
+        <el-button @click="printView" tag="button" class="el-button el-button--mini" active-class="el-button--primary" >打印</el-button>
+        <el-dialog  :visible.sync="dialogTableVisible" fullscreen :show-close="false">
+            <stock-tacking-print :id="id" @close="dialogTableVisible=false" ref="print"></stock-tacking-print>
+        </el-dialog>
+    </div>
+</template>
+<script>
+    import StockTackingPrint from "./stockTackingAdd/StockTackingPrint";
+    export default {
+        components: {StockTackingPrint},
+        name:"TopNavBtn",
+      props:["id"],
+      data(){
+        return{
+            dialogTableVisible:false
+        }
+      },
+        methods:{
+            printView(){
+                this.dialogTableVisible=true
+                if(this.$refs['print'])
+                this.$refs['print'].doAjax()
+            }
+        },
+      computed:{
+        "info":function(){
+          return "/stockTacking/detail/"+this.id+"/info";
+        },
+        "verify":function(){
+          return "/stockTacking/detail/"+this.id+"/verify";
+        },
+        "examine":function(){
+          return "/stockTacking/detail/"+this.id+"/examine";
+        },
+        "inventoryProfit":function(){
+          return "/stockTacking/detail/"+this.id+"/inventoryProfit";
+        },
+        "inventoryLosses":function(){
+          return "/stockTacking/detail/"+this.id+"/inventoryLosses";
+        },
+        roleInfo:function(){
+          return this.$store.state.roleInfo;
+        },
+      },
+    }
+</script>
+<style>
+
+</style>

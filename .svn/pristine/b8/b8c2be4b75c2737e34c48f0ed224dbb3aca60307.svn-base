@@ -1,0 +1,105 @@
+<template>
+  <div id="put-out-info">
+    <div class="right-topTitle-two">
+      单据号：{{infoData.stockOutBillCode}}
+    </div>
+    <div style="margin-top: -20px">
+      <span style="margin-left: 77px;color: #333333;font-size: 14px">红蓝字类型：{{ infoData.blueRedFlagKey|enumtext(blueRedFlag) }}</span>
+    </div>
+    <el-form label-width="130px" size="mini" style="width: 100%">
+      <el-form-item label="出库单号:" class="right-content-body-tableForm">
+        {{infoData.stockOutBillCode}}
+      </el-form-item>
+      <el-form-item label="仓库名称:" class="right-content-body-tableForm">
+        {{infoData.warehouseName}}
+      </el-form-item>
+      <el-form-item label="出库类别:" class="right-content-body-tableForm">
+        {{infoData.stockOutTypeKey|enumtext(stockOutType)}}
+      </el-form-item>
+      <!--<el-form-item label="外来单号:" class="right-content-body-tableForm">-->
+        <!--{{infoData.stockOutBillCode}}-->
+      <!--</el-form-item>-->
+      <el-form-item label="领料人:" class="right-content-body-tableForm">
+        {{infoData.pickingPersonName}}
+      </el-form-item>
+      <el-form-item label="领料部门:" class="right-content-body-tableForm">
+        {{infoData.pickingDeptName}}
+      </el-form-item>
+      <el-form-item label="创建日期:" class="right-content-body-tableForm">
+        {{infoData.createDate}}
+      </el-form-item>
+      <el-form-item label="出库员:" class="right-content-body-tableForm">
+        {{infoData.stockOutPersonName}}
+      </el-form-item>
+      <el-form-item label="作废时间:" class="right-content-body-tableForm" v-if="infoData.cancelTime">
+        {{infoData.cancelTime}}
+      </el-form-item>
+      <el-form-item label="作废操作员:" class="right-content-body-tableForm" v-if="infoData.cancelTime">
+        {{infoData.cancelPersonName}}
+      </el-form-item>
+      <el-form-item label="作废原因:" class="right-content-body-tableForm" style="width: 98.2%" v-if="infoData.cancelTime">
+        {{infoData.cancelReason}}
+      </el-form-item>
+      <el-form-item label="备注:" class="right-content-body-tableForm" style="width: 98.2%">
+        {{infoData.remarks}}
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    mounted(){
+      this.id = this.$route.params.id;
+      this.getInfo();
+    },
+    data(){
+      return{
+        id:"",
+        infoData:{}
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/putOutStorageInfo/getStockOutBasicInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            console.log("基本信息刷新")
+            this.infoData = result.data.data?result.data.data:{};
+          }else{
+            this.$notify.error({
+              title:"出库单基本信息获取失败",
+              message:result.data.message
+            })
+            this.infoData = {};
+          }
+          let dom = document.getElementById("put-out-info");
+          if(this.infoData.cancelTime){
+            dom.style.height = "267px";
+          }else{
+            dom.style.height = "215px";
+          }
+        });
+      }
+    },
+    computed:{
+      "blueRedFlag":function () {
+        return this.$store.state.enumList.blueRedFlag;
+      },
+      "stockOutType":function () {//出库类别列表
+        return this.$store.state.enumList.stockOutType;
+      },
+      "blueRedFlag":function () {//红蓝字类型
+        return this.$store.state.enumList.blueRedFlag;
+      },
+    },
+    watch:{
+      "$route.params.id":function () {
+        this.id = this.$route.params.id;
+        this.getInfo();
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

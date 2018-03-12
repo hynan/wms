@@ -1,0 +1,169 @@
+//问题交互
+const Question = resolve => require.ensure([], () => resolve(require('./components/common/questionManage/List.vue')), 'question')
+const QuestionDetail = resolve => require.ensure([], () => resolve(require('./components/common/questionManage/Detail.vue')), 'question')
+const QuestionInfo = resolve => require.ensure([], () => resolve(require('./components/common/questionManage/QuestionList.vue')), 'question')
+const Replay = resolve => require.ensure([], () => resolve(require('./components/common/questionManage/Replay.vue')), 'question')
+const Ask = resolve => require.ensure([], () => resolve(require('./components/common/questionManage/AskAlert.vue')), 'question')
+
+
+//我的通知
+const Notice = resolve => require.ensure([], () => resolve(require('./components/common/noticeManage/List.vue')), 'notice')
+const NoticeDetail = resolve => require.ensure([], () => resolve(require('./components/common/noticeManage/Detail.vue')), 'notice')
+const NoticeInfo = resolve => require.ensure([], () => resolve(require('./components/common/noticeManage/NoticeManage.vue')), 'notice')
+
+
+
+
+//我的任务
+const MyTask = resolve => require.ensure([], () => resolve(require('./components/myTask/MyTask.vue')), 'myTask')
+
+
+//供应商管理
+const Supplier = resolve => require.ensure([], () => resolve(require('./components/dataManage/supplierManage/SupplierList.vue')), 'supplierManage')
+const SupplierDetail = resolve => require.ensure([], () => resolve(require('./components/dataManage/supplierManage/SupplierDetail.vue')), 'supplierManage')
+const SupplierInfo = resolve => require.ensure([], () => resolve(require('./components/dataManage/supplierManage/SupplierInfo.vue')), 'supplierManage')
+const SupplierContact = resolve => require.ensure([], () => resolve(require('./components/dataManage/supplierManage/Contact.vue')), 'supplierManage')
+
+//采购周期管理
+const ProcurementCycleManage = resolve => require.ensure([], () => resolve(require('./components/dataManage/procurementCycleManage/ProcurementCycleManage.vue')), 'procurementCycleManage')
+
+//仓库名称管理
+const WarehouseManage = resolve => require.ensure([], () => resolve(require('./components/dataManage/warehouseNameManage/WarehouseManage.vue')), 'warehouseManage')
+
+//采购单管理
+const PurchaseList = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/PurchaseList.vue')), 'purchaseList')
+const PurchaseDetail = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/PurchaseDetail.vue')), 'purchaseList')
+const PurchasingAdd = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/purchaseAdd/PurchasingAdd.vue')), 'purchaseList')
+const PurchaseInfoTabs = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/purchaseInfo/InfoTabs.vue')), 'purchaseList')
+const PurchaseInfo= resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/purchaseInfo/Info.vue')), 'purchaseList')
+const PurchaseInfoFlow= resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/purchaseInfo/FlowInfo.vue')), 'purchaseList')
+const TaskAssignment= resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/taskAssignment/TaskAssignment.vue')), 'purchaseList')
+const TaskReceive= resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/taskReceive/TaskReceive.vue')), 'purchaseList')
+const InquiryManage = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/inquiryManage/InquiryManage.vue')), 'purchaseList')
+const ArrivalHistory = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/arrivalHistory/ArrivalHistory.vue')), 'purchaseList')
+const ExpeditingHistory = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/expeditingHistory/ExpeditingHistory.vue')), 'purchaseList')
+const PurchaseToExamine = resolve => require.ensure([], () => resolve(require('./components/purchaseListManage/purchaseToExamine/PurchaseToExamine.vue')), 'purchaseList')
+
+//订货单管理
+const OrderList = resolve => require.ensure([], () => resolve(require('./components/orderManage/OrderList.vue')), 'orderList')
+const OrderDetail = resolve => require.ensure([], () => resolve(require('./components/orderManage/OrderDetail.vue')), 'orderList')
+const OrderInfo = resolve => require.ensure([], () => resolve(require('./components/orderManage/orderInfo/Info.vue')), 'orderList')
+const OrderInfoTwo = resolve => require.ensure([], () => resolve(require('./components/orderManage/orderInfoTwo/Info.vue')), 'orderList')
+const OrderToAdd = resolve => require.ensure([], () => resolve(require('./components/orderManage/orderToAdd/OrderToAdd.vue')), 'orderList')
+const OrderToExamine = resolve => require.ensure([], () => resolve(require('./components/orderManage/orderToExamine/OrderToExamine.vue')), 'orderList')
+const ArrivalManage = resolve => require.ensure([], () => resolve(require('./components/orderManage/arrivalManage/ArrivalManage.vue')), 'orderList')
+const QualityManage = resolve => require.ensure([], () => resolve(require('./components/orderManage/qualityManage/QualityManage.vue')), 'orderList')
+const PutInStorage = resolve => require.ensure([], () => resolve(require('./components/orderManage/putInStorage/PutInStorageManage.vue')), 'orderList')
+const ReceiveTicket = resolve => require.ensure([], () => resolve(require('./components/orderManage/receiveTicketManage/ReceiveTicketManage.vue')), 'orderList')
+const Remittance = resolve => require.ensure([], () => resolve(require('./components/orderManage/remittanceManage/RemittanceManage.vue')), 'orderList')
+const Expediting = resolve => require.ensure([], () => resolve(require('./components/orderManage/expeditingManage/Expenditing.vue')), 'orderList')
+
+//质量统计报表
+const QualityReportTable = resolve => require.ensure([], () => resolve(require('./components/statisticalReport/qualityReportTable/QualityReportTable.vue')), 'qualityReportTable')
+//供应商统计表
+const SupplierReportTable = resolve => require.ensure([], () => resolve(require('./components/statisticalReport/supplierReportTable/SupplierReportTable.vue')), 'qualityReportTable')
+
+//配置项管理
+const Config = resolve => require.ensure([], () => resolve(require('./components/configManage/Config.vue')), 'qualityReportTable')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export default [
+
+  //配置项管理
+  {path:'/configManage',component:Config,name:"configManage"},
+
+  //问题交互
+  {path:'/question',component:Question,name:"question",
+    children:[
+      {'path':'detail/:id',
+        component:QuestionDetail,
+        children:[
+          {path:'info',component:Replay},
+          // {path:'ask',component:QuestionInfo},
+          // {path:'replay',component:Replay},
+        ]}
+    ]},
+  //我的通知
+  {path:'/notice',component:Notice,name:"notice",
+    children:[
+      {'path':'detail/:id',
+        component:NoticeDetail,
+        children:[
+          {path:'info',component:NoticeInfo},
+        ]}
+    ]},
+  //我的任务
+  {path:'/myTask',component:MyTask,name:"myTask"},
+  //供应商管理
+  {path:'/supplierManage',component:Supplier,name:"supplierManage",
+    children:[
+      {'path':'detail/:id',
+        component:SupplierDetail,
+        children:[
+          {path:'info',component:SupplierInfo},
+          {path:'contacts',component:SupplierContact},
+        ]}
+    ]},
+  //采购周期管理
+  {path:'/procurementCycleManage',component:ProcurementCycleManage,name:"procurementCycleManage"},
+  //仓库名称管理
+  {path:'/warehouseManage',component:WarehouseManage,name:"warehouseManage"},
+  //质量统计表
+  {path:'/qualityReportTable',component:QualityReportTable,name:"qualityReportTable"},
+  //供应商统计表
+  {path:'/supplierReportTable',component:SupplierReportTable,name:"supplierReportTable"},
+  //采购单管理
+  {path:'/purchaseListManage',component:PurchaseList,name:"purchaseListManage",
+    children:[
+      {'path':'detail/:id',
+        component:PurchaseDetail,
+        children:[
+          {path:'addPurchase',component:PurchasingAdd},
+          {path:'info/:state',component:PurchaseInfoTabs},
+            // children:[
+            //   {path:'baseInfo/:state',component:PurchaseInfo},
+            //   {path:'flow/:state',component:PurchaseInfoFlow},
+            // ]},
+          {path:'taskAssignment/:state',component:TaskAssignment},
+          {path:'taskReceive/:state',component:TaskReceive},
+          {path:'inquiryManage/:state',component:InquiryManage},
+          {path:'arrivalHistory/:state',component:ArrivalHistory},
+          {path:'expeditingHistory/:state',component:ExpeditingHistory},
+          {path:'purchaseToExamine/:state',component:PurchaseToExamine},
+        ]}
+    ]},
+  //订货单管理
+  {path:'/orderListManage',component:OrderList,name:"orderListManage",
+    children:[
+      {'path':'detail/:id',
+        component:OrderDetail,
+        children:[
+          {path:'info',component:OrderInfo},
+          {path:'info_two',component:OrderInfoTwo},
+          {path:'orderToAdd',component:OrderToAdd},
+          {path:'orderToExamine',component:OrderToExamine},
+          {path:'arrivalManage',component:ArrivalManage},
+          {path:'qualityManage',component:QualityManage},
+          {path:'putInStorage',component:PutInStorage},
+          {path:'receiveTicket',component:ReceiveTicket},
+          {path:'remittance',component:Remittance},
+          {path:'expediting',component:Expediting},
+        ]}
+    ]},
+]

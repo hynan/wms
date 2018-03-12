@@ -1,0 +1,134 @@
+<template>
+    <div>
+        <p class="dataManagement-title">{{isAdd?'添加货柜':'修改货柜'}}</p>
+        <br/>
+        <el-form :model="form" ref="containerForm" :rules="rules">
+        <table class="info-table dataManagement-table">
+            <tbody>
+            <tr>
+                <td>货柜名称：</td>
+                <td><el-form-item prop="shelfName"><el-input size="small" v-model="form.shelfName"></el-input></el-form-item></td>
+                <td>货柜类型：</td>
+                <td><el-input size="small" v-model="form.shelfType"></el-input></td>
+            </tr>
+            <tr>
+                <td>物料类别：</td>
+                <td>
+                    <materiel-select v-model="form.materialCategoryCode"></materiel-select>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        </el-form>
+        <div style="text-align:right;margin-top:10px">
+            <el-button type="primary" size="mini" @click="submit" :disabled="uploading">保存</el-button>
+            <el-button @click="goBack" size="mini" v-if="!isAdd">取消</el-button>
+        </div>
+    </div>
+</template>
+<script>
+    import MaterielSelect from '../MaterielSelect.vue'
+    export default {
+        name:"Edit",
+        mounted(){
+            if(!this.isAdd){
+                this.doAjax()
+            }
+        },
+        data(){
+            return{
+            form:{
+                shelfName:'',
+                materialCategoryCode:'',
+                shelfType:'',
+            },
+                rules:{
+                    shelfName:[{required:true,message:'请输入名称',trigger:'blur'}],
+                },
+                uploading:false
+            }
+        },
+        methods:{
+            goBack(){
+                this.$router.push("/dataManagement/store/detail/container/"+this.$route.params.id+"/info")
+            },
+            doAjax(){
+                this.$http.post('/ys-web-wms/store/getContainerInfo',{id:this.$route.params.id}).then(
+                    (res)=>{
+                        if(res.data)
+                            this.form=Object.assign({
+                                shelfName:'',
+                                materialCategoryCode:'',
+                                shelfType:''
+                            },res.data.data)
+                        this.form.materialCategoryName = ""
+                    }
+                )
+            },
+            submit(){
+                let url = "editContainer"
+                if(this.isAdd){
+                    this.form.storeAreaId = this.$route.query.storeAreaId
+                    url = "addContainer"
+                }
+                if(!this.form.materialCategoryCode){
+                    this.$message({
+                        'type': 'warning',
+                        message: "请选择物料类别",
+                        'showClose': true
+                    });
+                    return false
+                }
+                this.$refs['containerForm'].validate((valid)=>{
+                    if(valid){
+                        this.uploading = true
+                        this.$http.post("/ys-web-wms/store/"+url, {params: JSON.stringify(this.form),id:this.$route.params.id})
+                            .then((response) => {
+                                if (response.data.data.status == '200') {
+                                    this.$message({
+                                        'type': 'success',
+                                        message: "操作成功",
+                                        'showClose': true
+                                    });
+                                    if(this.isAdd){
+                                        this.$store.commit('SET_EXPAND_KEYS',[this.$route.query.storeAreaId])
+                                        this.$store.commit('IS_REFRESH')
+                                        this.$router.push('/dataManagement/store/detail/area/'+this.$route.query.storeAreaId+'/info')
+                                    }else{
+                                        this.$router.push('/dataManagement/store/detail/container/'+this.$route.params.id+'/info')
+                                    }
+                                } else {
+                                    this.$message({
+                                        'type': 'error',
+                                        message: "操作失败，,请重试或联系管理",
+                                        'showClose': true
+                                    });
+                                    this.uploading = false
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                this.uploading = false
+                            });
+                    }else{
+                        this.$nextTick(()=> {
+                        })
+                    }
+                })
+            }
+        },
+        computed:{
+            isAdd(){
+                return this.$route.name == 'conAdd'
+            }
+        },
+        components:{
+            MaterielSelect
+        }
+    }
+</script>
+<style scoped>
+
+</style>

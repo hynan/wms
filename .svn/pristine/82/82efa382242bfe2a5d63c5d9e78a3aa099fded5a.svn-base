@@ -1,0 +1,72 @@
+<template>
+  <div class="receiving-note-print page-print">
+    <div class="right-topTitle">
+      单据号：SH201712040001
+    </div>
+    <div class="card-box right-content">
+      <div class="right-content-body" id="receivingNotePrint">
+        <div class="receiving-note-print-title">
+          收货单
+        </div>
+        <div style="padding: 5px;height: 135px">
+          <info></info>
+        </div>
+        <div style="padding: 5px;margin-top: 7px">
+          <detail-table :tableData="detailForm.tableData"></detail-table>
+        </div>
+        <div style="height: 45px" class="not-print">
+          <el-button size="mini" type="primary" style="float: right;margin: 7px 17px 17px 7px" @click="print">打印</el-button>
+        </div>
+        <pdf-print @closepdf="isShow=false" :pdfurl="pdfData" v-if="isShow"></pdf-print>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../receivingNoteInfo/Info.vue"
+  import DetailTable from "../receivingNoteInfo/DetailTable.vue"
+  import PdfPrint from "../../common/pdfPrint/PdfPrint.vue"
+  export default{
+    name:"ReceivingNoteDetail",
+    mounted(){
+      this.id = this.$route.params.id;
+    },
+    data(){
+      return{
+        id:"",
+        isShow:false,
+        pdfData:"",
+        detailForm:{
+          tableData:[{date:"----",state:"nomal"}]
+        },
+      }
+    },
+    methods:{
+      print(){
+//        this.getPdf("#receivingNotePrint","收货单",function (doc,blob) {
+//          var url = window.URL.createObjectURL(blob)
+//          var win = window.open(url)
+//          win.print();
+//          win.location.reload();
+//        })
+        window.print();
+      },
+
+    },
+    components:{
+      "info":Info,
+      "detail-table":DetailTable,
+      "pdf-print":PdfPrint
+    }
+  }
+</script>
+<style>
+  .receiving-note-print-title{
+    text-align: center;
+    padding: 20px 10px;
+    font-family: '微软雅黑 Bold', '微软雅黑 Regular', '微软雅黑';
+    font-weight: 700;
+    font-style: normal;
+    font-size: 20px;
+  }
+</style>

@@ -1,0 +1,154 @@
+<template>
+  <el-row style="height:100%">
+    <el-col style="height:100%; background:#F9FAFC;" id="leftMainBox" :span="8" class="left-main-box not-print">
+      <search-bar @search="search" :params="searchParams"></search-bar>
+      <div class="receivingList-table" style="height: 63%">
+        <el-table :data="tableData"  border :row-class-name="highlightCurrent" @row-click="rowCurrentChange" :height="tableHeight" style="width: 100%" >
+          <el-table-column label="创建日期" prop="createDate" align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="单据号" prop="receiptBillCode"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="外来单号" prop="externalBillCode" width="100"  align="center" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="单据状态" prop="buyProgressKey"  align="center" width="100">
+            <template slot-scope="scope">
+              <span>{{ scope.row.receiptBillStatusKey|enumtext(receiptBillStatus) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="pageBox">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page.pageNo"
+          :page-size="page.pageSize"
+          layout="total, prev, pager, next"
+          :total="count">
+        </el-pagination>
+      </div>
+    </el-col>
+    <el-col id='rightMainBox' :span="16" class="page-print">
+      <slide-bar leftEl='#leftMainBox' rightEl='#rightMainBox' class="not-print"></slide-bar>
+      <transition name="fade">
+        <router-view></router-view>
+      </transition>
+    </el-col>
+  </el-row>
+</template>
+
+<script>
+  import SearchBar from './ReceivingSearchBar.vue'
+  import SlideBar from '../common/SlideBar'
+  export default {
+    name: 'ReceivingList',
+    mounted(){
+      this.tableHeight = document.body.clientHeight*0.6;
+      this.getList();
+    },
+    data () {
+      return {
+        tableHeight:"",
+        count:0,
+        searchParams:{
+          dateCreated:"",//创建日期
+          createDateBegin:"",//创建日期（起始值）
+          createDateEnd:"",//创建日期（结束值）
+          receiptBillCode:"",//单据号
+          receiptBillSourceKey:"",//单据来源
+          externalBillCode:"",//外来单号
+          receiptBillStatusKey:"",//单据状态
+          receiptBillId:"",//收货单id
+        },
+        page: {pageNo: 1, pageSize: 20},
+        tableData:[],
+        currentRow: {
+          receiptBillId:0,
+        }
+      }
+    },
+    methods:{
+      search(val){
+        this.searchParams = val;
+        this.page.pageNo = 1,
+        this.getList();
+      },
+      getList(){
+        if(this.$route.query.tourl){
+          this.searchParams.receiptBillId = this.$route.params.id
+        }else{
+          this.searchParams.receiptBillId = "";
+        }
+        let dataStr = JSON.stringify(this.searchParams)
+        let pageStr = JSON.stringify(this.page)
+        this.$http.post("/ys-web-wms/receivingInspectionList/getList",{data:dataStr,page:pageStr}).then(function (result) {
+          if(result.data.state == 200){
+            this.tableData = result.data.data.list?result.data.data.list:[];
+            this.count = result.data.data.count;
+            if(this.tableData.length>0){
+              this.rowCurrentChange(this.tableData[0])
+            }
+          }else{
+            this.$notify.error({
+              title:"收货单列表获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`);
+      },
+      handleCurrentChange(val) {
+        this.page.pageNo = val;
+        this.getList();
+      },
+      rowCurrentChange(val){
+        if(!val){
+          return;
+        }
+        this.currentRow = val;
+        this.$store.commit('SET_RECEIVING_INFO',val)
+        let toPreurl  = "/receivingInspection/detail/" + val.receiptBillId+'/';
+        let modulePath = this.$route.query.tourl ? this.$route.query.tourl : "info";
+        this.$router.push(toPreurl+modulePath);
+      },
+      highlightCurrent({row, rowIndex}){
+        return (row.receiptBillId==this.currentRow.receiptBillId ? 'info-row' :'');
+      },
+    },
+    components:{
+      'search-bar':SearchBar,
+      SlideBar
+    },
+    watch: {
+      "$route": function(to,from) {
+        if(from.path == "/receivingInspection/receivingNoteAdd"){
+          this.getList();
+        }
+        if(from.path.endsWith("/del")){
+          this.getList();
+        }
+        if(to.path == "/receivingInspection/receivingNoteAdd"){
+          this.currentRow = {
+            receiptBillId:0
+          }
+        }
+      },
+      "$store.state.purchase":function (val) {
+        this.currentRow = val;
+      }
+    },
+    computed:{
+      "receiptBillStatus":function () {//单据状态
+        return this.$store.state.enumList.receiptBillStatus;
+      }
+    },
+  }
+</script>
+
+<style>
+  .pageBox{ text-align: center; margin:15px auto;}
+  .el-table .info-row {
+    background: #c9e5f5;
+  }
+  .el-table td{ cursor: pointer; }
+  .receivingList-table .el-table__row .cell{padding:5px;}
+</style>

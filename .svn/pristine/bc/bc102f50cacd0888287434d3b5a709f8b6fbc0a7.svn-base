@@ -1,0 +1,37 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+import moduleOrder from './order'
+import moduleDrawing from './drawings'
+import mutations from './mutations'
+
+import * as actions from './actions'
+Vue.use(Vuex)
+const state = {
+  slideFlag:true, //左侧列表展开与否
+  user:{},
+  roleInfo:{},//角色信息
+  dept:{},//部门信息
+  materialList:[],//物料列表（物料名称+物料编码）
+  materialType:[],//物料类别，大类+小类  树形结构
+  materialMainType:[],//物料大类列表
+  enumList:{},//常用枚举列表
+  personList:{},//人员列表
+  companyData:{},
+  purchase:{},//采购单信息
+  order:{},//订货单信息
+  notice:{},//通知信息
+  warehouseList:[],//仓库列表
+  orderList:{},//单号列表
+  allVendors:[],//供应商列表
+  configData:{},//配置项信息
+  firstLoadIframe:true,
+}
+export default new Vuex.Store({
+  modules:{
+    moduleOrder,
+    moduleDrawing
+  },
+  state,
+  mutations,
+  actions
+})

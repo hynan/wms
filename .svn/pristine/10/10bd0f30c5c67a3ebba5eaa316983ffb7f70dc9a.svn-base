@@ -1,0 +1,351 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：SH201712040001
+    </div>
+    <div class="card-box right-content">
+      <div class="right-content-body">
+        <div class="right-content-body-topTitle">
+          新建调拨单
+        </div>
+        <div style="padding: 5px;height: 180px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <el-form ref="form" :model="formData" label-width="130px" size="mini" style="width: 100%">
+            <el-form-item label="调拨单号:" class="right-content-body-tableForm" style="width: 33%">
+              <el-input size="mini"></el-input>
+            </el-form-item>
+            <el-form-item label="转出部门:" class="right-content-body-tableForm" style="width: 33%">
+              <el-select clearable v-model="formData.orderState" filterable placeholder="转出部门" style="width: 100%">
+                <el-option
+                  v-for="item in testData"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转入部门:" class="right-content-body-tableForm" style="width: 33%">
+              <el-select clearable v-model="formData.orderState" filterable placeholder="转入部门" size="mini"  style="width: 100%">
+                <el-option
+                  v-for="item in testData"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转出仓库:" class="right-content-body-tableForm" style="width: 33%">
+              <el-select clearable v-model="formData.orderState" filterable placeholder="转出仓库" size="mini" style="width: 100%">
+                <el-option
+                  v-for="item in testData"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="转入仓库:" class="right-content-body-tableForm" style="width: 33%">
+              <el-select clearable v-model="formData.orderState" filterable placeholder="转出仓库" size="mini" style="width: 100%">
+              <el-option
+                v-for="item in testData"
+                :key="item.code"
+                :label="item.name"
+                :value="item.name">
+              </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="出库单号:" class="right-content-body-tableForm" style="width: 33%;height: 33px;">
+              系统自动生成
+            </el-form-item>
+            <el-form-item label="入库单号:" class="right-content-body-tableForm" style="width: 33%;height: 33px;">
+            </el-form-item>
+            <el-form-item label="创建调拨单日期:" class="right-content-body-tableForm" style="width: 33%">
+              <el-date-picker
+                style="width: 100%"
+                size="mini"
+                v-model="formData.arrivalDate"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="申请人:" class="right-content-body-tableForm" style="width: 33%;height: 33px;">
+            </el-form-item>
+            <el-form-item label="备注:" class="right-content-body-tableForm" style="width: 99.2%">
+              <el-input size="mini" placeholder=""></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <!--明细信息-->
+        <div style="padding: 5px;">
+          <span style="font-style: normal;font-size: 12px;color: #2B7C9F;font-weight: bold;margin-left: 7px;">
+              明细信息
+          </span>
+          <el-button size="mini" style="float: right;margin: 0px 7px 2px 0px" type="primary" @click="addDetail">添加明细</el-button>
+          <el-form :model="detailForm" ref="detailForm" :status-icon="true" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width:100%" class="operation-table">
+              <el-table-column prop="date" label="物料类别" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="物料类别" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="输入模糊匹配" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="输入模糊匹配" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    选择编码，名称后自动显示
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    选择编码，名称后自动显示
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="物料所有人" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date" placeholder="回显可修改"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="产品批次" width="120" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="总公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="分公司订单号" width="90" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="库区" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="货位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="入库时间" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="质检员" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="存货条码" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-select v-model="scope.row.date" placeholder="" size="mini">
+                      <el-option
+                        v-for="item in testData"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="调拨数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    <el-input size="mini" v-model="scope.row.date"></el-input>
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="计量单位" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" v-if="scope.row.state=='edit'" :rules="rules.date">
+                    自动生成
+                  </el-form-item>
+                  <span v-else>{{scope.row.date}}</span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="操作" fixed="right" align="center" width="87">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.state=='edit'">
+                    <el-button type="text" size="mini" @click="savelDetail(scope.row,scope.$index,'detailForm')">保存</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                  <div v-else>
+                    <el-button type="text" size="mini" @click="editDetail(scope.row,scope.$index)">修改</el-button>
+                    <el-button type="text" size="mini" @click="delDetail(scope.row,scope.$index)">删除</el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form>
+        </div>
+        <div style="text-align: right" class="right-content-body-foot">
+          <el-button size="mini">保存</el-button>
+          <el-button size="mini" type="primary">提交</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  export default{
+    name:"AllocationAdd",
+    mounted:function () {
+
+    },
+    data(){
+      return{
+        radio:"",
+        index:"",
+        detailForm:{
+          tableData:[{date:"asdf",state:"nomal"}]
+        },
+        testData:[
+          {name:"1",code:"1"},
+          {name:"2",code:"2"},
+          {name:"3",code:"3"},
+        ],
+        formData:{
+          orderNum:"",
+          orderState:"",
+          orderSource:"",
+          warehouse:"",
+          foreignOrder:"",
+          arrivalDate:new Date()
+        },
+        rules:{
+          date: [
+            { required: true, message: '请输入活动名称', trigger: 'change' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          ],
+        }
+      }
+    },
+    methods:{
+      editDetail(data,index){
+        data.state = "edit";
+      },
+      delDetail(data,index){
+        this.detailForm.tableData.splice(index, 1);
+      },
+      savelDetail(data,index,formName){
+        if(this.checkForm(formName)){
+          data.state = "nomal"
+        }
+      },
+      addDetail() {
+        this.detailForm.tableData.push({date:"",state:"edit"})
+      }
+    },
+    components:{
+
+    }
+  }
+</script>
+<style>
+
+</style>

@@ -1,0 +1,173 @@
+<template>
+  <div id="info">
+    <div class="right-topTitle-two">
+      单据号：{{infoData.stockInBillCode}}
+    </div>
+    <div style="margin-top: -20px">
+      <span style="margin-left: 77px;color: #333333;font-size: 14px">红蓝字类型：{{ infoData.blueRedFlagKey|enumtext(blueRedFlag) }}</span>
+    </div>
+    <el-form label-width="130px" size="mini" style="width: 100%">
+      <el-form-item label="入库单号:" class="right-content-body-tableForm">
+        {{infoData.stockInBillCode}}
+      </el-form-item>
+      <el-form-item label="仓库名称:" class="right-content-body-tableForm">
+        {{infoData.warehouseName}}
+      </el-form-item>
+      <el-form-item label="入库类别:" class="right-content-body-tableForm">
+        {{infoData.stockInTypeKey|enumtext(stockInType)}}
+      </el-form-item>
+      <el-form-item label="外来单号:" class="right-content-body-tableForm">
+        {{infoData.externalBillCode}}
+      </el-form-item>
+      <el-form-item label="总公司订单号:" class="right-content-body-tableForm">
+        {{infoData.headOfficeOrderNum}}
+      </el-form-item>
+      <el-form-item label="分公司订单号:" class="right-content-body-tableForm">
+        {{infoData.branchOfficeOrderNum}}
+      </el-form-item>
+      <el-form-item label="入库员:" class="right-content-body-tableForm">
+        {{infoData.stockInPersonName}}
+      </el-form-item>
+      <el-form-item label="创建日期:" class="right-content-body-tableForm">
+        {{infoData.createDate}}
+      </el-form-item>
+      <el-form-item label="作废时间:" class="right-content-body-tableForm" v-if="infoData.cancelDate">
+        {{infoData.cancelDate}}
+      </el-form-item>
+      <el-form-item label="作废操作员:" class="right-content-body-tableForm" v-if="infoData.cancelDate">
+        {{infoData.cancelPersonName}}
+      </el-form-item>
+      <el-form-item label="作废原因:" class="right-content-body-tableForm" style="width: 98.2%" v-if="infoData.cancelDate">
+        {{infoData.cancelReason}}
+      </el-form-item>
+      <el-form-item label="备注:" class="right-content-body-tableForm" style="width: 98.2%">
+        {{infoData.remarks}}
+      </el-form-item>
+    </el-form>
+    <!--采购入库-->
+    <el-form label-width="130px" size="mini" style="width: 100%" v-if="infoData.stockInTypeKey=='1'">
+      <el-form-item label="收货单号:" class="right-content-body-tableForm">
+        {{infoData.orderCode}}
+      </el-form-item>
+      <el-form-item label="收货接收人:" class="right-content-body-tableForm">
+        查询
+      </el-form-item>
+      <el-form-item label="收货日期:" class="right-content-body-tableForm">
+        查询
+      </el-form-item>
+      <el-form-item label="供应商名称:" class="right-content-body-tableForm">
+        查询
+      </el-form-item>
+      <el-form-item label="供应商编号:" class="right-content-body-tableForm">
+        {{infoData.supplierCode}}
+      </el-form-item>
+      <el-form-item label="" class="right-content-body-tableForm" style="height: 30px;">
+      </el-form-item>
+    </el-form>
+    <!--生产入库-->
+    <el-form label-width="130px" size="mini" style="width: 100%" v-if="infoData.stockInTypeKey=='2'">
+      <el-form-item label="生产单号:" class="right-content-body-tableForm" style="width: 33%">
+        外来单号
+      </el-form-item>
+      <el-form-item label="收货单号:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        {{infoData.orderCode}}
+      </el-form-item>
+      <el-form-item label="委外供应商名称:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        查询
+      </el-form-item>
+      <el-form-item label="委外供应商编号:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        查询
+      </el-form-item>
+      <el-form-item label="收货接收人:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        查询
+      </el-form-item>
+      <el-form-item label="收货日期" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        查询
+      </el-form-item>
+    </el-form>
+    <!--委外入库-->
+    <el-form label-width="130px" size="mini" style="width: 100%" v-if="infoData.stockInTypeKey=='3'">
+      <el-form-item label="识别号:" class="right-content-body-tableForm" style="width: 33%">
+        {{infoData.identityNum}}
+      </el-form-item>
+      <el-form-item label="委外商编号:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        回显
+      </el-form-item>
+      <el-form-item label="委外商名称:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        回显
+      </el-form-item>
+      <el-form-item label="发出日期:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        回显
+      </el-form-item>
+      <el-form-item label="收回日期:" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        回显
+      </el-form-item>
+      <el-form-item label="外协要求" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        回显
+      </el-form-item>
+      <el-form-item label="工艺" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+        回显
+      </el-form-item>
+      <el-form-item label="" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+
+      </el-form-item>
+      <el-form-item label="" class="right-content-body-tableForm" style="width: 33%;height: 33px">
+
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+<script>
+  export default{
+    name:"Info",
+    mounted(){
+      this.id=this.$route.params.id;
+      this.getInfo();
+    },
+    data(){
+      return{
+        id:"",
+        infoData:{}
+      }
+    },
+    methods:{
+      getInfo(){
+        this.$http.get("/ys-web-wms/putInStorageInfo/getStockInBasicInfo?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.infoData = result.data.data?result.data.data:{}
+            let dom = document.getElementById("info");
+            if(this.infoData.stockInTypeKey<=3){
+              if(this.infoData.cancelDate){
+                dom.style.height = "420px";
+              }else{
+                dom.style.height = "340px";
+              }
+            }else{
+              if(this.infoData.cancelDate){
+                dom.style.height = "310px";
+              }else{
+                dom.style.height = "137px";
+              }
+            }
+          }else{
+            this.$notify.error({
+              title:"入库单基本信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      }
+    },
+    computed:{
+      "blueRedFlag":function () {
+        return this.$store.state.enumList.blueRedFlag;
+      },
+      "stockInType":function () {
+        return this.$store.state.enumList.stockInType;
+      }
+    }
+  }
+</script>
+<style>
+
+</style>

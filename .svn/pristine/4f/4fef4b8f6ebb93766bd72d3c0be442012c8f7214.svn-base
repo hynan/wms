@@ -1,0 +1,124 @@
+<template>
+  <div ref="slideBar" @click="slideHandler" class="slide-box">
+    <i class="el-icon-d-arrow-left"></i>
+  </div>
+</template>
+<script>
+    export default {
+      name:'SlideBar',
+      props:{
+        leftEl:{
+          type:String,
+          required:true
+        },
+        rightEl:{
+          type:String,
+          required:true
+        },
+      },
+      data(){
+        return {
+          leftBox:null,
+          leftBoxWidth:0,
+          rightBoxWidth:0,
+          rightBox:null,
+          hiddenFlag:false,
+          transitionendHandler:null,
+          resizeHandler:null,
+          scrollHandler:null
+        }
+      },
+      mounted(){
+        this.leftBox = document.querySelector(this.leftEl);
+        this.rightBox = document.querySelector(this.rightEl);
+        this.init();
+      },
+      methods:{
+        init(){
+          this.setStyle(this.leftBox,{'position':'fixed','transition':'left .5s','left':'0px','top':'0px','zIndex':'99'});
+          this.setStyle(this.rightBox,{'position':'absolute','right':'0px','top':'0px','transition':'width .5s'});
+          this.leftBoxWidth = this.leftBox.offsetWidth;
+          this.rightBoxWidth = this.rightBox.offsetWidth;
+          this.eventBind();
+        },
+        slideHandler(){
+          if(!this.hiddenFlag){
+            this.$refs['slideBar'].querySelector('i').className='el-icon-d-arrow-left hidden';
+            this.setStyle(this.leftBox,{'left':-this.leftBoxWidth+'px'});
+            this.setStyle(this.rightBox,{'width':'100%'});
+            this.hiddenFlag = true;
+          }else{
+            this.$refs['slideBar'].querySelector('i').className='el-icon-d-arrow-left';
+            this.setStyle(this.leftBox,{'visibility':'visible'});
+            this.setStyle(this.leftBox,{'left':'0px'});
+            let rightBoxWidth = (this.rightBoxWidth/(this.leftBoxWidth+this.rightBoxWidth))*100;
+            this.setStyle(this.rightBox,{'width':rightBoxWidth+'%'});
+            this.hiddenFlag = false;
+          }
+          this.$store.commit('SET_SLIDE_FLAG');
+        },
+        setStyle(el,styleObj){
+          if(!el) return;
+          let styleKeys = Object.keys(styleObj);
+          styleKeys.forEach(function(name){
+            el.style[name] = styleObj[name];
+          })
+        },
+        eventBind(){
+          this.transitionendHandler=function(){
+            if(this.hiddenFlag){
+              this.setStyle(this.leftBox,{'visibility':'hidden'});
+            }
+          }.bind(this);
+
+          this.resizeHandler=function(event){
+              this.leftBoxWidth = this.leftBox.offsetWidth;
+              if(this.hiddenFlag){
+                this.setStyle(this.leftBox,{'left':-this.leftBoxWidth+'px'});
+              }
+          }.bind(this);
+
+          this.scrollHandler=function(event){
+            let stop = document.body.scrollTop;
+            this.setStyle(this.$refs['slideBar'],{top:stop+100+'px'})
+          }.bind(this);
+
+          this.leftBox.addEventListener('transitionend',this.transitionendHandler,true);
+          window.addEventListener('resize',this.resizeHandler);
+          window.addEventListener('scroll',this.scrollHandler);
+        }
+      },
+      beforeDestroy(){
+        this.leftBox.addEventListener('transitionend',this.transitionendHandler,true);
+          window.addEventListener('resize',this.resizeHandler);
+          window.addEventListener('scroll',this.scrollHandler);
+      }
+    }
+</script>
+<style scoped>
+  .slide-box{
+    position: absolute;
+    left:0px;
+    top:100px;
+    width: 0px;
+    height: 30px;
+    z-index: 99;
+    cursor: pointer;
+    border-left:none;
+    border-top:15px solid transparent;
+    border-bottom:15px solid transparent;
+    border-left:15px solid #F5F6FA;
+    transition: 'top 0.5s'
+  }
+  .slide-box i{
+    position: absolute;
+    left:-15px;
+    top: 8px;
+    font-size: 12px;
+    color: #666;
+    transition:All 0.5s ease-in-out 0.5s;
+  }
+  .slide-box .hidden{
+    transform:rotate(180deg);
+  }
+</style>

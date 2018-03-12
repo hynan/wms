@@ -1,0 +1,7 @@
+import * as types from "./mutations_types"
+
+export default {
+  [types.ADD_ORDER](state,addModel){
+    state.todayplans.plans.push(addModel);
+  }
+}

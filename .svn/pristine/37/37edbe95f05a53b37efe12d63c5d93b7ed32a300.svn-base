@@ -1,0 +1,118 @@
+<template>
+  <div>
+    <div class="right-topTitle">
+      单据号：RK201712040001
+    </div>
+    <div class="right-content">
+      <div class="right-content-body">
+        <div style="padding: 5px;height: 187px">
+          <span class="right-content-body-little-title">
+            基本信息
+          </span>
+          <info></info>
+        </div>
+        <div style="padding: 5px">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <el-form :model="detailForm" ref="detailForm" :inline-message="true">
+            <el-table :data="detailForm.tableData" border style="width: 100%" class="operation-table">
+              <el-table-column prop="date" label="物料名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="物料编码" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="型号" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="规格" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="库存数量" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="num" label="实际数量" align="center" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  <el-form-item label="" :prop="'tableData.'+scope.$index+'.date'" :rules="rules.num">
+                    <el-input size="mini" v-model="scope.row.num" @change="numChange(scope.row)"></el-input>
+                    <!--<el-input-number :controls="false" size="mini" v-model="scope.row.num" @change="numChange(scope.$index)" style="width: 100%"></el-input-number>-->
+                    <!--<div class="el-input-number el-input-number&#45;&#45;mini is-without-controls">-->
+                      <!--<div class="el-input el-input&#45;&#45;mini">-->
+                        <!--<input class="el-input__inner" v-model="scope.row.num" @change="numChange(scope.row)" style="width: 100%"></input>-->
+                      <!--</div>-->
+                    <!--</div>-->
+
+                  </el-form-item>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="库存金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="total" label="实际金额" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="singlePrice" label="单价" align="center" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column prop="date" label="单位" align="center" :show-overflow-tooltip="true"></el-table-column>
+            </el-table>
+          </el-form>
+          <el-row style="margin-top: 17px" class="right-content-body-tableCss">
+            <el-col :span="2" class="right-content-body-tableCss-left">核实备注:</el-col>
+            <el-col :span="22" class="right-content-body-tableCss-right">
+              <el-input
+                type="textarea"
+                :rows="5"
+                placeholder=""
+                v-model="test">
+              </el-input>
+            </el-col>
+          </el-row>
+          <div style="height: 37px">
+            <el-button size="mini" type="primary" style="float: right;margin: 7px 3% 10px 0px;">确定</el-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Info from "../stockTackingInfo/Info.vue"
+  export default{
+    name:"Verify",
+    mounted(){
+
+    },
+    data(){
+      var checkNum = (rule, value, callback) => {
+//        console.log(rule)
+//        console.log(value)
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        } else {
+          callback();
+        }
+      };
+      return{
+        test:"",
+        detailForm:{
+          tableData:[
+            {date:"asdf",num:"",singlePrice:"12",total:"",state:"nomal"},
+            {date:"asdf",num:"",singlePrice:"16",total:"",state:"nomal"},
+            {date:"asdf",num:"",singlePrice:"13",total:"",state:"nomal"}
+          ]
+        },
+        test:"",
+        tableData:[
+          {date:"----"},
+          {date:"----"},
+        ],
+        rules: {
+          num: [
+            {validator: checkNum, trigger: 'change'}
+          ],
+        }
+      }
+    },
+    methods:{
+      testChange(val){
+        console.log(val)
+      },
+      numChange(row){
+        row.total = row.num*row.singlePrice;
+      }
+
+    },
+    components:{
+      "info":Info,
+    }
+  }
+</script>
+<style>
+
+</style>

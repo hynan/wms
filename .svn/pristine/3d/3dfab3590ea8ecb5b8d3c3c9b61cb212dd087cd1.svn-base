@@ -1,0 +1,35 @@
+
+//收货质检
+const ReceivingList = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/ReceivingList.vue')), 'receivingList')
+const ReceivingDetail = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/ReceivingDetail.vue')), 'receivingList')
+const ReceivingNoteAdd = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteAdd/ReceivingNoteAdd.vue')), 'receivingList')
+const ReceivingNoteInfo = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteInfo/ReceivingNoteInfo.vue')), 'receivingList')
+const Receiving = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receiving/Receiving.vue')), 'receivingList')
+const ReceivingNoteEdit = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteEdit/ReceivingNoteEdit.vue')), 'receivingList')
+const ReceivingNoteDel = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNoteDel/ReceivingNoteDel.vue')), 'receivingList')
+const ReceivingNotePrint = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/receivingNotePrint/ReceivingNotePrint.vue')), 'receivingList')
+const PrintTag = resolve => require.ensure([], () => resolve(require('../components/receivingInspection/printTag/PrintTag.vue')), 'receivingList')
+
+
+
+
+
+export default [
+  //收货质检
+  {path:'/receivingInspection',component:ReceivingList,name:"receivingList",
+    children:[
+      {'path':'detail/:id',
+        component:ReceivingDetail,
+        children:[
+          {path:'info',component:ReceivingNoteInfo},
+          {path:'receiving',component:Receiving},
+          {path:'edit',component:ReceivingNoteEdit},
+          {path:'del',component:ReceivingNoteDel},
+          {path:'print',component:ReceivingNotePrint},
+          {path:'tag',component:PrintTag},
+        ]},
+      {'path':'receivingNoteAdd',
+        component:ReceivingNoteAdd
+      }
+    ]},
+]

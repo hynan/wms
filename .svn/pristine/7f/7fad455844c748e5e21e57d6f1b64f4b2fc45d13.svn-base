@@ -1,0 +1,94 @@
+<template>
+  <div class="receiving-note-print-tag">
+    <div class="right-topTitle">
+      单据号：{{$store.state.putInStorageInfo.stockInBillCode}}
+    </div>
+    <el-dialog title="" :visible.sync="dialogVisible" top="3vh">
+      <print-alert @close="dialogVisible=false" :tagList="printData"></print-alert>
+    </el-dialog>
+    <div class="card-box right-content not-print">
+      <div class="right-content-body">
+        <div style="padding: 5px;">
+          <span class="right-content-body-little-title">
+            明细信息
+          </span>
+          <el-table :data="tableData" border tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+            <el-table-column type="selection" align="center" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="物料类别" align="center" prop="materialCategoryName" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="物料编码" align="center" prop="materialCode" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="物料名称" align="center" prop="materialName" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="入库数量" align="center" prop="actualStockInAmount" :show-overflow-tooltip="true">measureUnit
+              <template slot-scope="scope">
+                <span>{{scope.row.actualStockInAmount}}{{scope.row.measureUnit}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="生产日期" align="center" prop="produceDate" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column label="操作" align="center" width="75">
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" plain @click="print(scope.row)">打印</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-button size="mini" type="primary"  @click="printAll" style="margin: 10px" v-if="multipleSelection.length>0">打印所选标签</el-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import PrintAlert from "./PrintAlert.vue"
+  export default{
+    name:"PrintTag",
+    mounted(){
+      this.id = this.$route.params.id;
+      this.getTagList();
+    },
+    data(){
+      return{
+        id:"",
+        dialogVisible:false,
+        tableData:[
+//          {materailCode:"123",materialName:"1212",warehouseName:"23323",arrivalDate:"2018-1-18",barcode:"1209384758"}
+        ],
+        multipleSelection:[],
+        printData:[],
+      }
+    },
+    methods:{
+      getTagList(){
+        this.$http.get("/ys-web-wms/putInStorageInfo/getStockInDetailList?id="+this.id).then(function (result) {
+          if(result.data.state == 200){
+            this.tableData = result.data.data?result.data.data:[]
+          }else{
+            this.$notify.error({
+              title:"标签列表信息获取失败",
+              message:result.data.message
+            })
+          }
+        })
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
+      print(val){
+        this.printData = [];
+        this.printData.push(val)
+        this.dialogVisible = true;
+      },
+      printAll(){
+        this.printData = [];
+        this.printData = Object.assign([],this.multipleSelection)
+        this.dialogVisible = true;
+      }
+    },
+    components:{
+      "print-alert":PrintAlert
+    }
+  }
+</script>
+<style>
+  .receiving-note-print-tag .el-dialog__header{padding: 0px}
+  .receiving-note-print-tag .el-dialog__body{padding: 0px}
+  .receiving-note-print-tag .el-dialog{width: 421px}
+  .receiving-note-print-tag .el-dialog__close{display: none}
+</style>
