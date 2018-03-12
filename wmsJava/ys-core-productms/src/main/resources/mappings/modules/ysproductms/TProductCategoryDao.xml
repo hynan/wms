@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductCategoryDao">
+    
+	<sql id="tProductCategoryColumns">
+		a.id AS "id",
+		a.category_id AS "categoryId",
+		a.category_name AS "categoryName",
+		a.category_parent_id AS "categoryParentId",
+		a.unit AS "unit",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.degree_id AS "degreeId"
+	</sql>
+	
+	<sql id="tProductCategoryJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductCategory">
+		SELECT 
+			<include refid="tProductCategoryColumns"/>
+		FROM t_product_category a
+		<include refid="tProductCategoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductCategory">
+		SELECT 
+			<include refid="tProductCategoryColumns"/>,
+			b.category_name AS "categoryParentName"
+		FROM t_product_category a
+		LEFT JOIN t_product_category b
+		ON a.category_parent_id = b.category_id
+		<include refid="tProductCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="categoryParentId != null and categoryParentId != '' ">
+			and a.category_parent_id = #{categoryParentId}
+			</if>
+			<if test="categoryId != null and categoryId != '' ">
+			and a.category_id = #{categoryId}
+			</if>
+			<if test="categoryName != null and categoryName != '' ">
+			and a.category_name = #{categoryName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.category_id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductCategory">
+		SELECT 
+			<include refid="tProductCategoryColumns"/>
+		FROM t_product_category a
+		<include refid="tProductCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} 
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.category_id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllListNew" resultType="TProductCategory">
+		SELECT a.id AS "id",
+		a.category_id AS "categoryId",
+		a.category_name AS "categoryName",
+		a.category_parent_id AS "categoryParentId",
+		a.unit AS "unit"	
+		FROM t_product_category a
+		<include refid="tProductCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} and a.category_id is not null and a.degree_id = 1 
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.category_id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_category(
+			category_id,
+			category_name,
+			category_parent_id,
+			unit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			degree_id
+		) VALUES (
+			#{categoryId},
+			#{categoryName},
+			#{categoryParentId},
+			#{unit},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{degreeId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_category SET 	
+			category_id = #{categoryId},
+			category_name = #{categoryName},
+			category_parent_id = #{categoryParentId},
+			unit = #{unit},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			degree_id = #{degreeId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_category SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getProductCategoryList" resultType="string">
+		SELECT category_name FROM t_product_category  WHERE del_flag=0
+	</select>
+	
+	<select id="getUserIds" resultType="java.lang.String" parameterType="java.lang.String">
+	SELECT charger_id FROM t_product_category_charger WHERE category_id=#{categoryId}
+	</select>
+	
+	<select id="delectUserIds"  >
+	DELETE FROM t_product_category_charger WHERE category_id=#{categoryId}
+	</select>
+	
+	<insert id="addNew" parameterType="java.util.List">
+        insert into t_product_category_charger 
+           (category_id,
+			charger_id,
+			charger_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.categoryId,jdbcType=INTEGER}, 
+            #{item.chargerId,jdbcType=LONGVARCHAR},
+            #{item.chargerName,jdbcType=LONGVARCHAR},
+            #{item.createBy.id,jdbcType=LONGVARCHAR},
+            #{item.createDate,jdbcType=DATE},
+            #{item.updateBy.id,jdbcType=LONGVARCHAR},
+            #{item.updateDate,jdbcType=DATE},
+            #{item.delFlag,jdbcType=LONGVARCHAR}
+            )
+        </foreach>
+    </insert>
+    
+    <select id="isSameCode"  resultType="java.lang.Integer">
+    SELECT COUNT(id) FROM t_product_category WHERE category_id = #{categoryId} and del_flag = 0 and id != #{id}
+    </select>
+    <select id="isSameName"  resultType="java.lang.Integer">
+    SELECT COUNT(id) FROM t_product_category WHERE category_name = #{categoryName} and del_flag = 0 and id != #{id}
+    </select>
+	
+	<select id="queryByCategoryId" parameterType="java.lang.Long" resultType="com.sml.sz.ysproductms.dto.ProductCategoryResultDto">
+	SELECT 
+	    a.id AS "id",
+	    a.category_id AS "categoryId",
+	    a.category_name AS "name",
+	    b.category_name AS "parentIdName",
+	    a.unit AS "unit"
+	FROM t_product_category a 
+	LEFT JOIN t_product_category b
+	ON a.category_parent_id = b.category_id
+	<where>
+	a.del_flag = 0
+	<if test="categoryId != null and categoryId != 0">
+	and a.category_id = #{categoryId}
+	</if>
+	</where>
+	order by a.category_name
+	</select>
+	
+	<select id="queryBigTypeCategory" resultType="com.sml.sz.ysproductms.dto.ProductCategoryResultDto">
+	SELECT 
+	    a.id AS "id",
+	    a.category_id AS "categoryId",
+	    a.category_name AS "name",
+	    b.category_name AS "parentIdName",
+	    a.unit AS "unit"
+	FROM t_product_category a 
+	LEFT JOIN t_product_category b
+	ON a.category_parent_id = b.category_id
+	where 	a.del_flag = 0	and a.category_parent_id is null
+	order by a.category_name
+	</select>
+	
+	<select id="queryCategoryByBigTypeId" resultType="com.sml.sz.ysproductms.dto.ProductCategoryResultDto"
+	parameterType="java.lang.Long">
+	SELECT 
+	    a.id AS "id",
+	    a.category_id AS "categoryId",
+	    a.category_name AS "name",
+	    b.category_name AS "parentIdName",
+	    a.unit AS "unit"
+	FROM t_product_category a 
+	LEFT JOIN t_product_category b
+	ON a.category_parent_id = b.category_id
+	<where>
+	a.del_flag = 0
+	<if test="bigTypeId != null and bigTypeId != 0">
+	and a.category_parent_id = #{bigTypeId}
+	</if>
+	</where>
+	order by a.category_name
+	</select>
+	
+	<resultMap type="com.sml.sz.ysproductms.dto.MaterialCategory" id="categoryMap">
+	    <result property="name" column="category_name"/>
+	    <result property="code" column="category_id"/>
+	    <collection property="childList" column="category_id" ofType="com.sml.sz.ysproductms.dto.MaterialCategory"
+	    select="getCategoryByParentId"></collection>	    
+	</resultMap>
+	
+	<select id="getTreeMaterialList" resultMap="categoryMap" parameterType="java.lang.String">
+	SELECT category_id,category_name FROM t_product_category 
+	<where>
+	del_flag = 0
+	<if test="code != null and code != '' ">
+	
+	and category_id = #{code}
+	</if>
+	<if test="code == null or code == '' ">
+	and category_parent_id is null
+	</if>
+	</where>	
+	</select>
+	
+	<select id="getCategoryByParentId" parameterType="java.lang.String" resultMap="categoryMap">
+	SELECT category_id,category_name FROM t_product_category WHERE del_flag = 0 and category_parent_id = #{code}
+	</select>
+	
+	<select id="getSingleEntity" parameterType="com.sml.sz.ysproductms.entity.TProductCategory" resultType="com.sml.sz.ysproductms.entity.TProductCategory">
+	    SELECT 
+			<include refid="tProductCategoryColumns"/>
+		FROM t_product_category a
+		<include refid="tProductCategoryJoins"/>
+		<where>
+		    a.del_flag = 0
+		    <if test="categoryId != null and categoryId != '' ">
+		    and a.category_id = #{categoryId}
+		    </if>
+		</where>
+	</select>
+	
+	<update id="updateInfoByCategoryId">
+		UPDATE t_product_info SET 				
+			degree_id = #{degree}
+		WHERE category_id = #{categoryId}
+	</update>
+</mapper>

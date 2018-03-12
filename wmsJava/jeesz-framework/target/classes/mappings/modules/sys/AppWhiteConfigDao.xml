@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.AppWhiteConfigDao">
+    
+	<sql id="appWhiteConfigColumns">
+		a.id AS "id",
+		a.appname AS "appname",
+		a.ip AS "ip",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="appWhiteConfigJoins">
+	</sql>
+    
+	<select id="get" resultType="AppWhiteConfig">
+		SELECT 
+			<include refid="appWhiteConfigColumns"/>
+		FROM sys_app_white_config a
+		<include refid="appWhiteConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AppWhiteConfig">
+		SELECT 
+			<include refid="appWhiteConfigColumns"/>
+		FROM sys_app_white_config a
+		<include refid="appWhiteConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="appname != null and appname != ''">
+				AND a.appname = #{appname}
+			</if>
+			<if test="ip != null and ip != ''">
+				AND a.ip LIKE 
+					<if test="dbName == 'oracle'">'%'||#{ip}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{ip}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{ip},'%')</if>
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AppWhiteConfig">
+		SELECT 
+			<include refid="appWhiteConfigColumns"/>
+		FROM sys_app_white_config a
+		<include refid="appWhiteConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_app_white_config(
+			id,
+			appname,
+			ip,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{appname},
+			#{ip},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_app_white_config SET 	
+			appname = #{appname},
+			ip = #{ip},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_app_white_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

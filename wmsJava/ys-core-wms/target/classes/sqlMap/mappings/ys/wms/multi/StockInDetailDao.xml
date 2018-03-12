@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.multi.StockInDetailDao">
+    
+	<sql id="tWarehouseentryDetailColumns">
+		a.id AS "id",
+		a.warehouseentry_id AS "warehouseentryId",
+		a.foreign_order_detail_id AS "foreignOrderDetailId",
+		a.material_type_id AS "materialTypeId",
+		a.stock_barcode AS "stockBarcode",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.product_batch_no AS "productBatchNo",
+		a.material_owner_id AS "materialOwnerId",
+		a.material_owner_name AS "materialOwnerName",
+		a.unit AS "unit",
+		a.amount AS "amount",
+		a.onshelf_amount AS "onshelfAmount",
+		a.is_all_shelfed AS "isAllShelfed",
+		a.quality_guarantee_period AS "qualityGuaranteePeriod",
+		a.manufacture_time AS "manufactureTime",
+		a.single_price AS "singlePrice",
+		a.currency_money AS "currencyMoney",
+		a.original_total_money AS "originalTotalMoney",
+		a.tax_rate AS "taxRate",
+		a.introduction AS "introduction",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.quality_guarantee_type AS "qualityGuaranteeType",
+		a.entry_detail_id_orignal AS "entryDetailIdOrignal"
+		
+	</sql>
+	
+	<sql id="tWarehouseentryDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TWarehouseentryDetail">
+		SELECT 
+			<include refid="tWarehouseentryDetailColumns"/>
+		FROM t_warehouseentry_detail a
+		<include refid="tWarehouseentryDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TWarehouseentryDetail">
+		SELECT 
+			<include refid="tWarehouseentryDetailColumns"/>
+		FROM t_warehouseentry_detail a
+		<include refid="tWarehouseentryDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="warehouseentryId != null and warehouseentryId != ''">
+				AND a.warehouseentry_id = #{warehouseentryId}
+			</if>
+			<if test="foreignOrderDetailId != null and foreignOrderDetailId != ''">
+				AND a.foreign_order_detail_id = #{foreignOrderDetailId}
+			</if>
+			<if test="materialTypeId != null and materialTypeId != ''">
+				AND a.material_type_id = #{materialTypeId}
+			</if>
+			<if test="stockBarcode != null and stockBarcode != ''">
+				AND a.stock_barcode = #{stockBarcode}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="productBatchNo != null and productBatchNo != ''">
+				AND a.product_batch_no = #{productBatchNo}
+			</if>
+			<if test="materialOwnerId != null and materialOwnerId != ''">
+				AND a.material_owner_id = #{materialOwnerId}
+			</if>
+			<if test="materialOwnerName != null and materialOwnerName != ''">
+				AND a.material_owner_name = #{materialOwnerName}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="amount != null and amount != ''">
+				AND a.amount = #{amount}
+			</if>
+			<if test="onshelfAmount != null and onshelfAmount != ''">
+				AND a.onshelf_amount = #{onshelfAmount}
+			</if>
+			<if test="isAllShelfed != null and isAllShelfed != ''">
+				AND a.is_all_shelfed = #{isAllShelfed}
+			</if>
+			<if test="qualityGuaranteePeriod != null and qualityGuaranteePeriod != ''">
+				AND a.quality_guarantee_period = #{qualityGuaranteePeriod}
+			</if>
+			<if test="singlePrice != null and singlePrice != ''">
+				AND a.single_price = #{singlePrice}
+			</if>
+			<if test="currencyMoney != null and currencyMoney != ''">
+				AND a.currency_money = #{currencyMoney}
+			</if>
+			<if test="originalTotalMoney != null and originalTotalMoney != ''">
+				AND a.original_total_money = #{originalTotalMoney}
+			</if>
+			<if test="taxRate != null and taxRate != ''">
+				AND a.tax_rate = #{taxRate}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TWarehouseentryDetail">
+		SELECT 
+			<include refid="tWarehouseentryDetailColumns"/>
+		FROM t_warehouseentry_detail a
+		<include refid="tWarehouseentryDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_warehouseentry_detail(
+			id,
+			warehouseentry_id,
+			foreign_order_detail_id,
+			material_type_id,
+			stock_barcode,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			product_batch_no,
+			material_owner_id,
+			material_owner_name,
+			unit,
+			amount,
+			onshelf_amount,
+			is_all_shelfed,
+			quality_guarantee_period,
+			manufacture_time,
+			single_price,
+			currency_money,
+			original_total_money,
+			tax_rate,
+			introduction,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			quality_guarantee_type,
+			entry_detail_id_orignal
+			
+			
+		) VALUES (
+			#{id},
+			#{warehouseentryId},
+			#{foreignOrderDetailId},
+			#{materialTypeId},
+			#{stockBarcode},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{productBatchNo},
+			#{materialOwnerId},
+			#{materialOwnerName},
+			#{unit},
+			#{amount},
+			#{onshelfAmount},
+			#{isAllShelfed},
+			#{qualityGuaranteePeriod},
+			#{manufactureTime},
+			#{singlePrice},
+			#{currencyMoney},
+			#{originalTotalMoney},
+			#{taxRate},
+			#{introduction},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{qualityGuaranteeType},
+			#{entryDetailIdOrignal}
+			
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_warehouseentry_detail SET 	
+			warehouseentry_id = #{warehouseentryId},
+			foreign_order_detail_id = #{foreignOrderDetailId},
+			material_type_id = #{materialTypeId},
+			stock_barcode = #{stockBarcode},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			product_batch_no = #{productBatchNo},
+			material_owner_id = #{materialOwnerId},
+			material_owner_name = #{materialOwnerName},
+			unit = #{unit},
+			amount = #{amount},
+			onshelf_amount = #{onshelfAmount},
+			is_all_shelfed = #{isAllShelfed},
+			quality_guarantee_period = #{qualityGuaranteePeriod},
+			manufacture_time = #{manufactureTime},
+			single_price = #{singlePrice},
+			currency_money = #{currencyMoney},
+			original_total_money = #{originalTotalMoney},
+			tax_rate = #{taxRate},
+			introduction = #{introduction},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			quality_guarantee_type=#{qualityGuaranteeType},
+			entry_detail_id_orignal=#{entryDetailIdOrignal}
+			
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_warehouseentry_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="deleteByStockId">
+		UPDATE t_warehouseentry_detail SET 
+			del_flag ='1'
+		WHERE warehouseentry_id = #{stockInId}
+	</update>
+	
+	
+	
+	<select id="getStockInDetailList" parameterType="java.lang.String" resultMap="StockInDetailListMap">
+	   SELECT 
+		a.id AS "id",
+		a.warehouseentry_id AS "warehouseentryId",
+		a.foreign_order_detail_id AS "foreignOrderDetailId",
+		a.material_type_id AS "materialTypeId",
+		a.stock_barcode AS "stockBarcode",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.product_batch_no AS "productBatchNo",
+		a.material_owner_id AS "materialOwnerId",
+		a.material_owner_name AS "materialOwnerName",
+		a.unit AS "unit",
+		a.amount AS "amount",
+		a.quality_guarantee_period AS "qualityGuaranteePeriod",
+		a.manufacture_time AS "manufactureTime",
+		a.single_price AS "singlePrice",
+		a.currency_money AS "currencyMoney",
+		a.original_total_money AS "originalTotalMoney",
+		a.tax_rate AS "taxRate",
+		a.quality_guarantee_type AS "qualityGuaranteeType",
+		a.entry_detail_id_orignal AS "entryDetailIdOrignal",
+        p.qualified_amount AS "receiptAmount"
+		from t_warehouseentry_detail a 
+		LEFT JOIN t_product_receive_detail p on p.id=a.foreign_order_detail_id
+		WHERE a.del_flag='0' and a.warehouseentry_id = #{stockInBillId}
+	</select>
+	
+	<select id="getDetailUpShelfList" parameterType="java.lang.String" 
+	        resultType="com.ys.wms.dto.stockin.MaterialAlreadyUpShelfInfo">
+		select 
+		a.warehouse_id as warehouseId,
+		a.amount as alreadyUpAmount,
+		a.subarea_code as storeAreaCode,
+		a.storagebin_code as goodsAllocationCode,
+		w.`code` as warehouseCode,
+		w.`name` as warehouseName,
+		kq.`name` as storeAreaName
+		from t_warehouse_shelfing a 
+		LEFT JOIN t_warehouse_info w on w.id=a.warehouse_id
+		LEFT JOIN t_warehouse_subarea_info kq on kq.`code`=a.subarea_code
+		where a.del_flag='0'
+		and w.del_flag='0' and kq.del_flag='0'
+		and a.warehouseentry_detail_id=#{stockInDetailId}
+		order by a.create_date 
+	</select>
+	
+	
+	<select id="getStockInUpShelfList" parameterType="java.lang.String"
+	        resultType="com.ys.wms.dto.stockin.UpShelfListDto">
+		SELECT 
+		a.warehouseentry_detail_id as stockInDetailId,
+		a.material_code as materialCode,
+		a.material_name as materialName,
+		a.subarea_code as storeAreaCode,
+		a.storagebin_code as goodsAllocationCode,
+		a.amount as alreadyUpAmount,
+		a.unit as measureUnit,
+		a.operator_name as upShelfOperator,
+		a.operator_time as upShelfTime,
+		w.`code` as warehouseCode,
+		w.`name` as warehouseName,
+		kq.`name` as storeAreaName
+		from t_warehouse_shelfing a 
+		LEFT JOIN t_warehouseentry_detail d on d.id=a.warehouseentry_detail_id
+		LEFT JOIN t_warehouse_info w on w.id=a.warehouse_id
+		LEFT JOIN t_warehouse_subarea_info kq on kq.`code`=a.subarea_code
+		where a.del_flag='0' 
+		and d.del_flag='0' 
+		and w.del_flag='0' 
+		and kq.del_flag='0'
+		and d.warehouseentry_id=#{stockInBillId}
+		ORDER BY a.create_date 
+	</select>
+	
+	
+	<select id="queryStockInDetailShelf" parameterType="java.lang.String"
+	        resultType="com.ys.wms.dto.stockin.StockInDetailShelfDto">
+		SELECT 
+		a.id AS "stockInDetailId",
+		a.entry_detail_id_orignal AS "entryDetailIdOrignal",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.onshelf_amount AS "alreadyUpAmount",
+		a.amount-IFNULL(a.onshelf_amount,0) AS "waitUpAmount",
+		a.unit AS measureUnit
+		from t_warehouseentry_detail a 
+		WHERE a.del_flag='0'   and a.warehouseentry_id = #{stockInBillId}
+		ORDER BY a.create_date 
+		
+	</select>
+	
+	
+	<select id="getDetailsByReceipt" parameterType="java.lang.String"
+	        resultType="com.ys.wms.dto.stockin.StockInDetailAddDto">
+		select 
+		a.id as foreignOrderDetailId,
+		a.material_code as materialCode,
+		a.material_name as materialName,
+		a.material_type_id as materialCategoryCode,
+		a.material_type_name as materialCategoryName,
+		a.material_model as modelType,
+		a.material_spec as specification,
+		a.unit as unitName,
+		a.bar_code as barCode,
+		a.qualified_amount as receiptAmount
+		from t_product_receive_detail a 
+		LEFT JOIN t_product_receive b on b.id=a.product_receive_id
+		where b.order_code=#{code}
+		ORDER BY a.create_date DESC
+	</select>
+	<resultMap id="StockInDetailListMap" type="com.ys.wms.dto.stockin.StockInDetailListDto">
+        <id column="id" property="stockInDetailId" />
+		<result column="stockBarcode" property="stockBarcode" />
+		<result column="materialTypeId" property="materialCategoryCode" />
+		<result column="materialCategoryName" property="materialCategoryName" />
+		<result column="materialName" property="materialName" />
+		<result column="materialCode" property="materialCode" />
+		<result column="materialSpec" property="specification" />
+		<result column="materialModel" property="modelNum" />
+		<result column="unit" property="measureUnit" />
+		<result column="materialOwnerName" property="ownerName" />
+		<result column="materialOwnerId" property="ownerId" />
+		<result column="singlePrice" property="homeSinglePrice" />
+		<result column="currencyMoney" property="homeMoneyAmount" />
+		<result column="receiptAmount" property="receiptAmount" />
+		<result column="taxRate" property="taxRate" />
+		<result column="manufactureTime" property="produceDate" />
+		<result column="originalTotalMoney" property="originPriceTaxAmount" />
+		<result column="amount" property="actualStockInAmount" />
+		<result column="productBatchNo" property="productBatch" />
+		<result column="entryDetailIdOrignal" property="redOldDetailId" />
+		<collection property="shelfLife" ofType="com.ys.wms.dto.common.ShelfLife">
+			<result column="qualityGuaranteePeriod" property="period" />
+		    <result column="qualityGuaranteeType" property="unitName" />
+		</collection>
+   </resultMap>
+   
+   <select id="getWaitUpShelfList" parameterType="HashMap"
+	        resultType="com.ys.wms.dto.rest.WaitUpShelfDto">
+	    select  
+		d.id as stockInDetailId,
+		d.stock_barcode as stockBarcode,
+		d.unit as unitName,
+		d.material_code as materialCode,
+		d.material_name as materialName,
+		d.material_model as modelType,
+		d.material_spec as specification,
+		d.onshelf_amount as alreadyUpAmount,
+		d.amount-IFNULL(d.onshelf_amount,0) AS waitUpAmount,
+		d.entry_detail_id_orignal as redOldDetailId,
+		w.warehouseentry_code as stockInBillCode,
+		w.warehouse_id as warehouseId,
+		i.`code` as warehouseCode,
+		i.`name` as warehouseName
+		from t_warehouseentry_detail d
+		LEFT JOIN t_warehouseentry w on w.id=d.warehouseentry_id
+		LEFT JOIN t_warehouse_info i on i.id=w.warehouse_id
+		<where>
+		d.del_flag='0' 
+		and w.del_flag='0' 
+		
+		<if test=" ids != null ">
+		   AND  w.warehouse_id in
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+	           #{item}  
+            </foreach> 
+            
+		</if>
+		<if test=" isAllShelfed != null and isAllShelfed >0">
+		   and d.is_all_shelfed=#{isAllShelfed}
+		</if>
+		<if test=" stockInBillCode != null and stockInBillCode!='' ">
+		   and w.warehouseentry_code=#{stockInBillCode}
+		</if>
+		<if test=" stockBarcode != null and stockBarcode!='' ">
+		   and d.stock_barcode=#{stockBarcode}
+		</if>
+		
+		</where>
+		ORDER BY w.create_date,d.create_date
+   </select>
+	
+</mapper>

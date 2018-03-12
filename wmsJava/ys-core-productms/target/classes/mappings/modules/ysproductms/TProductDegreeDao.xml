@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductDegreeDao">
+    
+	<sql id="tProductDegreeColumns">
+		a.id AS "id",
+		a.degree AS "degree",
+		a.degree_name AS "degreeName",
+		a.is_leaf AS "isLeaf",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tProductDegreeJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductDegree">
+		SELECT 
+			<include refid="tProductDegreeColumns"/>
+		FROM t_product_degree a
+		<include refid="tProductDegreeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductDegree">
+		SELECT 
+			<include refid="tProductDegreeColumns"/>
+		FROM t_product_degree a
+		<include refid="tProductDegreeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="degree != 0 and degree != '' ">
+			and a.degree = #{degree}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductDegree">
+		SELECT 
+			<include refid="tProductDegreeColumns"/>
+		FROM t_product_degree a
+		<include refid="tProductDegreeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_degree(
+			
+			degree,
+			degree_name,
+			is_leaf,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			
+			#{degree},
+			#{degreeName},
+			#{isLeaf},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_degree SET 	
+			degree = #{degree},
+			degree_name = #{degreeName},
+			is_leaf = #{isLeaf},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_degree SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

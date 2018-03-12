@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TMaterialSubtypeDao">
+    
+	<sql id="tMaterialSubtypeColumns">
+		a.id AS "id",
+		a.type_id AS "typeId",
+		a.name AS "name",
+		a.supply_cycle AS "supplyCycle",
+		a.charger_id AS "chargerId",
+		a.charger AS "charger",
+		a.tel AS "tel",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tMaterialSubtypeJoins">
+	</sql>
+    
+	<select id="get" resultType="TMaterialSubtype">
+		SELECT 
+			<include refid="tMaterialSubtypeColumns"/>
+		FROM t_material_subtype a
+		<include refid="tMaterialSubtypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TMaterialSubtype">
+		SELECT 
+			<include refid="tMaterialSubtypeColumns"/>
+		FROM t_material_subtype a
+		<include refid="tMaterialSubtypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="typeId != null and typeId != ''">
+				AND a.type_id = #{typeId}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="supplyCycle != null and supplyCycle != ''">
+				AND a.supply_cycle = #{supplyCycle}
+			</if>
+			<if test="chargerId != null and chargerId != ''">
+				AND a.charger_id = #{chargerId}
+			</if>
+			<if test="charger != null and charger != ''">
+				AND a.charger = #{charger}
+			</if>
+			<if test="tel != null and tel != ''">
+				AND a.tel = #{tel}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TMaterialSubtype">
+		SELECT 
+			<include refid="tMaterialSubtypeColumns"/>
+		FROM t_material_subtype a
+		<include refid="tMaterialSubtypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_material_subtype(
+			id,
+			type_id,
+			name,
+			supply_cycle,
+			charger_id,
+			charger,
+			tel,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{typeId},
+			#{name},
+			#{supplyCycle},
+			#{chargerId},
+			#{charger},
+			#{tel},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_material_subtype SET 	
+			type_id = #{typeId},
+			name = #{name},
+			supply_cycle = #{supplyCycle},
+			charger_id = #{chargerId},
+			charger = #{charger},
+			tel = #{tel},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_material_subtype SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

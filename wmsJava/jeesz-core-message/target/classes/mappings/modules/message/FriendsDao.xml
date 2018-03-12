@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.message.dao.FriendsDao">
+	<!-- 好友结果映射列表 -->
+   	<resultMap id="FriendsResultMap" type="com.sml.sz.message.entity.Friends">
+   		<result property="id" column="id"/>
+   		<result property="userId" column="user_id"/>
+   		<result property="friendsId" column="friends_id"/>
+   		<result property="friendsName" column="friends_name"/>
+   		<result property="remarksName" column="remarks_name"/>
+   		<result property="status" column="status"/>
+   		<result property="remarks" column="remarks"/>
+   	</resultMap>
+	
+	<!-- 我的申请列表 -->
+	<select id="applyForFriendsList" resultMap="FriendsResultMap">
+		SELECT 	
+		    `id`, 
+			`user_id`, 
+			`friends_id`, 
+			`create_by`, 
+			`create_date`, 
+			`update_by`, 
+			`update_date`, 
+			CASE STATUS WHEN  0 THEN '待同意' WHEN 1 THEN '已同意' WHEN 2 THEN '已拒绝' ELSE '' END  STATUS,
+			`remarks`
+			FROM 
+			`sys_my_friends_apply_list`  WHERE  user_id = #{entity.userId}
+			LIMIT 0, 500
+	</select>
+	
+	<!-- 待加为好友列表 -->
+	<select id="toBeAddedFriendsList" resultMap="FriendsResultMap">
+		SELECT 	
+		    `id`, 
+			`user_id`, 
+			`friends_id`, 
+			`create_by`, 
+			`create_date`, 
+			`update_by`, 
+			`update_date`, 
+			CASE STATUS WHEN  0 THEN '待同意' WHEN 1 THEN '已同意' WHEN 2 THEN '已拒绝' ELSE '' END  STATUS,
+			`remarks`
+			FROM 
+			`sys_my_friends_apply_list` WHERE STATUS = 0 AND friends_id = #{entity.userId}
+			LIMIT 0, 500
+	</select>
+	
+	<!-- 我的好友列表 -->
+	<select id="myFriendsList" resultMap="FriendsResultMap">
+		SELECT 	
+		    `id`, 
+			`user_id`, 
+			`friends_id`, 
+			`friends_name`, 
+			`remarks_name`, 
+			`create_by`, 
+			`create_date`, 
+			`update_by`, 
+			`update_date`, 
+			`status`, 
+			`remarks`
+			FROM 
+		`sys_my_friends_list` WHERE STATUS = 1 AND user_id = #{entity.userId}
+		LIMIT 0, 500 
+	</select>
+	
+	<!-- 申请加为好友 -->
+	<insert id="applyForFriends">
+		INSERT INTO `sys_my_friends_apply_list` 
+		(`id`, 
+		`user_id`, 
+		`friends_id`, 
+		`create_by`, 
+		`create_date`, 
+		`update_by`, 
+		`update_date`, 
+		`status`, 
+		`remarks`
+		)
+		VALUES
+		(#{entity.id},
+		#{entity.userId},
+		#{entity.friendsId},
+		#{entity.createBy.id},
+		NOW(),
+		#{entity.updateBy.id},
+		NOW(),
+		#{entity.status},
+		#{entity.remarks}
+		)
+	</insert>
+	
+	<!-- 检查申请加为好友信息是否存在 -->
+	<select id="getFriendApplyInfo" resultMap="FriendsResultMap">
+		SELECT 	
+		`id`, 
+		`user_id`, 
+		`friends_id`, 
+		`status`, 
+		`remarks`
+	    FROM 
+	    `sys_my_friends_apply_list`  
+	    <where> 1= 1
+	    <if test="entity.id != null and entity.id !=''">
+	    	and id = #{entity.id}
+	    </if>
+	    <if test="entity.status != null and entity.status != ''">
+	    	and status = #{entity.status}
+	    </if>
+	    and user_id  = #{entity.userId} and friends_id = #{entity.friendsId}
+	    </where> 
+	</select>
+	
+	<!-- 添加好友 -->
+	<insert id="addFriend">
+		INSERT INTO `sys_my_friends_list` 
+		(`id`, 
+		`user_id`, 
+		`friends_id`, 
+		`friends_name`, 
+		`remarks_name`, 
+		`create_by`, 
+		`create_date`, 
+		`update_by`, 
+		`update_date`, 
+		`status`, 
+		`remarks`
+		)
+		VALUES
+		(#{entity.id},
+		#{entity.userId},
+		#{entity.friendsId},
+		#{entity.friendsName},
+		#{entity.remarksName},
+		#{entity.createBy.id},
+		NOW(),
+		#{entity.updateBy.id},
+		NOW(),
+		#{entity.status},
+		#{entity.remarks}
+		)
+	</insert>
+	
+	<!-- 更新申请的好友信息; -->
+	<update id="updateApplyFriends">
+		UPDATE `sys_my_friends_apply_list` 
+			SET
+			`update_by` = #{entity.updateBy} , 
+			`update_date` = NOW() , 
+			<if test="entity.status != null and entity.status != ''">
+				`status` = #{entity.status}, 
+			</if>
+			`remarks` = #{entity.remarks}
+		WHERE
+			<if test="entity.id != null and entity.id != ''">
+				`id` =  #{entity.id} 
+			</if>
+			<if test="entity.userId and entity.userId">
+				user_id = #{entity.userId}
+			</if>
+			<if test="entity.friendsId != null and entity.friendsId != ''">
+				friends_id = #{entity.friendsId}
+			</if>
+	</update>
+	
+	<!-- 更新好友信息 -->
+	<update id="updateFriends">
+		UPDATE `sys_my_friends_list` 
+			SET
+			<if test="entity.remarksName != null and entity.remarksName != ''">
+				`remarks_name` = #{entity.remarksName}, 
+			</if>
+			`update_by` = #{entity.updateBy.id} , 
+			`update_date` = NOW() , 
+			<if test="entity.status != null and entity.status != ''">
+				`status` = #{entity.status}, 
+			</if>
+			`remarks` = #{entity.remarks}
+		WHERE 1= 1 
+			<if test="entity.id != null and entity.id != ''">
+				and `id` =  #{entity.id} 
+			</if>
+			<if test="entity.userId and entity.userId != ''">
+				and user_id = #{entity.userId}
+			</if>
+			<if test="entity.friendsId != null and entity.friendsId != ''">
+				and friends_id = #{entity.friendsId}
+			</if>
+	</update>
+	
+	<!-- 同意或者拒绝加位好友 -->
+	<update id="agreeOrRejectFriends">
+		UPDATE `sys_my_friends_apply_list` 
+			SET
+			`update_by` = #{entity.updateBy.id} , 
+			`update_date` = NOW() , 
+			`status` = #{entity.status}
+		WHERE
+			`id` =  #{entity.id}
+	</update>
+	
+	<!-- 删除好友 -->
+	<delete id="deleteFriends">
+		DELETE FROM `sys_my_friends_list` WHERE (user_id = #{entity.userId} and friends_id = #{entity.friendsId}) or (user_id = #{entity.friendsId} and friends_id = #{entity.userId})
+	</delete>
+    
+    <!-- 检查好友是否已经存在 -->
+    <select id="checkFriendsIsExists" resultType="int">
+    	SELECT COUNT(*) c FROM sys_my_friends_list t WHERE t.user_id = #{entity.userId} and friends_id = #{entity.friendsId}
+    </select>
+</mapper>

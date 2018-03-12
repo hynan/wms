@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductMaterialsInfoDao">
+    
+	<sql id="tProductMaterialsInfoColumns">
+		a.id AS "id",
+		a.product_id AS "productId",
+		b.name AS "materialName",
+		a.material_version_no AS "materialVersionNo",
+		a.material_id AS "materialId",
+		a.version_no AS "versionNo",
+		a.single_weight AS "singleWeight",
+		a.weight_unit AS "weightUnit",
+		a.remark AS "remark",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tProductMaterialsInfoJoins">
+	LEFT JOIN t_material b 
+	ON a.material_id = b.id 
+	</sql>
+    
+	<select id="get" resultType="TProductMaterialsInfo">
+		SELECT 
+			<include refid="tProductMaterialsInfoColumns"/>
+		FROM t_product_materials a
+		<include refid="tProductMaterialsInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductMaterialsInfo">
+		SELECT 
+			<include refid="tProductMaterialsInfoColumns"/>
+		FROM t_product_materials a
+		<include refid="tProductMaterialsInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId != 0">
+			    and a.product_id = #{productId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductMaterialsInfo">
+		SELECT 
+			<include refid="tProductMaterialsInfoColumns"/>
+		FROM t_product_materials a
+		<include refid="tProductMaterialsInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_materials(
+
+			product_id,
+			material_id,
+			material_version_no,
+			version_no,
+			single_weight,
+			weight_unit,
+			remark,						
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			create_time,
+			del_flag
+		) VALUES (
+			
+			#{productId},
+			#{materialId},
+			#{materialVersionNo},
+			#{versionNo},
+			#{singleWeight},
+			#{weightUnit},
+			#{remark},						
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{createDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_materials SET 	
+			product_id = #{productId},
+			material_id = #{materialId},
+			material_version_no = #{materialVersionNo},
+			version_no = #{versionNo},
+			single_weight = #{singleWeight},
+			weight_unit = #{weightUnit},
+			update_date =#{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_product_materials WHERE id = #{id}
+	</update>
+	
+	<select id="getDtoList" resultType="com.sml.sz.ysproductms.dto.TProductMaterialsInfoDto">
+        SELECT	  
+	    a.id AS "id",
+		a.product_id AS "productId",
+		a.material_type_id AS "materialTypeId",
+		a.material_subtype_id AS "materialSubtypeId",
+		a.material_name AS "materialName",
+		a.single_amount AS "singleAmount",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		b.name AS "bigTypeName",
+		c.name AS "smallTypeName"
+		FROM t_product_materials_info a
+		LEFT JOIN t_material_type b
+		ON b.id = a.material_type_id
+		LEFT JOIN t_material_smalltype c
+		ON c.id = a.material_subtype_id
+		WHERE a.product_id = #{productId}
+		
+		
+	</select>
+	
+	<insert id="insertHis">
+		INSERT INTO t_product_materials_his(
+
+			product_id,
+			material_id,
+			material_version_no,
+			version_no,
+			single_weight,
+			weight_unit,
+			remark,						
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			create_time,
+			del_flag
+		) VALUES (
+			
+			#{productId},
+			#{materialId},
+			#{materialVersionNo},
+			#{versionNo},
+			#{singleWeight},
+			#{weightUnit},
+			#{remark},						
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{createDate},
+			#{delFlag}
+		)
+	</insert>
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TPurchaseLogDetailDao">
+    
+	<sql id="tPurchaseLogDetailColumns">
+		a.id AS "id",
+		a.purchase_log_id AS "purchaseLogId",
+		a.alert_log_id AS "alertLogId",
+		a.amount AS "amount",
+		a.require_time AS "requireTime",
+		a.recipient_id AS "recipientId",
+		a.recipient_name AS "recipientName",
+		a.introduction AS "introduction",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tPurchaseLogDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TPurchaseLogDetail">
+		SELECT 
+			<include refid="tPurchaseLogDetailColumns"/>
+		FROM t_purchase_log_detail a
+		<include refid="tPurchaseLogDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TPurchaseLogDetail">
+		SELECT 
+			<include refid="tPurchaseLogDetailColumns"/>
+		FROM t_purchase_log_detail a
+		<include refid="tPurchaseLogDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="purchaseLogId != null and purchaseLogId != ''">
+				AND a.purchase_log_id = #{purchaseLogId}
+			</if>
+			<if test="alertLogId != null and alertLogId != ''">
+				AND a.alert_log_id = #{alertLogId}
+			</if>
+			<if test="amount != null and amount != ''">
+				AND a.amount = #{amount}
+			</if>
+			<if test="recipientId != null and recipientId != ''">
+				AND a.recipient_id = #{recipientId}
+			</if>
+			<if test="recipientName != null and recipientName != ''">
+				AND a.recipient_name = #{recipientName}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TPurchaseLogDetail">
+		SELECT 
+			<include refid="tPurchaseLogDetailColumns"/>
+		FROM t_purchase_log_detail a
+		<include refid="tPurchaseLogDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_purchase_log_detail(
+			id,
+			purchase_log_id,
+			alert_log_id,
+			amount,
+			require_time,
+			recipient_id,
+			recipient_name,
+			introduction,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{purchaseLogId},
+			#{alertLogId},
+			#{amount},
+			#{requireTime},
+			#{recipientId},
+			#{recipientName},
+			#{introduction},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_purchase_log_detail SET 	
+			purchase_log_id = #{purchaseLogId},
+			alert_log_id = #{alertLogId},
+			amount = #{amount},
+			require_time = #{requireTime},
+			recipient_id = #{recipientId},
+			recipient_name = #{recipientName},
+			introduction = #{introduction},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_purchase_log_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

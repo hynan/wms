@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TSupplyCompanyDao">
+    
+	<sql id="tSupplyCompanyColumns">
+		a.id AS "id",
+		a.material_type AS "materialType",
+		a.material_name AS "materialName",
+		a.name AS "name",
+		a.code AS "code",
+		a.province AS "province",
+		a.company_type AS "companyType",
+		a.bank AS "bank",
+		a.city AS "city",
+		a.bank_no AS "bankNo",
+		a.bank_account AS "bankAccount",
+		a.address AS "address",
+		a.tax_no AS "taxNo",
+		a.billing_addr AS "billingAddr",
+		a.tel AS "tel",
+		a.fax AS "fax",
+		a.legal_man AS "legalMan",
+		a.legal_tel AS "legalTel",
+		a.credit AS "credit",
+		a.balance AS "balance",
+		a.is_fixed AS "isFixed",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tSupplyCompanyJoins">
+	</sql>
+    
+	<select id="get" resultType="TSupplyCompany">
+		SELECT 
+			<include refid="tSupplyCompanyColumns"/>
+		FROM t_supply_company a
+		<include refid="tSupplyCompanyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TSupplyCompany">
+		SELECT 
+			<include refid="tSupplyCompanyColumns"/>
+		FROM t_supply_company a
+		<include refid="tSupplyCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="materialType != null and materialType != ''">
+				AND a.material_type = #{materialType}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="province != null and province != ''">
+				AND a.province = #{province}
+			</if>
+			<if test="companyType != null and companyType != ''">
+				AND a.company_type = #{companyType}
+			</if>
+			<if test="bank != null and bank != ''">
+				AND a.bank = #{bank}
+			</if>
+			<if test="city != null and city != ''">
+				AND a.city = #{city}
+			</if>
+			<if test="bankNo != null and bankNo != ''">
+				AND a.bank_no = #{bankNo}
+			</if>
+			<if test="bankAccount != null and bankAccount != ''">
+				AND a.bank_account = #{bankAccount}
+			</if>
+			<if test="address != null and address != ''">
+				AND a.address = #{address}
+			</if>
+			<if test="taxNo != null and taxNo != ''">
+				AND a.tax_no = #{taxNo}
+			</if>
+			<if test="billingAddr != null and billingAddr != ''">
+				AND a.billing_addr = #{billingAddr}
+			</if>
+			<if test="tel != null and tel != ''">
+				AND a.tel = #{tel}
+			</if>
+			<if test="fax != null and fax != ''">
+				AND a.fax = #{fax}
+			</if>
+			<if test="legalMan != null and legalMan != ''">
+				AND a.legal_man = #{legalMan}
+			</if>
+			<if test="legalTel != null and legalTel != ''">
+				AND a.legal_tel = #{legalTel}
+			</if>
+			<if test="credit != null and credit != ''">
+				AND a.credit = #{credit}
+			</if>
+			<if test="balance != null and balance != ''">
+				AND a.balance = #{balance}
+			</if>
+			<if test="isFixed != null and isFixed != ''">
+				AND a.is_fixed = #{isFixed}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TSupplyCompany">
+		SELECT 
+			<include refid="tSupplyCompanyColumns"/>
+		FROM t_supply_company a
+		<include refid="tSupplyCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_supply_company(
+			id,
+			material_type,
+			material_name,
+			name,
+			code,
+			province,
+			company_type,
+			bank,
+			city,
+			bank_no,
+			bank_account,
+			address,
+			tax_no,
+			billing_addr,
+			tel,
+			fax,
+			legal_man,
+			legal_tel,
+			credit,
+			balance,
+			is_fixed,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{materialType},
+			#{materialName},
+			#{name},
+			#{code},
+			#{province},
+			#{companyType},
+			#{bank},
+			#{city},
+			#{bankNo},
+			#{bankAccount},
+			#{address},
+			#{taxNo},
+			#{billingAddr},
+			#{tel},
+			#{fax},
+			#{legalMan},
+			#{legalTel},
+			#{credit},
+			#{balance},
+			#{isFixed},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_supply_company SET 	
+			material_type = #{materialType},
+			material_name = #{materialName},
+			name = #{name},
+			code = #{code},
+			province = #{province},
+			company_type = #{companyType},
+			bank = #{bank},
+			city = #{city},
+			bank_no = #{bankNo},
+			bank_account = #{bankAccount},
+			address = #{address},
+			tax_no = #{taxNo},
+			billing_addr = #{billingAddr},
+			tel = #{tel},
+			fax = #{fax},
+			legal_man = #{legalMan},
+			legal_tel = #{legalTel},
+			credit = #{credit},
+			balance = #{balance},
+			is_fixed = #{isFixed},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_supply_company SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

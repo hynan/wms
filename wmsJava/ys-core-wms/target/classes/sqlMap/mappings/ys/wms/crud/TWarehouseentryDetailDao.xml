@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TWarehouseentryDetailDao">
+    
+	<sql id="tWarehouseentryDetailColumns">
+		a.id AS "id",
+		a.warehouseentry_id AS "warehouseentryId",
+		a.foreign_order_detail_id AS "foreignOrderDetailId",
+		a.material_type_id AS "materialTypeId",
+		a.stock_barcode AS "stockBarcode",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.product_batch_no AS "productBatchNo",
+		a.material_owner_id AS "materialOwnerId",
+		a.material_owner_name AS "materialOwnerName",
+		a.unit AS "unit",
+		a.amount AS "amount",
+		a.onshelf_amount AS "onshelfAmount",
+		a.is_all_shelfed AS "isAllShelfed",
+		a.quality_guarantee_period AS "qualityGuaranteePeriod",
+		a.manufacture_time AS "manufactureTime",
+		a.single_price AS "singlePrice",
+		a.currency_money AS "currencyMoney",
+		a.original_total_money AS "originalTotalMoney",
+		a.tax_rate AS "taxRate",
+		a.introduction AS "introduction",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.quality_guarantee_type AS "qualityGuaranteeType",
+		a.entry_detail_id_orignal AS "entryDetailIdOrignal"
+		
+		
+	</sql>
+	
+	<sql id="tWarehouseentryDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TWarehouseentryDetail">
+		SELECT 
+			<include refid="tWarehouseentryDetailColumns"/>
+		FROM t_warehouseentry_detail a
+		<include refid="tWarehouseentryDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TWarehouseentryDetail">
+		SELECT 
+			<include refid="tWarehouseentryDetailColumns"/>
+		FROM t_warehouseentry_detail a
+		<include refid="tWarehouseentryDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="warehouseentryId != null and warehouseentryId != ''">
+				AND a.warehouseentry_id = #{warehouseentryId}
+			</if>
+			<if test="foreignOrderDetailId != null and foreignOrderDetailId != ''">
+				AND a.foreign_order_detail_id = #{foreignOrderDetailId}
+			</if>
+			<if test="materialTypeId != null and materialTypeId != ''">
+				AND a.material_type_id = #{materialTypeId}
+			</if>
+			<if test="stockBarcode != null and stockBarcode != ''">
+				AND a.stock_barcode = #{stockBarcode}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="productBatchNo != null and productBatchNo != ''">
+				AND a.product_batch_no = #{productBatchNo}
+			</if>
+			<if test="materialOwnerId != null and materialOwnerId != ''">
+				AND a.material_owner_id = #{materialOwnerId}
+			</if>
+			<if test="materialOwnerName != null and materialOwnerName != ''">
+				AND a.material_owner_name = #{materialOwnerName}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="amount != null and amount != ''">
+				AND a.amount = #{amount}
+			</if>
+			<if test="onshelfAmount != null and onshelfAmount != ''">
+				AND a.onshelf_amount = #{onshelfAmount}
+			</if>
+			<if test="isAllShelfed != null and isAllShelfed != ''">
+				AND a.is_all_shelfed = #{isAllShelfed}
+			</if>
+			<if test="qualityGuaranteePeriod != null and qualityGuaranteePeriod != ''">
+				AND a.quality_guarantee_period = #{qualityGuaranteePeriod}
+			</if>
+			<if test="singlePrice != null and singlePrice != ''">
+				AND a.single_price = #{singlePrice}
+			</if>
+			<if test="currencyMoney != null and currencyMoney != ''">
+				AND a.currency_money = #{currencyMoney}
+			</if>
+			<if test="originalTotalMoney != null and originalTotalMoney != ''">
+				AND a.original_total_money = #{originalTotalMoney}
+			</if>
+			<if test="taxRate != null and taxRate != ''">
+				AND a.tax_rate = #{taxRate}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TWarehouseentryDetail">
+		SELECT 
+			<include refid="tWarehouseentryDetailColumns"/>
+		FROM t_warehouseentry_detail a
+		<include refid="tWarehouseentryDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_warehouseentry_detail(
+			id,
+			warehouseentry_id,
+			foreign_order_detail_id,
+			material_type_id,
+			stock_barcode,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			product_batch_no,
+			material_owner_id,
+			material_owner_name,
+			unit,
+			amount,
+			onshelf_amount,
+			is_all_shelfed,
+			quality_guarantee_period,
+			manufacture_time,
+			single_price,
+			currency_money,
+			original_total_money,
+			tax_rate,
+			introduction,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			quality_guarantee_type,
+			entry_detail_id_orignal
+			
+			
+		) VALUES (
+			#{id},
+			#{warehouseentryId},
+			#{foreignOrderDetailId},
+			#{materialTypeId},
+			#{stockBarcode},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{productBatchNo},
+			#{materialOwnerId},
+			#{materialOwnerName},
+			#{unit},
+			#{amount},
+			#{onshelfAmount},
+			#{isAllShelfed},
+			#{qualityGuaranteePeriod},
+			#{manufactureTime},
+			#{singlePrice},
+			#{currencyMoney},
+			#{originalTotalMoney},
+			#{taxRate},
+			#{introduction},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{qualityGuaranteeType},
+			#{entryDetailIdOrignal}
+			
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_warehouseentry_detail SET 	
+			warehouseentry_id = #{warehouseentryId},
+			foreign_order_detail_id = #{foreignOrderDetailId},
+			material_type_id = #{materialTypeId},
+			stock_barcode = #{stockBarcode},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			product_batch_no = #{productBatchNo},
+			material_owner_id = #{materialOwnerId},
+			material_owner_name = #{materialOwnerName},
+			unit = #{unit},
+			amount = #{amount},
+			onshelf_amount = #{onshelfAmount},
+			is_all_shelfed = #{isAllShelfed},
+			quality_guarantee_period = #{qualityGuaranteePeriod},
+			manufacture_time = #{manufactureTime},
+			single_price = #{singlePrice},
+			currency_money = #{currencyMoney},
+			original_total_money = #{originalTotalMoney},
+			tax_rate = #{taxRate},
+			introduction = #{introduction},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			quality_guarantee_type=#{qualityGuaranteeType},
+			entry_detail_id_orignal=#{entryDetailIdOrignal}
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_warehouseentry_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

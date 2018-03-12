@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.soa.dao.SoaServiceConfigDao">
+    
+	<sql id="soaServiceConfigColumns">
+		a.id AS "id",
+		a.service_name AS "serviceName",
+		a.service_catatory_id AS "serviceCatatoryId",
+		a.service_url AS "serviceUrl",
+		a.service_req AS "serviceReq",
+		a.version AS "version",
+		a.switch_flag AS "switchFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.status AS "status",
+		b.category_name AS "soaDataCategory.categoryName"
+	</sql>
+	
+	<sql id="soaServiceConfigColumnsSingle">
+		a.id AS "id",
+		a.service_name AS "serviceName",
+		a.service_catatory_id AS "serviceCatatoryId",
+		a.service_url AS "serviceUrl",
+		a.service_req AS "serviceReq",
+		a.version AS "version",
+		a.switch_flag AS "switchFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.status AS "status"
+		
+	</sql>
+	
+	<sql id="soaServiceConfigJoins">
+		LEFT JOIN soa_data_category b ON b.id = a.service_catatory_id
+	</sql>
+    
+	<select id="get" resultType="SoaServiceConfig">
+		SELECT 
+			<include refid="soaServiceConfigColumns"/>
+		FROM soa_service_config a
+		<include refid="soaServiceConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SoaServiceConfig">
+		SELECT 
+			<include refid="soaServiceConfigColumns"/>
+		FROM soa_service_config a
+		<include refid="soaServiceConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="serviceName != null and serviceName != ''">
+				AND a.service_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{serviceName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{serviceName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{serviceName},'%')</if>
+			</if>
+			<if test="serviceCatatoryId != null and serviceCatatoryId != ''">
+				AND a.service_catatory_id = #{serviceCatatoryId}
+			</if>
+			<if test="switchFlag != null and switchFlag != ''">
+				AND a.switch_flag = #{switchFlag}
+			</if>
+			<if test="serviceUrl != null and serviceUrl != ''">
+				AND a.service_url LIKE 
+					<if test="dbName == 'oracle'">'%'||#{serviceUrl}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{serviceUrl}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{serviceUrl},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SoaServiceConfig">
+		SELECT 
+			<include refid="soaServiceConfigColumns"/>
+		FROM soa_service_config a
+		<include refid="soaServiceConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findNoSwitchList" resultType="SoaServiceConfig">
+		SELECT 
+			<include refid="soaServiceConfigColumnsSingle"/>
+		FROM soa_service_config a
+		<where>
+			a.del_flag = '0'
+			and a.switch_flag = '1'
+		</where>		
+		
+	</select>
+	
+	
+	<insert id="insert">
+		INSERT INTO soa_service_config(
+			id,
+			service_name,
+			service_catatory_id,
+			service_url,
+			service_req,
+			version,
+			switch_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			status
+		) VALUES (
+			#{id},
+			#{serviceName},
+			#{serviceCatatoryId},
+			#{serviceUrl},
+			#{serviceReq},
+			#{version},
+			#{switchFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE soa_service_config SET 	
+			service_name = #{serviceName},
+			service_catatory_id = #{serviceCatatoryId},
+			service_url = #{serviceUrl},
+			service_req = #{serviceReq},
+			version = #{version},
+			switch_flag = #{switchFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE soa_service_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE soa_service_config SET 
+			status = #{status}, 
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

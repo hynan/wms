@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductInfoDao">
+    
+	<sql id="tProductInfoColumns">
+		a.id AS "id",
+		a.product_code AS "productCode",
+		a.product_name AS "productName",
+		a.product_introduction AS "productIntroduction",
+		a.category_id AS "categoryId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.product_source_id AS "productSourceId",
+		a.parent_id AS "parentId",
+		a.degree_id AS "productDegreeId",
+		a.each_limit AS "eachLimit",
+		a.day_limit AS "dayLimit",
+		a.week_limit AS "weekLimit",
+		a.month_limit AS "monthLimit",
+		a.warranty_period AS "warrantyPeriod",
+		a.quality_guarantee_type AS "qualityGuaranteeType",
+		a.unique_code AS "uniqueCode",
+		a.upper_limit_stock AS "upperLimitStock",
+		a.lower_limit_stock AS "lowerLimitStock"
+	</sql>
+	
+	<sql id="tProductInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductInfo">
+		SELECT 
+			<include refid="tProductInfoColumns"/>
+		FROM t_product_info a
+		<include refid="tProductInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList_del" resultType="TProductInfo">
+		SELECT 
+			<include refid="tProductInfoColumns"/>
+		FROM t_product_info a
+		<include refid="tProductInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findList" resultType="TProductInfo">
+		SELECT 
+		a.id AS "id",
+		a.product_code AS "productCode",
+		a.product_name AS "productName",
+		a.product_introduction AS "productIntroduction",
+		a.category_id AS "categoryId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"	,
+		a.product_source_id AS "productSourceId",
+		a.parent_id AS "parentId",
+		a.degree_id AS "productDegreeId",
+		b.product_name AS "fatherProductName",
+        c.degree AS "productDegree",
+        d.category_name AS "productCategoryName",
+        e.source AS "sourceName",
+        a.each_limit AS "eachLimit",
+		a.day_limit AS "dayLimit",
+		a.week_limit AS "weekLimit",
+		a.month_limit AS "monthLimit",
+		a.warranty_period AS "warrantyPeriod",
+		a.quality_guarantee_type AS "qualityGuaranteeType",
+		a.upper_limit_stock AS "upperLimitStock",
+		a.lower_limit_stock AS "lowerLimitStock",
+		a.unique_code AS "uniqueCode"
+    FROM t_product_info a
+    LEFT JOIN t_product_info b
+    ON a.parent_id = b.id 
+    LEFT JOIN t_product_degree c
+    ON  a.degree_id = c.degree
+    LEFT JOIN t_product_category d
+    ON a.category_id = d.category_id 
+    LEFT JOIN t_product_source e
+    ON a.product_source_id = e.id
+    <where>
+     a.del_flag = 0
+		<if test="productName != null and productName != ''">
+			AND a.product_name LIKE  "%"#{productName}"%"
+			
+		</if>
+		<if test="productCode != null and productCode != ''">
+			AND a.product_code LIKE  "%"#{productCode}"%"
+		</if>
+		<if test="productCategoryName != null and productCategoryName != ''">
+			AND d.category_name LIKE "%"#{productCategoryName}"%"
+		</if>
+		<if test="uniqueCode != null and uniqueCode != ''">
+			AND a.unique_code LIKE  "%"#{uniqueCode}"%"
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			AND a.category_id = #{categoryId} 
+		</if>
+	</where>
+		
+		ORDER BY  a.category_id DESC
+	</select>
+	
+	<select id="findAllList" resultType="TProductInfo">
+		SELECT 
+			<include refid="tProductInfoColumns"/>
+		FROM t_product_info a
+		<include refid="tProductInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_info(
+			product_code,
+			product_name,
+			product_introduction,
+			category_id,
+			degree_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			parent_id,
+            product_source_id,
+            each_limit,
+		    day_limit,
+		    week_limit,
+	    	month_limit,
+		    warranty_period,
+		    quality_guarantee_type,
+		    unique_code,
+		    upper_limit_stock,
+		    lower_limit_stock 
+		) VALUES (
+			#{productCode},
+			#{productName},
+			#{productIntroduction},
+			#{categoryId},
+			#{productDegreeId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{parentId},
+            #{productSourceId},
+            #{eachLimit},
+		    #{dayLimit},
+		    #{weekLimit},
+		    #{monthLimit},
+		    #{warrantyPeriod},
+		    #{qualityGuaranteeType},
+		    #{uniqueCode},
+		    #{upperLimitStock},
+		    #{lowerLimitStock}
+		
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_info SET 	
+			product_code = #{productCode},
+			product_name = #{productName},
+			product_introduction = #{productIntroduction},
+			category_id = #{categoryId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			degree_id = #{productDegreeId},
+			remarks = #{remarks},		
+			parent_id = #{parentId},
+            product_source_id = #{productSourceId},
+            each_limit = #{eachLimit},
+		    day_limit = #{dayLimit},
+		    week_limit = #{weekLimit},
+		    month_limit = #{monthLimit},
+		    warranty_period = #{warrantyPeriod},
+		    quality_guarantee_type = #{qualityGuaranteeType},
+		    unique_code = #{uniqueCode},
+		    upper_limit_stock = #{upperLimitStock},
+		    lower_limit_stock = #{lowerLimitStock}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getProductInfoList" resultType="string">
+		SELECT product_name FROM t_product_info  WHERE del_flag=0
+	</select>
+	
+	
+	<select id="getProductCodeList" resultType="string">
+		select pi.product_code from  t_product_info   pi
+        LEFT JOIN t_product_category2  pc ON pc.category_oldid = pi.category_id
+        where pc.category_name = #{productCategoryName} and pi.del_flag=0
+        
+	</select>
+	
+	
+	<select id="getProductList" resultType="string">
+		SELECT product_name FROM t_product_info  WHERE category_id = #{productCategoryId} and del_flag=0
+	</select>
+	
+	<select id="getProductCategoryIdByName" resultType="string">
+		SELECT category_id FROM t_product_info  WHERE product_name = #{productCategoryName} and del_flag=0
+	</select>
+	
+	<select id="queryProduct" resultType="com.sml.sz.ysproductms.dto.ProductQueryResultDto">
+		SELECT 
+	    a.id AS "id",
+	    a.product_introduction AS "productIntroduction",
+	    a.unique_code AS "productCode",
+	    a.product_name AS "productName",
+	    a.category_id AS "categoryId",
+	    b.url_path AS "filePath",
+        c.category_name AS "categoryName",
+        c.unit AS "unit",
+        a.product_code AS "modelType"
+        
+		from t_product_info a
+	    LEFT JOIN t_product_file_info b ON a.id = b.product_id
+        LEFT JOIN t_product_category c ON a.category_id = c.category_id
+	<where>
+	  a.del_flag = 0 and b.del_flag = 0 and c.del_flag = 0
+	  <if test="categoryId != null and categoryId != '' ">
+	  and a.category_id = #{categoryId}
+	  </if>
+	  <if test="productName != null and productName != '' ">
+	  and a.product_name like concat('%',#{productName},'%')
+	  </if>
+	</where>
+	order by a.product_name
+	</select>
+	
+	<select id="getStockByInfoCode" resultType="com.sml.sz.ysproductms.dto.LimitStock" parameterType="java.lang.String">
+	    SELECT upper_limit_stock AS "upperLimitStock",
+	           lower_limit_stock AS "lowerLimitStock"
+	       from t_product_info where del_flag = 0 and unique_code = #{code}
+	</select>
+	
+	<select id="getCountByInfoCode" parameterType="java.lang.String" resultType="java.lang.Integer">
+	SELECT COUNT(id)
+	       from t_product_info where del_flag = 0 and unique_code = #{code}
+	</select>
+	
+	<select id="getProductBaseDto" resultType="com.sml.sz.sys.dto.BaseDto" parameterType="java.lang.String">
+	SELECT 
+	id AS "id",
+	product_name AS "name"
+	from t_product_info where del_flag = 0 and degree_id != 0 and degree_id != 2
+	<if test="categoryId != null and categoryId != '' ">
+	and category_id = #{categoryId}
+	</if>
+	</select>
+	
+	<select id="findPageNew" resultType="com.sml.sz.ysproductms.entity.TProductInfo" 
+	                     parameterType="com.sml.sz.ysproductms.entity.TProductInfo">
+		SELECT 
+		a.id AS "id",
+		a.product_code AS "productCode",
+		a.product_name AS "productName",		
+		a.category_id AS "categoryId",				
+		a.product_source_id AS "productSourceId",
+		a.parent_id AS "parentId",
+		a.degree_id AS "productDegreeId",		
+        c.degree AS "productDegree",
+        d.category_name AS "productCategoryName",
+        e.source AS "sourceName",      
+		a.unique_code AS "uniqueCode"
+    FROM t_product_info a
+    LEFT JOIN t_product_degree c
+    ON  a.degree_id = c.degree
+    LEFT JOIN t_product_category d
+    ON a.category_id = d.category_id 
+    LEFT JOIN t_product_source e
+    ON a.product_source_id = e.id
+   <where>
+     a.del_flag = 0
+		<if test="productName != null and productName != ''">
+			AND a.product_name LIKE  "%"#{productName}"%"
+			
+		</if>
+		<if test="productCode != null and productCode != ''">
+			AND a.product_code LIKE  "%"#{productCode}"%"
+		</if>
+		<if test="productCategoryName != null and productCategoryName != ''">
+			AND d.category_name LIKE "%"#{productCategoryName}"%"
+		</if>
+		<if test="uniqueCode != null and uniqueCode != ''">
+			AND a.unique_code LIKE  "%"#{uniqueCode}"%"
+		</if>
+		<if test="categoryId != null and categoryId != ''">
+			AND a.category_id = #{categoryId} 
+		</if>
+	</where>
+			
+	</select>
+	
+	<select id="queryProductById" resultType="com.sml.sz.ysproductms.dto.ProductQueryResultDto">
+		SELECT 
+	    a.id AS "id",
+	    a.product_introduction AS "productIntroduction",
+	    a.unique_code AS "productCode",
+	    a.product_name AS "productName",
+	    a.category_id AS "categoryId",
+	    b.url_path AS "filePath",
+        c.category_name AS "categoryName",
+        c.unit AS "unit",
+        a.product_code AS "modelType"
+        
+		from t_product_info a
+	    LEFT JOIN t_product_file_info b ON a.id = b.product_id
+        LEFT JOIN t_product_category c ON a.category_id = c.category_id
+	<where>
+	  a.del_flag = 0 and b.del_flag = 0 and c.del_flag = 0
+	  <if test="id != null and id != '' ">
+	  and a.id = #{id}
+	  </if>	  
+	</where>
+	order by a.product_name
+	</select>
+</mapper>

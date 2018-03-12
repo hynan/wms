@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.member.dao.MemberQuestionAnswerDao">
+    
+	<sql id="memberQuestionAnswerColumns">
+		a.id AS "id",
+		a.uid AS "uid",
+		a.qid AS "qid",
+		a.answer AS "answer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remark AS "remark",
+		b.title as title,
+		u.name AS "user.name"
+	</sql>
+	
+	<sql id="memberQuestionAnswerJoins">
+	JOIN sys_user u ON u.id = a.uid
+	JOIN member_question b ON a.qid = b.id
+	</sql>
+    
+    <!-- 检查用户是否存在密保设置信息 -->
+    <select id = "checkIsExistsQuestionAnswerByUserId" resultType="MemberQuestionAnswer">
+    	SELECT 
+    	a.id AS "id",
+		a.uid AS "uid",
+		a.qid AS "qid",
+		a.answer AS "answer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remark AS "remark" FROM member_question_answer a  WHERE uid = #{userId} and qid = #{questionId}
+    </select>
+    
+	<select id="getQuestionAnswer" resultType="MemberQuestionAnswer">
+		SELECT 
+			<include refid="memberQuestionAnswerColumns"/>
+		FROM member_question_answer a
+		<include refid="memberQuestionAnswerJoins"/>
+		WHERE  a.uid = #{userId} AND a.qid=#{questionId}
+	</select>
+	
+	<select id="findList" resultType="MemberQuestionAnswer">
+		SELECT 
+			<include refid="memberQuestionAnswerColumns"/>
+		FROM member_question_answer a
+		<include refid="memberQuestionAnswerJoins"/>
+		<where>
+			
+			<if test="uid != null and uid != ''">
+				AND a.uid = #{uid}
+			</if>
+			<if test="qid != null and qid != ''">
+				AND a.qid = #{qid}
+			</if>
+			<if test="answer != null and answer != ''">
+				AND a.answer = #{answer}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MemberQuestionAnswer">
+		SELECT 
+			<include refid="memberQuestionAnswerColumns"/>
+		FROM member_question_answer a
+		<include refid="memberQuestionAnswerJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO member_question_answer(
+			id,
+			uid,
+			qid,
+			answer,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remark
+		) VALUES (
+			#{id},
+			#{uid},
+			#{qid},
+			#{answer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE member_question_answer SET 	
+			uid = #{uid},
+			qid = #{qid},
+			answer = #{answer},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM member_question_answer
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

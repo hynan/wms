@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.sml.sz</groupId>
+		<artifactId>jeesz-project</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<groupId>com.ys.wms</groupId>
+	<artifactId>ys-core-wms</artifactId>
+	<name>ys-core-wms</name>
+	<url>http://maven.apache.org</url>
+	<description>ys-core-wms</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+		<dependency>
+	    	<groupId>org.springframework</groupId>
+	    	<artifactId>spring-test</artifactId>
+	    	<version>3.0.5.RELEASE</version>
+	   	 	<scope>test</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>com.github.miemiedev</groupId>
+		    <artifactId>mybatis-paginator</artifactId>
+		    <version>1.2.15</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.ws.rs</groupId>
+		    <artifactId>javax.ws.rs-api</artifactId>
+		    <version>2.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.jaxrs</groupId>
+		    <artifactId>jackson-jaxrs-json-provider</artifactId>
+		    <version>2.8.6</version>
+		</dependency>
+		<!-- alibaba druid connection pool -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>${druid.version}</version>
+		</dependency>
+
+		<!-- jdbc driver -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.driver.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc14</artifactId>
+			<version>${oracle.driver.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<version>${mssql.driver.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- AOP相关包 -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.7.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.7.4</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<!-- jeesz config begin -->
+		<!-- 系统公共配置 -->
+		<dependency>
+			<groupId>com.sml.sz</groupId>
+			<artifactId>jeesz-config</artifactId>
+		</dependency>
+		<!-- jeesz config end 公共配置 -->
+
+		<!-- jeesz framework begin -->
+		<!-- 系统核心框架包 -->
+		<dependency>
+			<groupId>com.sml.sz</groupId>
+			<artifactId>jeesz-framework</artifactId>
+		</dependency>
+		<!-- jeesz framework end -->
+
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sml.sz</groupId>
+			<artifactId>ys-core-productms</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+
+	</dependencies>
+</project>

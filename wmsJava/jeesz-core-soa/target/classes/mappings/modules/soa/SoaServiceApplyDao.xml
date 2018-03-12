@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.soa.dao.SoaServiceApplyDao">
+    
+	<sql id="soaServiceApplyColumns">
+		a.id AS "id",
+		a.uid AS "uid",
+		a.sid AS "sid",
+		a.range AS "range",
+		a.appname AS "appname",
+		a.ip AS "ip",
+		a.domain AS "domain",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.status AS "status",
+		
+		b.id AS "soaServiceConfig.id",
+		b.service_name AS "soaServiceConfig.serviceName",
+		b.service_catatory_id AS "soaServiceConfig.serviceCatatoryId",
+		b.service_url AS "soaServiceConfig.serviceUrl",
+		b.service_req AS "soaServiceConfig.serviceReq",
+		b.version AS "soaServiceConfig.version"
+	</sql>
+	
+	<sql id="soaServiceApplyColumns2">
+		a.id AS "id",
+		a.uid AS "uid",
+		a.sid AS "sid",
+		a.range AS "range",
+		a.appname AS "appname",
+		a.ip AS "ip",
+		a.domain AS "domain",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.status AS "status"
+	</sql>
+	
+	<sql id="soaServiceApplyJoins">
+		LEFT JOIN soa_service_config b ON b.id = a.sid
+	</sql>
+    
+	<select id="get" resultType="SoaServiceApply">
+		SELECT 
+			<include refid="soaServiceApplyColumns"/>
+		FROM soa_user_service_apply a
+		<include refid="soaServiceApplyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SoaServiceApply">
+		SELECT 
+			<include refid="soaServiceApplyColumns"/>
+		FROM soa_user_service_apply a
+		<include refid="soaServiceApplyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sid != null and sid != ''">
+				AND a.sid LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sid}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sid}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sid},'%')</if>
+			</if>
+			<if test="range != null and range != ''">
+				AND a.range = #{range}
+			</if>
+			<if test="appname != null and appname != ''">
+				AND a.appname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{appname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{appname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{appname},'%')</if>
+			</if>
+			<if test="domain != null and domain != ''">
+				AND a.domain LIKE 
+					<if test="dbName == 'oracle'">'%'||#{domain}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{domain}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{domain},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SoaServiceApply">
+		SELECT 
+			<include refid="soaServiceApplyColumns"/>
+		FROM soa_user_service_apply a
+		<include refid="soaServiceApplyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getServiceApply" resultType="SoaServiceApply">
+		SELECT 
+			<include refid="soaServiceApplyColumns2"/>
+		FROM soa_user_service_apply a
+		WHERE a.sid = #{sid} and a.appname = #{appname} and a.del_flag = 0
+	</select>
+	
+	<select id="getServiceApplyByAppname" resultType="SoaServiceApply">
+		SELECT 
+			<include refid="soaServiceApplyColumns2"/>
+		FROM soa_user_service_apply a, soa_service_config b
+		WHERE a.appname = #{appname} and b.service_url = #{serviceUrl} and a.sid = b.id and  a.del_flag = 0 and a.status = 1
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO soa_user_service_apply(
+			id,
+			uid,
+			sid,
+			`range`,
+			appname,
+			ip,
+			domain,
+			token,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			status
+		) VALUES (
+			#{id},
+			#{uid},
+			#{sid},
+			#{range},
+			#{appname},
+			#{ip},
+			#{domain},
+			#{token},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE soa_user_service_apply SET 	
+			uid = #{uid},
+			sid = #{sid},
+			`range` = #{range},
+			appname = #{appname},
+			ip = #{ip},
+			domain = #{domain},
+			token = #{token},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM soa_user_service_apply  WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatus">
+		UPDATE soa_user_service_apply SET 
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

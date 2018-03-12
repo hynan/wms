@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TWarehouseoutDetailDao">
+    
+	<sql id="tWarehouseoutDetailColumns">
+		a.id AS "id",
+		a.entry_detail_id_orignal AS "oldStockOutDetailId",
+		a.warehouseout_id AS "warehouseoutId",
+		a.foreign_order_detail_id AS "foreignOrderDetailId",
+		a.material_type_id AS "materialType",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.unit AS "unit",
+		a.amount AS "amount",
+		a.off_shelf_amount AS "offShelfAmount",
+		a.is_all_off_shelfed AS "isAllOffShelfed",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tWarehouseoutDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TWarehouseoutDetail">
+		SELECT 
+			<include refid="tWarehouseoutDetailColumns"/>
+		FROM t_warehouseout_detail a
+		<include refid="tWarehouseoutDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TWarehouseoutDetail">
+		SELECT 
+			<include refid="tWarehouseoutDetailColumns"/>
+		FROM t_warehouseout_detail a
+		<include refid="tWarehouseoutDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="warehouseoutId != null and warehouseoutId != ''">
+				AND a.warehouseout_id = #{warehouseoutId}
+			</if>
+			<if test="foreignOrderDetailId != null and foreignOrderDetailId != ''">
+				AND a.foreign_order_detail_id = #{foreignOrderDetailId}
+			</if>
+			<if test="oldStockOutDetailId != null and oldStockOutDetailId != ''">
+				AND a.entry_detail_id_orignal = #{oldStockOutDetailId}
+			</if>
+			<if test="materialType != null and materialType != ''">
+				AND a.material_type_id = #{materialType}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="amount != null and amount != ''">
+				AND a.amount = #{amount}
+			</if>
+			<if test="offShelfAmount != null and offShelfAmount != ''">
+				AND a.off_shelf_amount = #{offShelfAmount}
+			</if>
+			<if test="isAllOffShelfed != null and isAllOffShelfed != ''">
+				AND a.is_all_off_shelfed = #{isAllOffShelfed}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TWarehouseoutDetail">
+		SELECT 
+			<include refid="tWarehouseoutDetailColumns"/>
+		FROM t_warehouseout_detail a
+		<include refid="tWarehouseoutDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_warehouseout_detail(
+			id,
+			entry_detail_id_orignal,
+			warehouseout_id,
+			foreign_order_detail_id,
+			material_type_id,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			unit,
+			amount,
+			off_shelf_amount,
+			is_all_off_shelfed,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{oldStockOutDetailId},
+			#{warehouseoutId},
+			#{foreignOrderDetailId},
+			#{materialType},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{unit},
+			#{amount},
+			#{offShelfAmount},
+			#{isAllOffShelfed},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_warehouseout_detail SET 	
+			warehouseout_id = #{warehouseoutId},
+			entry_detail_id_orignal= #{oldStockOutDetailId},
+			foreign_order_detail_id = #{foreignOrderDetailId},
+			material_type_id = #{materialType},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			unit = #{unit},
+			amount = #{amount},
+			off_shelf_amount = #{offShelfAmount},
+			is_all_off_shelfed = #{isAllOffShelfed},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_warehouseout_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

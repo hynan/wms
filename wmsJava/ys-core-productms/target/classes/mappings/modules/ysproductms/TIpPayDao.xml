@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TIpPayDao">
+    
+	<sql id="tIpPayColumns">
+		a.id AS "id",
+		a.apply_no AS "applyNo",
+		a.pay_type AS "payType",
+		a.pay_period AS "payPeriod",
+		a.official_fee AS "officialFee",
+		a.agency_fee AS "agencyFee",
+		a.pay_date AS "payDate",
+		a.attach_path AS "attachPath",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tIpPayJoins">
+	</sql>
+    
+	<select id="get" resultType="TIpPay">
+		SELECT 
+			<include refid="tIpPayColumns"/>
+		FROM t_ip_pay a
+		<include refid="tIpPayJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TIpPay">
+		SELECT 
+			<include refid="tIpPayColumns"/>
+		FROM t_ip_pay a
+		<include refid="tIpPayJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TIpPay">
+		SELECT 
+			<include refid="tIpPayColumns"/>
+		FROM t_ip_pay a
+		<include refid="tIpPayJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_ip_pay(
+			
+			apply_no,
+			pay_type,
+			pay_period,
+			official_fee,
+			<if test="agencyFee != null and agencyFee != '' ">
+			agency_fee,
+			</if>
+			pay_date,
+			attach_path,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			
+			#{applyNo},
+			#{payType},
+			#{payPeriod},
+			#{officialFee},
+			<if test="agencyFee != null and agencyFee != '' ">
+			#{agencyFee},
+			</if>			
+			#{payDate},
+			#{attachPath},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_ip_pay SET 	
+			apply_no = #{applyNo},
+			pay_type = #{payType},
+			pay_period = #{payPeriod},
+			official_fee = #{officialFee},
+			agency_fee = #{agencyFee},
+			pay_date = #{payDate},
+			attach_path = #{attachPath},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_ip_pay SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getDtoByApplyNo" parameterType="java.lang.String" resultType="com.sml.sz.ysproductms.dto.PayListDto">
+	SELECT
+			i.apply_no applyNo,
+			i.pay_type payType,
+			i.pay_period payPeriod,
+			i.official_fee officialFee,			
+			i.agency_fee agencyFee,
+			i.pay_date payDate,
+			i.attach_path attachPath,
+			i.id id,
+			i.remarks remarks
+	FROM    t_ip_pay i
+		<where>
+		    i.del_flag = 0
+		    <if test="applyNo != null and applyNo != '' "> 
+			AND i.apply_no = #{applyNo}
+		    </if>
+		</where>				
+		ORDER BY i.update_date DESC
+	
+	</select>
+	
+	<select id="deletePayInfoByApplyNo" parameterType="java.lang.String">
+	DELETE FROM  t_ip_pay WHERE apply_no = #{applyNo} and del_flag = 0
+	</select>
+	
+	<select id="payTypeList" resultType="java.lang.String">
+	SELECT  pay_type FROM  t_ip_pay WHERE del_flag = 0 order by update_date
+	</select>
+</mapper>

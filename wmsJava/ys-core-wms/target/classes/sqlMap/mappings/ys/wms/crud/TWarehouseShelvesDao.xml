@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TWarehouseShelvesDao">
+    
+	<sql id="tWarehouseShelvesColumns">
+		a.id AS "id",
+		a.material_type_id AS "materialTypeId",
+		a.material_type_name AS "materialTypeName",
+		a.type AS "type",
+		a.code AS "code",
+		a.name AS "name",
+		a.warehouse_id AS "warehouseId",
+		a.subarea_id AS "subareaId",
+		a.generate_time AS "generateTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tWarehouseShelvesJoins">
+	</sql>
+    
+	<select id="get" resultType="TWarehouseShelves">
+		SELECT 
+			<include refid="tWarehouseShelvesColumns"/>
+		FROM t_warehouse_shelves a
+		<include refid="tWarehouseShelvesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TWarehouseShelves">
+		SELECT 
+			<include refid="tWarehouseShelvesColumns"/>
+		FROM t_warehouse_shelves a
+		<include refid="tWarehouseShelvesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="materialTypeId != null and materialTypeId != ''">
+				AND a.material_type_id = #{materialTypeId}
+			</if>
+			<if test="materialTypeName != null and materialTypeName != ''">
+				AND a.material_type_name = #{materialTypeName}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code LIKE
+				<if test="dbName == 'mysql'">concat('%',#{code},'%')</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="warehouseId != null and warehouseId != ''">
+				AND a.warehouse_id = #{warehouseId}
+			</if>
+			<if test="subareaId != null and subareaId != ''">
+				AND a.subarea_id = #{subareaId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TWarehouseShelves">
+		SELECT 
+			<include refid="tWarehouseShelvesColumns"/>
+		FROM t_warehouse_shelves a
+		<include refid="tWarehouseShelvesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_warehouse_shelves(
+			id,
+			material_type_id,
+			material_type_name,
+			type,
+			code,
+			name,
+			warehouse_id,
+			subarea_id,
+			generate_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{materialTypeId},
+			#{materialTypeName},
+			#{type},
+			#{code},
+			#{name},
+			#{warehouseId},
+			#{subareaId},
+			#{generateTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_warehouse_shelves SET 	
+			material_type_id = #{materialTypeId},
+			material_type_name = #{materialTypeName},
+			type = #{type},
+			code = #{code},
+			name = #{name},
+			warehouse_id = #{warehouseId},
+			subarea_id = #{subareaId},
+			generate_time = #{generateTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_warehouse_shelves SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<where>
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND id = #{id}
+			</if>
+			<if test="warehouseId != null and warehouseId != ''">
+				AND warehouse_id = #{warehouseId}
+			</if>
+			<if test="subareaId != null and subareaId != ''">
+				AND subarea_id = #{subareaId}
+			</if>
+		</where>
+	</update>
+	
+</mapper>

@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.UserDao">
+	<sql id ="baseUserColumns">
+		a.id,
+    	a.company_id AS "company.id",
+    	a.office_id AS "office.id",
+    	a.login_name,
+    	a.password,
+    	a.no,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.user_type userType,
+		a.id_card idCard,
+		a.login_ip loginIp,
+		a.login_date,
+		a.remarks,
+		a.login_flag loginFlag,
+		a.photo,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag
+	</sql>
+	
+    <sql id="userColumns">
+    	a.id,
+    	a.company_id AS "company.id",
+    	o.id AS "office.id",
+    	a.login_name,
+    	a.password,
+    	a.no,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.user_type,
+		a.login_ip,
+		a.login_date,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.id_card idCard,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		sp.id AS "position.id",
+		a.business_code AS "businessCode",
+		a.employee_status AS "employeeStatus",
+		a.join_time AS "joinTime",
+		a.leave_time AS "leaveTime",
+		a.email_password AS "emailPassword",
+    	c.name AS "company.name",
+    	c.parent_id AS "company.parent.id",
+    	c.parent_ids AS "company.parentIds",
+    	ca.id AS "company.area.id",
+    	ca.name AS "company.area.name",
+    	ca.parent_id AS "company.area.parent.id",
+    	ca.parent_ids AS "company.area.parentIds",
+    	o.name AS "office.name",
+    	o.parent_id AS "office.parent.id",
+    	o.parent_ids AS "office.parentIds",
+    	oa.id AS "office.area.id",
+    	oa.name AS "office.area.name",
+    	oa.parent_id AS "office.area.parent.id",
+    	oa.parent_ids AS "office.area.parentIds",
+    	cu.id AS "company.primaryPerson.id",
+    	cu.name AS "company.primaryPerson.name",
+    	cu2.id AS "company.deputyPerson.id",
+    	cu2.name AS "company.deputyPerson.name",
+    	ou.id AS "office.primaryPerson.id",
+    	ou.name AS "office.primaryPerson.name",
+    	ou2.id AS "office.deputyPerson.id",
+    	ou2.name AS "office.deputyPerson.name",
+    	sp.name AS "position.name"<!-- ,
+    	(select  substring_index(substring_index(parent_ids, ',', 2),',',-1) from sys_office o2 WHERE o2.id = o.id ) AS "office.companyId" --><!-- ,
+        r.id AS "roleList.id",
+        r.office_id AS "roleList.office.id",
+        r.name AS "roleList.name",
+        r.enname AS "roleList.enname",
+        r.role_type AS "roleList.roleType",
+        r.data_scope AS "roleList.dataScope" -->
+    </sql>
+    
+    <sql id="userJoins">
+		LEFT JOIN (select * from sys_user_office_position where del_flag = 0) suop ON a.id = suop.user_id
+        LEFT JOIN sys_office c ON c.id = a.company_id
+		LEFT JOIN sys_area ca ON ca.id = c.area_id
+		LEFT JOIN sys_office o ON o.id = suop.office_id
+		LEFT JOIN sys_area oa ON oa.id = o.area_id
+		LEFT JOIN sys_user cu ON cu.id = c.primary_person
+		LEFT JOIN sys_user cu2 ON cu2.id = c.deputy_person
+		LEFT JOIN sys_user ou ON ou.id = o.primary_person
+		LEFT JOIN sys_user ou2 ON ou2.id = o.deputy_person<!-- 
+		LEFT JOIN sys_user_role ur ON ur.user_id = a.id
+        LEFT JOIN sys_role r ON r.id = ur.role_id -->
+        LEFT JOIN sys_position sp ON sp.id = suop.position_id 
+    </sql>
+	
+	<resultMap id="userResult" type="com.sml.sz.sys.entity.User">
+		<id property="id" column="id" />
+		<result property="company.id" column="company.id" />
+		<result property="loginName" column="login_name" />
+	<!-- 	<result property="office.id" column="office.id" /> -->
+		<result property="password" column="password" />
+		<result property="no" column="no" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="phone" column="phone" />
+		<result property="mobile" column="mobile" />
+		<result property="userType" column="user_type" />
+		<result property="loginIp" column="login_ip" />
+		<result property="loginDate" column="login_date" />
+		<result property="roleType" column="roleType" />
+		<result property="remarks" column="remarks" />
+		<result property="loginFlag" column="login_flag" />
+		<result property="photo" column="photo" />
+		<result property="idCard" column="idCard" />
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+		<result property="businessCode" column="businessCode" />
+		<result property="employeeStatus" column="employeeStatus" />
+		<result property="joinTime" column="joinTime" />
+		<result property="leaveTime" column="leaveTime" />
+		<result property="emailPassword" column="emailPassword" />
+		<result property="company.name" column="company.name" />
+		<result property="company.parent.id" column="company.parent.id" />
+		<result property="company.parentIds" column="company.parentIds" />
+		<result property="company.area.id" column="company.area.id" />
+		<result property="company.area.name" column="company.area.name" />
+		<result property="company.area.parent.id" column="company.area.parent.id" />
+		<result property="company.area.parentIds" column="company.area.parentIds" />	
+		<result property="company.primaryPerson.id" column="company.primaryPerson.id" />
+		<result property="company.primaryPerson.name" column="company.primaryPerson.name" />
+		<result property="company.deputyPerson.id" column="company.deputyPerson.id" />		
+		<result property="company.deputyPerson.name" column="company.deputyPerson.name" />		
+		<collection property="positionList" ofType="Office">
+			<id property="id" column="position.id" />			
+			<result property="name" column="position.name" />		
+		</collection>
+		<collection property="officeList" ofType="Office">
+			<id property="id" column="office.id" />
+			<result property="name" column="office.name" />
+			<result property="parent.id" column="office.parent.id" />
+			<result property="parentIds" column="office.parentIds" />
+			<result property="area.id" column="office.area.id" />
+			<result property="area.name" column="office.area.name" />
+			<result property="area.parent.id" column="office.area.parent.id" />
+			<result property="area.parentIds" column="office.area.parentIds" />			
+			<result property="primaryPerson.id" column="office.primaryPerson.id" />
+			<result property="primaryPerson.name" column="office.primaryPerson.name" />
+			<result property="deputyPerson.id" column="office.deputyPerson.id" />
+			<result property="deputyPerson.name" column="office.deputyPerson.name" />
+			<result property="companyId" column="office.companyId" />
+			
+		</collection>
+	</resultMap>
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/><!-- ,
+			ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.id = #{id}
+		<!-- GROUP BY a.id -->
+	</select>
+	
+	<!-- 根据UserId查询用户 -->
+	<select id="getUserByUserId" resultType="User" parameterType="User">
+		SELECT
+			<include refid="baseUserColumns"/>
+		FROM sys_user a
+		WHERE a.id=#{userId} and a.del_flag = '0'
+	</select>
+	
+	<!-- 根据登录名如邮箱、手机号码、登陆LoginName查询用户 -->
+	<select id="getUserByLoginName" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/><!-- ,
+			ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE (a.login_name=#{loginName} or a.email=#{loginName} or a.mobile=#{loginName}) AND a.del_flag = 0 
+	</select>
+	
+	<!-- 根据登录名LoginName查询用户角色列表 -->
+	<select id="getUserRoleListByLoginName" resultType="com.sml.sz.sys.dto.UserRoleListDto">
+	    SELECT  a.id, a.login_name , ur.role_id,c.enname		
+		FROM sys_user a
+		LEFT JOIN sys_user_role ur ON ur.user_id = a.id
+        LEFT JOIN sys_role c ON c.id = ur.role_id
+		WHERE a.login_name=#{loginName} AND c.enname IS NOT NULL
+		
+	</select>
+	
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		<if test="role != null and role.id != null and role.id != ''">
+			JOIN sys_user_role ur ON ur.user_id = a.id AND ur.role_id = #{role.id}
+		</if>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} <!-- and suop.del_flag = 0 -->
+	
+		<!-- <if test="company != null and company.id != null and company.id != ''">
+			AND (c.id = #{company.id} OR c.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%,'||#{company.id}||',%')</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{company.id}, ',%'))</if>
+		</if> -->
+		
+		<if test="officeList != null ">
+		AND suop.office_id in
+			<foreach item="item" index="index" collection="officeList"
+	     		 open="(" separator="," close=")">	      	 	 
+	      	 	 #{item.id}
+	  		</foreach>			
+		</if>
+		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
+		<if test="!currentUser.admin">
+			AND a.id != '1'
+		</if>
+		<if test="loginName != null and loginName != ''">
+			AND a.login_name like 
+					<if test="dbName == 'oracle'">'%'||#{loginName}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{loginName}, '%')</if>
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name like 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>
+		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY c.code, o.code, a.name
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 根据OfficeId获取用户（树查询用户时用） -->
+	<select id="findUserByOfficeId" resultType="User" useCache="true">
+		SELECT
+			a.id, a.name, a.login_name
+		FROM sys_user a
+		JOIN sys_user_office_position b ON a.id = b.user_id 
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+			AND b.office_id = #{office.id} and b.del_flag = 0
+		ORDER BY a.name
+	</select>
+	
+	<!-- 查询全部用户 -->
+	<select id="findAllList" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY c.code, o.code, a.name
+	</select>
+	
+	<!-- 查询全部用户数目 -->
+	<select id="findAllCount" resultType="long">
+		SELECT
+			COUNT(1)
+		FROM sys_user a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<!-- 插入用户 -->
+	<insert id="insert">
+		INSERT INTO sys_user(
+			id, 
+			company_id, 
+			<!-- office_id,  -->
+			login_name, 
+			password, 
+			no, 
+			name, 
+			email, 
+			phone, 
+			mobile, 
+			user_type, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			login_flag, 
+			photo, 
+			del_flag,		
+			<if test="joinTime != null and joinTime != '' ">join_time,</if>
+            <if test="leaveTime != null and leaveTime != '' ">leave_time,</if>		
+			<!-- position_id, -->
+			employee_status,
+			business_code,
+			email_password			
+		) VALUES (
+			#{id}, 
+			#{company.id}, 
+			<!-- #{office.id}, --> 
+			#{loginName}, 
+			#{password}, 
+			#{no}, 
+			#{name}, 
+			#{email}, 
+			#{phone}, 
+			#{mobile}, 
+			#{userType}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{loginFlag}, 
+			#{photo}, 
+			#{delFlag},
+			<if test="joinTime != null and joinTime != '' ">#{joinTime},</if>
+			<if test="leaveTime != null and leaveTime != '' ">#{leaveTime},</if>
+			<!-- #{position.id}, -->
+			#{employeeStatus},
+			#{businessCode},
+			#{emailPassword}
+		)
+	</insert>
+	
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE sys_user SET 
+			company_id = #{company.id}, 
+			<!-- office_id = #{office.id},  -->
+			login_name = #{loginName}, 
+			password = #{password}, 
+			no = #{no}, 
+			name = #{name}, 
+			email = #{email}, 
+			phone = #{phone}, 
+			mobile = #{mobile}, 
+			user_type = #{userType}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks},
+			login_flag = #{loginFlag},
+			photo = #{photo},
+			<if test="joinTime != null and joinTime != '' ">join_time = #{joinTime},</if>			
+			<if test="leaveTime != null and leaveTime != '' ">leave_time = #{leaveTime},</if>
+			<!-- position_id = #{position.id}, -->
+			employee_status = #{employeeStatus},
+			business_code = #{businessCode},
+			email_password = #{emailPassword}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除用户和角色关联表数据 -->
+	<delete id="deleteUserRole">
+		DELETE FROM sys_user_role WHERE user_id = #{id}
+	</delete>
+	
+	<!-- 插入用户和角色关联表数据 -->
+	<insert id="insertUserRole">
+		INSERT INTO sys_user_role(user_id, role_id)
+		<foreach collection="roleList" item="role" separator=" union all ">
+			SELECT #{id}, #{role.id} FROM dual
+		</foreach>
+	</insert>
+	
+	<!-- 更新用户信息  -->
+	<update id="updateUserInfo">
+		UPDATE sys_user SET 
+			email = #{email}, 
+			phone = #{phone}, 
+			mobile = #{mobile}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks},
+			photo = #{photo}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 实名认证方法 -->
+	<update id="realNameAuthentication">
+		UPDATE sys_user SET 
+		name = #{name},
+		id_card = #{idCard}
+		update_by = #{updateBy.id}, 
+		update_date = NOW()
+		WHERE login_name = #{loginName}
+	</update>
+	
+	<!-- 更新用户密码 -->
+	<update id="updatePasswordById">
+		UPDATE sys_user SET 
+			password = #{password} 
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新登录信息，如登录IP、登录时间 -->
+	<update id="updateLoginInfo">
+		UPDATE sys_user SET 
+			login_ip = #{loginIp}, 
+			login_Date = #{loginDate} 
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 逻辑删除用户 -->
+	<update id="delete">
+		UPDATE sys_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateUser">
+		UPDATE sys_user SET 
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 查询班组成员 -->
+	<select id="getOperatorsByTeam" resultType="com.sml.sz.sys.dto.PersonDto">
+		SELECT u.id,u.login_name,u.name  
+		FROM sys_user  u
+		WHERE u.office_id=#{teamId} and u.del_flag =0
+	</select>
+	
+	
+	<select id="getGenProdNumPersonList" resultType="com.sml.sz.sys.dto.PersonDto">
+		 SELECT u.id,u.login_name,u.name 
+		 FROM sys_role r
+         LEFT JOIN sys_user_role ur ON ur.role_id = r.id
+         LEFT JOIN sys_user u ON u.id = ur.user_id
+         WHERE r.enname=#{genProdNum_role}  AND u.del_flag =0 
+		 
+	</select>
+	
+	<select id="getUserIdByName" resultType="String">
+		SELECT
+			a.id
+		FROM sys_user a
+		WHERE a.del_flag = 0 AND a.name = #{name}
+		ORDER BY a.name limit 1
+	</select>
+
+    <select id="salesmanList" resultType="com.sml.sz.sys.dto.SalesmanDto">
+        select
+            distinct id as salesmanId, name as salesmanName
+        from
+            sys_user
+        where
+        	office_id in ('04b19497c71d437f959278d4f0d899f6','08420ba58baf43319bfb31929f94be7c','0c7c335b88ad489d935c2463f20faf57','25d5cc7f06b047b8919787d0bc75f2b7','2c50a010dd1c4ee6a1cf49762d8b4f65','2c58a821d18b4af499d088fb898ad176','2eaa43c7928942bfa0ef500f6fadea8f','317bb20ff66a46c59c7dd87ecc8a4ed3','37da8d965a6247bb895432db572feb73','3f32af5b3a384214bb564a859913d279','48ca3a3a80e248099cf47ca0dd173dbb','4a3ba8d91f9d49ecb67bd62a8c0f4acf','72ff103adef94816b46accbc1171c660','74d6d3e3ee014714b938559fc36a5dd1','791c7a761be04a7d90e24aeec9910e5c','7ac75cd906e94937a2f4c953f72fee18','7f5c2ad3b307408697457f93713602e4','81d6e6969b964b689adc70a555da9d33','9bbc29e0e2c24b5b9a5b924ca1fb6b82','9f2c77b0cfd44af1a7bfcba0fcd660f5','9fafa44eb140444cb7e1a3fadd340232','aa3225af48574b84b23da96c52bf094e','bbaf72ac72b74b6a801810faadea62bd','c5c70e5dfd4c428fab712e4735642dab','d1dfbc338e83473d856f99a1511d90b9','d5edaf90f6aa4f82ab2351b318ecfbb8','e9ab293bab964b79bd0869ba4bc3acbc','ef8ee06fd00c491dbb2d970d081fd1c4','f630bdea3e434f9aa5724d20eec2d67e','f812df4897b04e2fadbe66d85602d428')
+        order by
+            name asc, id asc
+    </select>
+
+    <select id="findSingleTable" resultType="User">
+    SELECT
+        a.id,
+    	a.company_id AS "company.id",
+    	a.office_id AS "office.id",
+    	a.login_name,
+    	a.password,
+    	a.no,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.user_type,
+		a.login_ip,
+		a.login_date,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.id_card idCard,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.position_id AS "position.id",
+		a.business_code AS "businessCode",
+		a.employee_status AS "employeeStatus",
+		a.join_time AS "joinTime",
+		a.leave_time AS "leaveTime"
+	FROM sys_user a
+	WHERE del_flag=0
+		</select>
+		
+		
+		<select id="gett" resultType="User">
+		SELECT
+			<include refid="userColumns"/><!-- ,
+			ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		<include refid="userJoins"/><!-- 
+		LEFT JOIN sys_role_office ro ON ro.role_id = r.id -->
+		WHERE a.id = #{id}
+		GROUP BY a.id
+	</select>
+	
+	<select id="getRoleIdListByUserId" parameterType="java.lang.String" resultType="java.lang.String">
+	SELECT role_id FROM sys_user_role WHERE user_id = #{userId} 
+	</select>
+	
+	<select id="deleteSuopByUserId" parameterType="java.lang.String">
+	DELETE FROM sys_user_office_position WHERE user_id = #{userId}
+	</select>
+	
+	<select id="deleteSuopaByUserId" parameterType="java.lang.String">
+	DELETE FROM sys_user_office_position_app 
+	WHERE office_position_id in 
+	(select id from sys_user_office_position where user_id = #{userId}) 
+	</select>
+	
+	<select id="getNameById" parameterType="java.lang.String" resultType="java.lang.String">
+	SELECT name FROM sys_user WHERE del_flag = 0 and id = #{id}
+	</select>
+</mapper>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TIpInfo4IpPayDao">
+    
+	<!--<select id="queryPaymentList" parameterType="map" resultType="com.sml.sz.ysproductms.dto.TIpInfo4IpPayOutDto"> -->
+	<select id="queryPaymentList" parameterType="com.sml.sz.ysproductms.dto.TIpInfo4IpPayInDto" resultType="com.sml.sz.ysproductms.dto.TIpInfo4IpPayOutDto">
+		SELECT
+			i.apply_no applyNo,
+			i.`name` name,
+			i.type type,
+			i.product_type productType,
+			i.agency agency,
+			i.apply_date applyDate,
+			i.authorize_date authorizeDate,
+			p.pay_date lastPayDate,
+			p.pay_type lastPayType,			
+			IFNULL(p.remainDays , -999999) remainDays
+		FROM
+			t_ip_info i
+		LEFT JOIN (
+			SELECT
+				apply_no,
+				pay_type,
+				pay_period,
+				pay_date,
+				TO_DAYS(
+					DATE_ADD(
+						pay_date,
+						INTERVAL pay_period MONTH
+					)
+				) - TO_DAYS(NOW()) remainDays
+			FROM (
+				SELECT * FROM t_ip_pay where del_flag = 0 ORDER BY pay_date DESC
+			) t
+			GROUP BY
+				t.apply_no
+		) p ON p.apply_no = i.apply_no
+		WHERE 1=1 and i.del_flag = 0
+		<if test="payStatus == 1"> <!--  <if test="payStatus == 'NORMAL'">正常 -->
+			AND p.remainDays >= 0
+		</if>
+		<if test="payStatus == 2"> <!--  <if test="payStatus == 'EXPIRY'">逾期 -->
+			AND p.remainDays <![CDATA[<]]> 0
+		</if>
+		<if test="phase == 1"> <!--   <if test="phase == 'CURRENT_SEASON'">本季度 -->
+			AND QUARTER (
+					DATE_ADD(
+						pay_date,
+						INTERVAL pay_period MONTH
+					)
+				) = QUARTER (now())
+			AND YEAR (
+				DATE_ADD(
+					pay_date,
+					INTERVAL pay_period MONTH
+				)
+			) = YEAR (now())
+		</if>
+		<if test="phase == 2"> <!--  <if test="phase == 'CURRENT_MONTH'">本月 -->
+			AND DATE_FORMAT(
+					DATE_ADD(
+						pay_date,
+						INTERVAL pay_period MONTH
+					),
+					'%y%m'
+				) = DATE_FORMAT(CURDATE(), '%y%m')
+		</if>
+		<if test="phase == 3"> <!--  <if test="phase == 'CURRENT_WEEK'">本周 -->
+			AND YEARWEEK(
+					DATE_ADD(
+						pay_date,
+						INTERVAL pay_period MONTH
+					)
+				) = YEARWEEK(now())
+		</if>
+		ORDER BY p.pay_date DESC
+	</select>
+	
+	
+	
+	<select id="getAgencyList" resultType="string">
+		select DISTINCT agency from t_ip_info
+	</select>
+	
+	<select id="getOwnerList" resultType="string">
+		select DISTINCT owner from t_ip_info
+	</select>
+	
+	<select id="getInventorList" resultType="string">
+		select DISTINCT inventor from t_ip_info
+	</select>
+	
+	<select id="getIprTypeList" resultType="string">
+		select DISTINCT type from t_ip_info
+	</select>
+	
+	<select id="getProductTypeList" resultType="string">
+		select DISTINCT product_type productType from t_ip_info
+	</select>
+	
+	<select id="getLawStatusList" resultType="string">
+		select DISTINCT law_status lawStatus from t_ip_info
+	</select>
+	
+	<select id="getIPRStatusList" resultType="string">
+		select DISTINCT status iprStatus from t_ip_info
+	</select>
+	
+	
+	<select id="queryIprs" parameterType="com.sml.sz.ysproductms.dto.IprQueryPageParam" resultType="com.sml.sz.ysproductms.dto.IprInfoOutDto">
+		SELECT
+			owner AS "owner",
+			agency AS "agency",
+			name AS "name",
+			type AS "type",
+			apply_date AS "applyDate",    
+			apply_no AS "applyNo",
+			product_type AS "productType",    
+			authorize_date AS "authorizeDate",    
+			certificate_no AS "certificateNo",   
+			law_status AS "lawStatus",    
+			inventor AS "inventor",    
+			status AS "status",    
+			attach_path AS "attachPath",    
+			project_status AS "projectStatus",   
+			fund_state AS "fundState",    
+			remarks AS "remarks"  
+			<!-- b.official_fee AS "payList.officialFee",    
+			b.agency_fee AS "payList.proxyFee",   
+			b.pay_date AS "payList.payDate",    
+			b.pay_type AS "payList.payType",    
+			b.remarks AS "payList.remarks",
+			b.id AS "bid"  -->
+		FROM					
+		t_ip_info 
+		<!-- LEFT JOIN t_ip_pay b ON a.apply_no = b.apply_no -->
+		where del_flag = 0		
+		<if test="agency != null and agency != ''">
+		AND agency LIKE concat(concat("%",#{agency}),"%")
+		</if>
+		<if test="applyDateBegin != null and applyDateBegin != ''">
+		AND apply_date >= #{applyDateBegin}
+		</if>
+		<if test="applyDateEnd != null and applyDateEnd != ''">
+		AND apply_date <![CDATA[<=]]> #{applyDateEnd}
+		</if>
+		<if test="applyNo != null and applyNo != ''">
+		AND apply_no LIKE concat(concat("%",#{applyNo}),"%")
+		</if>
+		<if test="authorizeDateBegin != null and authorizeDateBegin != ''">
+		AND authorize_date >= #{authorizeDateBegin}
+		</if>
+		<if test="authorizeDateEnd != null and authorizeDateEnd != ''">
+		AND authorize_date <![CDATA[<=]]> #{authorizeDateEnd}
+		</if>
+		<if test="inventor != null and inventor != ''">
+		AND inventor LIKE concat(concat("%",#{inventor}),"%")
+		</if>
+		<if test="lawStatus != null and lawStatus != ''">
+		AND law_status LIKE concat(concat("%",#{lawStatus}),"%")
+		</if>
+		<if test="name != null and name != ''">
+		AND name LIKE concat(concat("%",#{name}),"%")
+		</if>
+		<if test="owner != null and owner != ''">
+		AND owner LIKE concat(concat("%",#{owner}), "%")
+		</if>
+		<if test="status != null and status != ''">
+		AND `status` = #{status}
+		</if>
+		<if test="type != null and type != ''">
+		AND type LIKE concat(concat("%",#{type}),"%")
+		</if>
+		<if test="productType != null and productType != ''">
+		AND product_type LIKE concat(concat("%",#{productType}),"%")
+		</if>
+		
+		ORDER BY apply_no,apply_date ASC
+		
+	</select>			
+	
+	<resultMap id="iprsMap" type="com.sml.sz.ysproductms.dto.IprInfoOutDto">
+		<id property="id" column="id" />
+		<result property="owner" column="owner" />
+		<result property="agency" column="agency" />		
+		<result property="name" column="name" />
+		<result property="type" column="type" />
+		<result property="applyDate" column="applyDate" />
+		<result property="applyNo" column="applyNo" />		
+		<result property="productType" column="productType" />		
+		<result property="authorizeDate" column="authorizeDate" />
+		<result property="certificateNo" column="certificateNo" />
+		<result property="lawStatus" column="lawStatus" />		
+		<result property="inventor" column="inventor" />
+		<result property="status" column="status" />
+		<result property="attachPath" column="attachPath" />		
+		<result property="projectStatus" column="projectStatus" />
+		<result property="fundState" column="fundState" />
+		<result property="remarks" column="remarks" />				
+		<collection property="payList" ofType="com.sml.sz.ysproductms.dto.PayListDto">
+			<id property="id" column="bid" /> 
+			<result property="officialFee" column="payList.officialFee" />
+			<result property="proxyFee" column="payList.proxyFee" />
+			<result property="payDate" column="payList.payDate" />
+			<result property="payType" column="payList.payType" />			
+			<result property="remarks" column="payList.remarks" />			
+		</collection>
+	</resultMap>
+	
+    <select id="getPayInfoByApplyNo" parameterType="java.lang.String" resultType="com.sml.sz.ysproductms.dto.PayListDto">
+	select 
+	    official_fee AS "officialFee",
+	    agency_fee AS "proxyFee",
+	    pay_date "payDate",
+	    pay_type AS "payType",
+	    remarks AS "remarks"
+    from t_ip_pay
+    where del_flag = 0 and apply_no = #{applyNo}	
+    order by pay_date DESC
+	</select> 
+	
+</mapper>

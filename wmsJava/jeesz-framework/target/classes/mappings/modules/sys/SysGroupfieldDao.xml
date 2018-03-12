@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.SysGroupfieldDao">
+    
+	<sql id="sysGroupfieldColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.groupid AS "groupid",
+		a.permission AS "permission",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysGroupfieldJoins">
+	</sql>
+    
+	<select id="get" resultType="SysGroupfield">
+		SELECT 
+			<include refid="sysGroupfieldColumns"/>
+		FROM sys_groupfield a
+		<include refid="sysGroupfieldJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysGroupfield">
+		SELECT 
+			<include refid="sysGroupfieldColumns"/>
+		FROM sys_groupfield a
+		<include refid="sysGroupfieldJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="groupid != null and groupid != ''">
+				AND a.groupid = #{groupid}
+			</if>
+			<if test="permission != null and permission != ''">
+				AND a.permission = #{permission}
+			</if>
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+			<if test="updateBy != null and updateBy.id != null and updateBy.id != ''">
+				AND a.update_by = #{updateBy.id}
+			</if>
+			<if test="updateDate != null and updateDate != ''">
+				AND a.update_date = #{updateDate}
+			</if>
+			<if test="remarks != null and remarks != ''">
+				AND a.remarks = #{remarks}
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysGroupfield">
+		SELECT 
+			<include refid="sysGroupfieldColumns"/>
+		FROM sys_groupfield a
+		<include refid="sysGroupfieldJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_groupfield(
+			id,
+			name,
+			groupid,
+			permission,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{groupid},
+			#{permission},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_groupfield SET 	
+			name = #{name},
+			groupid = #{groupid},
+			permission = #{permission},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_groupfield SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+    <select id="findByUserId" parameterType="string" resultType="com.sml.sz.sys.dto.UserfieldDto">
+        select gf.permission, gf.name
+        from sys_group_user gu, sys_group g, sys_groupfield gf
+        where gu.user_id = #{user_id} 
+            and gu.usergroup_id = g.id and g.useable = '1' and g.del_flag = '0'
+            and gu.usergroup_id = gf.groupid and gf.del_flag = '0'
+        order by permission asc
+    </select>
+	
+	
+	<select id="insertGruopField">
+		INSERT INTO sys_groupfield(
+		    id,
+			name,
+			groupid,
+			permission,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks
+			
+		) VALUES (
+			#{id},
+			#{name},
+			#{groupid},
+			#{permission},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks}
+
+		)
+	</select>
+	
+	<update id="updateGruopField">
+		UPDATE sys_groupfield SET 	
+			name = #{name},
+			groupid = #{groupid},
+			permission = #{permission},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+			
+		WHERE id = #{id}
+	</update>
+	
+	<select id="deleteGruopField">
+	DELETE FROM sys_groupfield 
+	WHERE id=#{id}
+	</select>
+	
+	<select id="findDtoPage" parameterType="com.sml.sz.sys.dto.GroupFieldDto" resultType="com.sml.sz.sys.dto.GroupFieldDto">
+	select
+	    a.id AS "id",
+		a.name AS "name",
+		a.groupid AS "groupid",
+		a.permission AS "permission",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+    b.name AS "groupName"
+	FROM sys_groupfield a 
+	LEFT JOIN (select id,name  from sys_group )b
+	on a.groupId = b.id
+	<where>
+	    <if test="name != null and name != '' ">
+	    and a.name like concat('%',#{name},'%')
+	    </if>
+	    <if test="groupName != null and groupName != '' ">
+	    and b.name like concat('%',#{groupName},'%')
+	    </if>
+	</where>
+	ORDER BY a.update_date DESC
+	</select>
+	
+	<select id="isExist" parameterType="com.sml.sz.sys.entity.SysGroupfield" resultType="java.lang.Integer">
+	SELECT COUNT(id) FROM sys_groupfield 
+	<where>
+	  <if test="name != null and name != '' ">
+	  and name = #{name}
+	  </if>
+	  <if test="groupid != null and groupid != '' ">
+	  and groupid = #{groupid}
+	  </if>
+	  <if test="permission != null and permission != '' ">
+	  and permission = #{permission}
+	  </if>
+	</where>
+	</select>
+</mapper>

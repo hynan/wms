@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductCategoryDao">
+    
+	<sql id="tProductCategoryColumns">
+		a.id AS "id",
+		a.category_id AS "categoryId",
+		a.category_name AS "categoryName",
+		a.category_parent_id AS "categoryParentId",
+		a.unit AS "unit",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tProductCategoryJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductCategory">
+		SELECT 
+			<include refid="tProductCategoryColumns"/>
+		FROM t_product_category a
+		<include refid="tProductCategoryJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductCategory">
+		SELECT 
+			<include refid="tProductCategoryColumns"/>,
+			b.category_name AS "categoryParentName"
+		FROM t_product_category a
+		LEFT JOIN t_product_category b
+		ON a.category_parent_id = b.id
+		<include refid="tProductCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="categoryParentId != null and categoryParentId != '' ">
+			and a.category_parent_id = #{categoryParentId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.category_id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductCategory">
+		SELECT 
+			<include refid="tProductCategoryColumns"/>
+		FROM t_product_category a
+		<include refid="tProductCategoryJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.category_id asc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_category(
+			category_id,
+			category_name,
+			category_parent_id,
+			unit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{categoryId},
+			#{categoryName},
+			#{categoryParentId},
+			#{unit},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_category SET 	
+			category_id = #{categoryId},
+			category_name = #{categoryName},
+			category_parent_id = #{categoryParentId},
+			unit = #{unit},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_category SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getProductCategoryList" resultType="string">
+		SELECT category_name FROM t_product_category  WHERE del_flag=0
+	</select>
+	
+	<select id="getUserIds" resultType="java.lang.String" parameterType="java.lang.String">
+	SELECT charger_id FROM t_product_category_charger WHERE category_id=#{categoryId}
+	</select>
+	
+	<select id="delectUserIds"  >
+	DELETE FROM t_product_category_charger WHERE category_id=#{categoryId}
+	</select>
+	
+	<insert id="addNew" parameterType="java.util.List">
+        insert into t_product_category_charger 
+           (category_id,
+			charger_id,
+			charger_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.categoryId,jdbcType=INTEGER}, 
+            #{item.chargerId,jdbcType=LONGVARCHAR},
+            #{item.chargerName,jdbcType=LONGVARCHAR},
+            #{item.createBy.id,jdbcType=LONGVARCHAR},
+            #{item.createDate,jdbcType=DATE},
+            #{item.updateBy.id,jdbcType=LONGVARCHAR},
+            #{item.updateDate,jdbcType=DATE},
+            #{item.delFlag,jdbcType=LONGVARCHAR}
+            )
+        </foreach>
+    </insert>
+	
+</mapper>

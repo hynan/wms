@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TDictionaryDao">
+
+	<sql id="tDictionaryColumns">
+		a.id AS "id",
+		a.item_name AS "itemName",
+		a.item_value AS
+		"itemValue",
+		a.item_type AS "itemType" ,
+		a.introduction AS "introduction",
+		a.generate_time AS
+		"generateTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS
+		"createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS
+		"updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="tDictionaryJoins">
+	</sql>
+
+	<select id="get" resultType="TDictionary">
+		SELECT
+		<include refid="tDictionaryColumns" />
+		FROM t_dictionary a
+		<include refid="tDictionaryJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TDictionary">
+		SELECT
+		<include refid="tDictionaryColumns" />
+		FROM t_dictionary a
+		<include refid="tDictionaryJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="itemValue != null and itemValue != ''">
+				AND a.item_value = #{itemValue}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+			<if test= "itemName != null and itemName != '' ">
+			    AND a.item_name = #{itemName}
+			</if>
+		</where>
+		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListTime" resultType="TDictionary">
+		SELECT
+		<include refid="tDictionaryColumns" />
+		FROM t_dictionary a
+		<include refid="tDictionaryJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<!-- <if test="itemName != null and itemName != ''"> AND a.item_name = 
+				#{itemName} </if> -->
+			<if test="itemValue != null and itemValue != ''">
+				AND a.item_value = #{itemValue}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+			<if test="beginTime != null and beginTime !='' ">
+				AND a.generate_time >= #{beginTime}
+			</if>
+			<if test="endTime !=null and endTime != ''">
+				AND #{endTime} >= a.generate_time
+			</if>
+			<if test="itemName != null and itemName != ''">
+				AND a.item_name LIKE concat('%',#{itemName},'%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="TDictionary">
+		SELECT
+		<include refid="tDictionaryColumns" />
+		FROM t_dictionary a
+		<include refid="tDictionaryJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO t_dictionary(
+		id,
+		item_name,
+		item_value,
+		item_type,
+		introduction,
+		generate_time,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		del_flag
+		) VALUES (
+		#{id},
+		#{itemName},
+		#{itemValue},
+		#{itemType},
+		#{introduction},
+		#{generateTime},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_dictionary SET
+		item_name = #{itemName},
+		item_value = #{itemValue},
+		item_type = #{itemType},
+		introduction = #{introduction},
+		generate_time = #{generateTime},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_dictionary SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

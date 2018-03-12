@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TDamageReportDetailDao">
+    
+	<sql id="tDamageReportDetailColumns">
+		a.id AS "id",
+		a.damage_report_id AS "damageReportId",
+		a.stock_id AS "stockId",
+		a.material_type_id AS "materialTypeId",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.product_batch_no AS "productBatchNo",
+		a.material_owner_id AS "materialOwnerId",
+		a.material_owner_name AS "materialOwnerName",
+		a.order_id AS "orderId",
+		a.branch_order_id AS "branchOrderId",
+		a.warehouseentry_time AS "warehouseentryTime",
+		a.subarea_id AS "subareaId",
+		a.storagebin_code AS "storagebinCode",
+		a.stock_barcode AS "stockBarcode",
+		a.auditer_id AS "auditerId",
+		a.auditer_name AS "auditerName",
+		a.unit AS "unit",
+		a.stock_amount AS "stockAmount",
+		a.single_price AS "singlePrice",
+		a.stock_money AS "stockMoney",
+		a.damage_amount AS "damageAmount",
+		a.damage_single_price AS "damageSinglePrice",
+		a.damage_money AS "damageMoney",
+		a.reason AS "reason",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tDamageReportDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TDamageReportDetail">
+		SELECT 
+			<include refid="tDamageReportDetailColumns"/>
+		FROM t_damage_report_detail a
+		<include refid="tDamageReportDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TDamageReportDetail">
+		SELECT 
+			<include refid="tDamageReportDetailColumns"/>
+		FROM t_damage_report_detail a
+		<include refid="tDamageReportDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="damageReportId != null and damageReportId != ''">
+				AND a.damage_report_id = #{damageReportId}
+			</if>
+			<if test="stockId != null and stockId != ''">
+				AND a.stock_id = #{stockId}
+			</if>
+			<if test="materialTypeId != null and materialTypeId != ''">
+				AND a.material_type_id = #{materialTypeId}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="productBatchNo != null and productBatchNo != ''">
+				AND a.product_batch_no = #{productBatchNo}
+			</if>
+			<if test="materialOwnerId != null and materialOwnerId != ''">
+				AND a.material_owner_id = #{materialOwnerId}
+			</if>
+			<if test="materialOwnerName != null and materialOwnerName != ''">
+				AND a.material_owner_name = #{materialOwnerName}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND a.order_id = #{orderId}
+			</if>
+			<if test="branchOrderId != null and branchOrderId != ''">
+				AND a.branch_order_id = #{branchOrderId}
+			</if>
+			<if test="subareaId != null and subareaId != ''">
+				AND a.subarea_id = #{subareaId}
+			</if>
+			<if test="storagebinCode != null and storagebinCode != ''">
+				AND a.storagebin_code = #{storagebinCode}
+			</if>
+			<if test="stockBarcode != null and stockBarcode != ''">
+				AND a.stock_barcode = #{stockBarcode}
+			</if>
+			<if test="auditerId != null and auditerId != ''">
+				AND a.auditer_id = #{auditerId}
+			</if>
+			<if test="auditerName != null and auditerName != ''">
+				AND a.auditer_name = #{auditerName}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="stockAmount != null and stockAmount != ''">
+				AND a.stock_amount = #{stockAmount}
+			</if>
+			<if test="singlePrice != null and singlePrice != ''">
+				AND a.single_price = #{singlePrice}
+			</if>
+			<if test="stockMoney != null and stockMoney != ''">
+				AND a.stock_money = #{stockMoney}
+			</if>
+			<if test="damageAmount != null and damageAmount != ''">
+				AND a.damage_amount = #{damageAmount}
+			</if>
+			<if test="damageSinglePrice != null and damageSinglePrice != ''">
+				AND a.damage_single_price = #{damageSinglePrice}
+			</if>
+			<if test="damageMoney != null and damageMoney != ''">
+				AND a.damage_money = #{damageMoney}
+			</if>
+			<if test="reason != null and reason != ''">
+				AND a.reason = #{reason}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TDamageReportDetail">
+		SELECT 
+			<include refid="tDamageReportDetailColumns"/>
+		FROM t_damage_report_detail a
+		<include refid="tDamageReportDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_damage_report_detail(
+			id,
+			damage_report_id,
+			stock_id,
+			material_type_id,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			product_batch_no,
+			material_owner_id,
+			material_owner_name,
+			order_id,
+			branch_order_id,
+			warehouseentry_time,
+			subarea_id,
+			storagebin_code,
+			stock_barcode,
+			auditer_id,
+			auditer_name,
+			unit,
+			stock_amount,
+			single_price,
+			stock_money,
+			damage_amount,
+			damage_single_price,
+			damage_money,
+			reason,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{damageReportId},
+			#{stockId},
+			#{materialTypeId},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{productBatchNo},
+			#{materialOwnerId},
+			#{materialOwnerName},
+			#{orderId},
+			#{branchOrderId},
+			#{warehouseentryTime},
+			#{subareaId},
+			#{storagebinCode},
+			#{stockBarcode},
+			#{auditerId},
+			#{auditerName},
+			#{unit},
+			#{stockAmount},
+			#{singlePrice},
+			#{stockMoney},
+			#{damageAmount},
+			#{damageSinglePrice},
+			#{damageMoney},
+			#{reason},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_damage_report_detail SET 	
+			damage_report_id = #{damageReportId},
+			stock_id = #{stockId},
+			material_type_id = #{materialTypeId},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			product_batch_no = #{productBatchNo},
+			material_owner_id = #{materialOwnerId},
+			material_owner_name = #{materialOwnerName},
+			order_id = #{orderId},
+			branch_order_id = #{branchOrderId},
+			warehouseentry_time = #{warehouseentryTime},
+			subarea_id = #{subareaId},
+			storagebin_code = #{storagebinCode},
+			stock_barcode = #{stockBarcode},
+			auditer_id = #{auditerId},
+			auditer_name = #{auditerName},
+			unit = #{unit},
+			stock_amount = #{stockAmount},
+			single_price = #{singlePrice},
+			stock_money = #{stockMoney},
+			damage_amount = #{damageAmount},
+			damage_single_price = #{damageSinglePrice},
+			damage_money = #{damageMoney},
+			reason = #{reason},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_damage_report_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

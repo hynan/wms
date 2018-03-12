@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.multi.TransferDao">
+    
+	<sql id="tStockTransferColumns">
+		a.id AS "id",
+		a.transfer_code AS "transferCode",
+		a.generate_time AS "generateTime",
+		a.apply_user_id AS "applyUserId",
+		a.apply_user_name AS "applyUserName",
+		a.out_dept_id AS "outDeptId",
+		a.out_dept_name AS "outDeptName",
+		a.out_warehouse_id AS "outWarehouseId",
+		a.out_warehouse_name AS "outWarehouseName",
+		a.into_dept_id AS "intoDeptId",
+		a.into_dept_name AS "intoDeptName",
+		a.into_warehouse_id AS "intoWarehouseId",
+		a.into_warehouse_name AS "intoWarehouseName",
+		a.warehouseentry_code AS "warehouseentryCode",
+		a.warehouseout_code AS "warehouseoutCode",
+		a.introduction AS "introduction",
+		a.cancel_user_id AS "cancelUserId",
+		a.cancel_user_name AS "cancelUserName",
+		a.cancle_time AS "cancleTime",
+		a.cancel_reason AS "cancelReason",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.operator_dept_id AS "operatorDeptId"
+		
+	</sql>
+	
+	<sql id="tStockTransferJoins">
+	</sql>
+    
+	<select id="get" resultType="TStockTransfer">
+		SELECT 
+			<include refid="tStockTransferColumns"/>
+		FROM t_stock_transfer a
+		<include refid="tStockTransferJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TStockTransfer">
+		SELECT 
+			<include refid="tStockTransferColumns"/>
+		FROM t_stock_transfer a
+		<include refid="tStockTransferJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="transferCode != null and transferCode != ''">
+				AND a.transfer_code = #{transferCode}
+			</if>
+			<if test="applyUserId != null and applyUserId != ''">
+				AND a.apply_user_id = #{applyUserId}
+			</if>
+			<if test="applyUserName != null and applyUserName != ''">
+				AND a.apply_user_name = #{applyUserName}
+			</if>
+			<if test="outDeptId != null and outDeptId != ''">
+				AND a.out_dept_id = #{outDeptId}
+			</if>
+			<if test="outDeptName != null and outDeptName != ''">
+				AND a.out_dept_name = #{outDeptName}
+			</if>
+			<if test="outWarehouseId != null and outWarehouseId != ''">
+				AND a.out_warehouse_id = #{outWarehouseId}
+			</if>
+			<if test="outWarehouseName != null and outWarehouseName != ''">
+				AND a.out_warehouse_name = #{outWarehouseName}
+			</if>
+			<if test="intoDeptId != null and intoDeptId != ''">
+				AND a.into_dept_id = #{intoDeptId}
+			</if>
+			<if test="intoDeptName != null and intoDeptName != ''">
+				AND a.into_dept_name = #{intoDeptName}
+			</if>
+			<if test="intoWarehouseId != null and intoWarehouseId != ''">
+				AND a.into_warehouse_id = #{intoWarehouseId}
+			</if>
+			<if test="intoWarehouseName != null and intoWarehouseName != ''">
+				AND a.into_warehouse_name = #{intoWarehouseName}
+			</if>
+			<if test="warehouseentryCode != null and warehouseentryCode != ''">
+				AND a.warehouseentry_code = #{warehouseentryCode}
+			</if>
+			<if test="warehouseoutCode != null and warehouseoutCode != ''">
+				AND a.warehouseout_code = #{warehouseoutCode}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+			<if test="cancelUserId != null and cancelUserId != ''">
+				AND a.cancel_user_id = #{cancelUserId}
+			</if>
+			<if test="cancelUserName != null and cancelUserName != ''">
+				AND a.cancel_user_name = #{cancelUserName}
+			</if>
+			<if test="cancelReason != null and cancelReason != ''">
+				AND a.cancel_reason = #{cancelReason}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TStockTransfer">
+		SELECT 
+			<include refid="tStockTransferColumns"/>
+		FROM t_stock_transfer a
+		<include refid="tStockTransferJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_stock_transfer(
+			id,
+			transfer_code,
+			generate_time,
+			apply_user_id,
+			apply_user_name,
+			out_dept_id,
+			out_dept_name,
+			out_warehouse_id,
+			out_warehouse_name,
+			into_dept_id,
+			into_dept_name,
+			into_warehouse_id,
+			into_warehouse_name,
+			warehouseentry_code,
+			warehouseout_code,
+			introduction,
+			cancel_user_id,
+			cancel_user_name,
+			cancle_time,
+			cancel_reason,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			operator_dept_id
+			
+			
+		) VALUES (
+			#{id},
+			#{transferCode},
+			#{generateTime},
+			#{applyUserId},
+			#{applyUserName},
+			#{outDeptId},
+			#{outDeptName},
+			#{outWarehouseId},
+			#{outWarehouseName},
+			#{intoDeptId},
+			#{intoDeptName},
+			#{intoWarehouseId},
+			#{intoWarehouseName},
+			#{warehouseentryCode},
+			#{warehouseoutCode},
+			#{introduction},
+			#{cancelUserId},
+			#{cancelUserName},
+			#{cancleTime},
+			#{cancelReason},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{operatorDeptId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_stock_transfer SET 	
+			transfer_code = #{transferCode},
+			generate_time = #{generateTime},
+			apply_user_id = #{applyUserId},
+			apply_user_name = #{applyUserName},
+			out_dept_id = #{outDeptId},
+			out_dept_name = #{outDeptName},
+			out_warehouse_id = #{outWarehouseId},
+			out_warehouse_name = #{outWarehouseName},
+			into_dept_id = #{intoDeptId},
+			into_dept_name = #{intoDeptName},
+			into_warehouse_id = #{intoWarehouseId},
+			into_warehouse_name = #{intoWarehouseName},
+			warehouseentry_code = #{warehouseentryCode},
+			warehouseout_code = #{warehouseoutCode},
+			introduction = #{introduction},
+			cancel_user_id = #{cancelUserId},
+			cancel_user_name = #{cancelUserName},
+			cancle_time = #{cancleTime},
+			cancel_reason = #{cancelReason},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			operator_dept_id = #{operatorDeptId}
+			
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_stock_transfer SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="getTransferList" parameterType="com.ys.wms.dto.transfer.TransferQueryParam" resultType="com.ys.wms.dto.transfer.TransferListDto">
+		SELECT 
+	    a.id AS transferId,
+		a.transfer_code AS transferCode,
+		a.out_warehouse_name AS outWarehouseName,
+		a.into_warehouse_name AS inWarehouseName,
+		a.warehouseentry_code AS "warehouseentryCode",
+		a.warehouseout_code AS "warehouseoutCode",
+		a.status AS transferStatusKey,
+		a.generate_time AS createDate
+		FROM t_stock_transfer a
+		<where>
+			a.del_flag ='0'
+			<if test="transferId != null and transferId != ''">
+				AND a.id = #{transferId}
+			</if>
+			<if test="transferCode != null and transferCode != ''">
+				AND a.transfer_code like CONCAT('%',#{transferCode},'%')
+			</if>
+			<if test="outDeptId != null and outDeptId != ''">
+				AND a.out_dept_id = #{outDeptId}
+			</if>
+			<if test="InDeptId != null and InDeptId != ''">
+				AND a.into_dept_id = #{InDeptId}
+			</if>
+			<if test="inWarehouseId != null and inWarehouseId != ''">
+				AND a.into_warehouse_id = #{inWarehouseId}
+			</if>
+			
+			<if test="transferStatusKey != null and transferStatusKey != ''">
+				AND a.status = #{transferStatusKey}
+			</if>
+			
+			<if test="createDateBegin != null">
+				AND a.generate_time >= #{createDateBegin}
+			</if>
+			<if test="createDateEnd != null and createDateEnd != ''">
+				<![CDATA[
+			    AND a.generate_time <= #{createDateEnd}
+		    ]]>
+			</if>
+			
+			<if test="outWarehouseId != null and outWarehouseId != ''">
+				AND a.out_warehouse_id = #{outWarehouseId}
+			</if>
+			<if test="users != null and warehouseIds==null">
+				AND a.apply_user_id in
+				<foreach item="item" index="index" collection="users" open="(" separator="," close=")">  
+		           #{item}  
+	            </foreach> 
+			</if>
+			<if test=" warehouseIds != null ">
+			   AND (a.apply_user_id in
+				<foreach item="item" index="index" collection="users" open="(" separator="," close=")">  
+		           #{item}  
+	            </foreach> 
+				or a.out_warehouse_id in
+				<foreach item="item" index="index" collection="warehouseIds" open="(" separator="," close=")">  
+		           #{item}  
+	            </foreach> 
+	            )
+			</if>
+		</where>
+		ORDER BY a.create_date DESC
+	</select>
+	
+	<select id="queryTransferReviewWait" parameterType="java.util.List" resultType="com.ys.wms.dto.task.TransferReviewWaitDto">
+		SELECT 
+		a.id as transferBillId,
+		a.generate_time as createDate,
+		a.apply_user_name as applierName,
+		a.out_warehouse_name as outWarehouseName,
+		a.transfer_code as transferBillCode
+		FROM t_stock_transfer a 
+		<where>
+			a.del_flag = '0'
+			and a.out_warehouse_id in
+				<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		           #{item}  
+	            </foreach> 
+			and a.`status`=1
+		</where>
+		ORDER BY a.create_date 
+	</select>
+</mapper>

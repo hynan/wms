@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TStockCyclecountDetailVerifyDao">
+    
+	<sql id="tStockCyclecountDetailVerifyColumns">
+		a.id AS "id",
+		a.cyclecount_detail_id AS "cyclecountDetailId",
+		a.stock_id AS "stockId",
+		a.material_type AS "materialType",
+		a.stock_barcode AS "stockBarcode",
+		a.material_code AS "materialCode",
+		a.product_batch_no AS "productBatchNo",
+		a.material_owner_id AS "materialOwnerId",
+		a.material_owner_name AS "materialOwnerName",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.order_id AS "orderId",
+		a.branch_order_id AS "branchOrderId",
+		a.external_require AS "externalRequire",
+		a.technics AS "technics",
+		a.storagebin_code AS "storagebinCode",
+		a.stock_amount AS "stockAmount",
+		a.unit AS "unit",
+		a.stock_money AS "stockMoney",
+		a.real_amount AS "realAmount",
+		a.result_type AS "resultType",
+		a.overage_amount AS "overageAmount",
+		a.loss_amount AS "lossAmount",
+		a.real_money AS "realMoney",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.real_amount_in AS realAmountIn,
+		a.real_amount_out AS realAmountOut
+	</sql>
+	
+	<sql id="tStockCyclecountDetailVerifyJoins">
+	</sql>
+    
+	<select id="get" resultType="TStockCyclecountDetailVerify">
+		SELECT 
+			<include refid="tStockCyclecountDetailVerifyColumns"/>
+		FROM t_stock_cyclecount_detail_verify a
+		<include refid="tStockCyclecountDetailVerifyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TStockCyclecountDetailVerify">
+		SELECT 
+			<include refid="tStockCyclecountDetailVerifyColumns"/>
+		FROM t_stock_cyclecount_detail_verify a
+		<include refid="tStockCyclecountDetailVerifyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="cyclecountDetailId != null and cyclecountDetailId != ''">
+				AND a.cyclecount_detail_id = #{cyclecountDetailId}
+			</if>
+			<if test="stockId != null and stockId != ''">
+				AND a.stock_id = #{stockId}
+			</if>
+			<if test="materialType != null and materialType != ''">
+				AND a.material_type = #{materialType}
+			</if>
+			<if test="stockBarcode != null and stockBarcode != ''">
+				AND a.stock_barcode = #{stockBarcode}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="productBatchNo != null and productBatchNo != ''">
+				AND a.product_batch_no = #{productBatchNo}
+			</if>
+			<if test="materialOwnerId != null and materialOwnerId != ''">
+				AND a.material_owner_id = #{materialOwnerId}
+			</if>
+			<if test="materialOwnerName != null and materialOwnerName != ''">
+				AND a.material_owner_name = #{materialOwnerName}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND a.order_id = #{orderId}
+			</if>
+			<if test="branchOrderId != null and branchOrderId != ''">
+				AND a.branch_order_id = #{branchOrderId}
+			</if>
+			<if test="externalRequire != null and externalRequire != ''">
+				AND a.external_require = #{externalRequire}
+			</if>
+			<if test="technics != null and technics != ''">
+				AND a.technics = #{technics}
+			</if>
+			<if test="storagebinCode != null and storagebinCode != ''">
+				AND a.storagebin_code = #{storagebinCode}
+			</if>
+			<if test="stockAmount != null and stockAmount != ''">
+				AND a.stock_amount = #{stockAmount}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="stockMoney != null and stockMoney != ''">
+				AND a.stock_money = #{stockMoney}
+			</if>
+			<if test="realAmount != null and realAmount != ''">
+				AND a.real_amount = #{realAmount}
+			</if>
+			<if test="resultType != null and resultType != ''">
+				AND a.result_type = #{resultType}
+			</if>
+			<if test="overageAmount != null and overageAmount != ''">
+				AND a.overage_amount = #{overageAmount}
+			</if>
+			<if test="lossAmount != null and lossAmount != ''">
+				AND a.loss_amount = #{lossAmount}
+			</if>
+			<if test="realMoney != null and realMoney != ''">
+				AND a.real_money = #{realMoney}
+			</if>
+			<if test="realAmountIn != null and realAmountIn != ''">
+				AND a.real_amount_in = #{realAmountIn}
+			</if>
+			<if test="realAmountOut != null and realAmountOut != ''">
+				AND a.real_amount_out = #{realAmountOut}
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TStockCyclecountDetailVerify">
+		SELECT 
+			<include refid="tStockCyclecountDetailVerifyColumns"/>
+		FROM t_stock_cyclecount_detail_verify a
+		<include refid="tStockCyclecountDetailVerifyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_stock_cyclecount_detail_verify(
+			id,
+			cyclecount_detail_id,
+			stock_id,
+			material_type,
+			stock_barcode,
+			material_code,
+			product_batch_no,
+			material_owner_id,
+			material_owner_name,
+			material_name,
+			material_model,
+			material_spec,
+			order_id,
+			branch_order_id,
+			external_require,
+			technics,
+			storagebin_code,
+			stock_amount,
+			unit,
+			stock_money,
+			real_amount,
+			result_type,
+			overage_amount,
+			loss_amount,
+			real_money,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			real_amount_in,
+			real_amount_out
+		) VALUES (
+			#{id},
+			#{cyclecountDetailId},
+			#{stockId},
+			#{materialType},
+			#{stockBarcode},
+			#{materialCode},
+			#{productBatchNo},
+			#{materialOwnerId},
+			#{materialOwnerName},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{orderId},
+			#{branchOrderId},
+			#{externalRequire},
+			#{technics},
+			#{storagebinCode},
+			#{stockAmount},
+			#{unit},
+			#{stockMoney},
+			#{realAmount},
+			#{resultType},
+			#{overageAmount},
+			#{lossAmount},
+			#{realMoney},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{realAmountIn},
+			#{realAmountOut}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_stock_cyclecount_detail_verify SET 	
+			cyclecount_detail_id = #{cyclecountDetailId},
+			stock_id = #{stockId},
+			material_type = #{materialType},
+			stock_barcode = #{stockBarcode},
+			material_code = #{materialCode},
+			product_batch_no = #{productBatchNo},
+			material_owner_id = #{materialOwnerId},
+			material_owner_name = #{materialOwnerName},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			order_id = #{orderId},
+			branch_order_id = #{branchOrderId},
+			external_require = #{externalRequire},
+			technics = #{technics},
+			storagebin_code = #{storagebinCode},
+			stock_amount = #{stockAmount},
+			unit = #{unit},
+			stock_money = #{stockMoney},
+			real_amount = #{realAmount},
+			result_type = #{resultType},
+			overage_amount = #{overageAmount},
+			loss_amount = #{lossAmount},
+			real_money = #{realMoney},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			real_amount_in = #{realAmountIn},
+			real_amount_out = #{realAmountOut}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_stock_cyclecount_detail_verify SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

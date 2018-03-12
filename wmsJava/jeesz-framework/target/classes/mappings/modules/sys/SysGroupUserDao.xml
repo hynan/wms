@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.SysGroupUserDao">
+    
+	<sql id="sysGroupUserColumns">
+		a.usergroup_id AS "usergroupId",
+		a.user_id AS "user.id",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="sysGroupUserJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="SysGroupUser">
+		SELECT 
+			<include refid="sysGroupUserColumns"/>
+		FROM sys_group_user a
+		<include refid="sysGroupUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysGroupUser">
+		SELECT 
+			<include refid="sysGroupUserColumns"/>
+		FROM sys_group_user a
+		<include refid="sysGroupUserJoins"/>
+		<where>
+			
+			<if test="usergroupId != null and usergroupId != ''">
+				AND a.usergroup_id = #{usergroupId}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysGroupUser">
+		SELECT 
+			<include refid="sysGroupUserColumns"/>
+		FROM sys_group_user a
+		<include refid="sysGroupUserJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_group_user(
+			usergroup_id,
+			user_id
+		) VALUES (
+			#{usergroupId},
+			#{user.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_group_user SET 	
+			usergroup_id = #{usergroupId},
+			user_id = #{user.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_group_user
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--   查询开始    -->
+	<select id="findGroupUserList" resultMap="userMapper" parameterType="com.sml.sz.sys.entity.SysGroupUser">
+	select usergroup_id,
+	       user_id  
+	from   sys_group_user
+	where  usergroup_id = #{usergroupId}	
+	</select>
+	<resultMap type="com.sml.sz.sys.entity.SysGroupUser" id="userMapper">
+	  <result property="usergroupId" column="usergroup_id"/>
+	  <association property="user" column="user_id" select="selectUserById"  javaType="User"/>
+	</resultMap>
+	<select id="selectUserById" parameterType="String" resultType="User">
+	    select id,name 
+	    from  sys_user
+	    where id=#{user_id}
+	</select>
+	
+	<!--  查询结束   -->
+	<insert id="insertGroupUser">
+		INSERT INTO sys_group_user(
+			usergroup_id,
+			user_id
+		) VALUES (
+			#{usergroupId},
+			#{user.id}
+		)
+	</insert>
+	
+	<update id="deleteGroupUser">
+		DELETE FROM sys_group_user
+		WHERE usergroup_id = #{usergroupId} and user_id=#{user.id}
+	</update>
+	
+	<select id="checkName" resultType="java.lang.String">
+	SELECT id FROM sys_group WHERE name = #{name} and id != #{id} limit 1
+	</select>
+</mapper>

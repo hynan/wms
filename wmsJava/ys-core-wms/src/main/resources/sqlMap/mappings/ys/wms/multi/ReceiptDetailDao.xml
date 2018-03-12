@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.multi.ReceiptDetailDao">
+    
+	<sql id="tProductReceiveDetailColumns">
+		a.id AS "id",
+		a.product_receive_id AS "productReceiveId",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.unit AS "unit",
+		a.amount AS "amount",
+		a.receiver_id AS "receiverId",
+		a.receiver_name AS "receiverName",
+		a.receive_time AS "receiveTime",
+		a.qualified_amount AS "qualifiedAmount",
+		a.unqualified_amount AS "unqualifiedAmount",
+		a.unqualified_introduction AS "unqualifiedIntroduction",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.receive_introduction AS "receiveIntroduction",
+		a.bar_code AS "barCode",
+		a.material_type_id AS "materialTypeId",
+        a.material_type_name AS "materialTypeName"
+		
+	</sql>
+	
+	<sql id="tProductReceiveDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductReceiveDetail">
+		SELECT 
+			<include refid="tProductReceiveDetailColumns"/>
+		FROM t_product_receive_detail a
+		<include refid="tProductReceiveDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductReceiveDetail">
+		SELECT 
+			<include refid="tProductReceiveDetailColumns"/>
+		FROM t_product_receive_detail a
+		<include refid="tProductReceiveDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="productReceiveId != null and productReceiveId != ''">
+				AND a.product_receive_id = #{productReceiveId}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="amount != null and amount != ''">
+				AND a.amount = #{amount}
+			</if>
+			<if test="receiverId != null and receiverId != ''">
+				AND a.receiver_id = #{receiverId}
+			</if>
+			<if test="receiverName != null and receiverName != ''">
+				AND a.receiver_name = #{receiverName}
+			</if>
+			<if test="qualifiedAmount != null and qualifiedAmount != ''">
+				AND a.qualified_amount = #{qualifiedAmount}
+			</if>
+			<if test="unqualifiedAmount != null and unqualifiedAmount != ''">
+				AND a.unqualified_amount = #{unqualifiedAmount}
+			</if>
+			<if test="unqualifiedIntroduction != null and unqualifiedIntroduction != ''">
+				AND a.unqualified_introduction = #{unqualifiedIntroduction}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductReceiveDetail">
+		SELECT 
+			<include refid="tProductReceiveDetailColumns"/>
+		FROM t_product_receive_detail a
+		<include refid="tProductReceiveDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_receive_detail(
+			id,
+			product_receive_id,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			unit,
+			amount,
+			receiver_id,
+			receiver_name,
+			receive_time,
+			qualified_amount,
+			unqualified_amount,
+			unqualified_introduction,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			receive_introduction ,
+			bar_code ,
+			material_type_id,
+			material_type_name
+			
+		) VALUES (
+			#{id},
+			#{productReceiveId},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{unit},
+			#{amount},
+			#{receiverId},
+			#{receiverName},
+			#{receiveTime},
+			#{qualifiedAmount},
+			#{unqualifiedAmount},
+			#{unqualifiedIntroduction},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{receiveIntroduction},
+			#{barCode},
+			#{materialTypeId},
+			#{materialTypeName}
+			
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_receive_detail SET 	
+			product_receive_id = #{productReceiveId},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			unit = #{unit},
+			amount = #{amount},
+			receiver_id = #{receiverId},
+			receiver_name = #{receiverName},
+			receive_time = #{receiveTime},
+			qualified_amount = #{qualifiedAmount},
+			unqualified_amount = #{unqualifiedAmount},
+			unqualified_introduction = #{unqualifiedIntroduction},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			receive_introduction=#{receiveIntroduction},
+			bar_code =#{barCode},
+			material_type_id=#{materialTypeId},
+			material_type_name=#{materialTypeName}
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_receive_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="deleteByReceiptId">
+		UPDATE t_product_receive_detail SET 
+			del_flag = '1'
+		WHERE product_receive_id = #{receiptBillId}
+	</update>
+	
+	<!-- 查询最大收货单明细条码 -->
+	<select id="getBarCodeMax" parameterType="java.lang.String" resultType="java.lang.String">
+	select t.bar_code from t_product_receive_detail t  where t.del_flag='0'  ORDER BY SUBSTRING(bar_code, -10) DESC LIMIT 0,1
+	</select>
+	
+	<!-- 查询未收货的收货明细 -->
+	<select id="queryUnReceive" parameterType="java.lang.String" resultType="TProductReceiveDetail">
+		SELECT * FROM t_product_receive_detail a 
+		where a.del_flag='0' 
+		and a.product_receive_id=#{productReceiveId} 
+		and a.qualified_amount is NULL
+	</select>
+	
+	<!-- 根据收货单id查询明细列表 -->
+	<select id="queryDetailByReceiveId" parameterType="java.lang.String" resultType="TProductReceiveDetail">
+		SELECT *
+		FROM t_product_receive_detail a
+		where 
+		a.del_flag = '0'
+		AND a.product_receive_id = #{productReceiveId}
+	</select>
+	
+	<!-- 查询收货单明细（收货回显） -->
+	<select id="getReceiptDetailList" parameterType="HashMap" resultMap="receiptDetailListMap">
+		select  
+		d.id as receiptDetailId,
+		d.receiver_id as checkerId,
+		d.receiver_name as checkerName,
+		d.receive_time as checkDate,
+		d.amount as arrivalAmount,
+		d.qualified_amount as qualifiedAmount,
+		d.unqualified_amount as unqualifiedAmount,
+		d.unqualified_introduction as unqualifiedDesc,
+		d.receive_introduction as introduction,
+		d.material_code as materialCode,
+		d.material_name as materialName,
+		d.material_model as modelType,
+		d.material_spec as specification,
+		d.unit as unitName,
+		d.material_type_id as materialCategoryCode,
+		d.material_type_name as materialCategoryName,
+		d.bar_code as barCode
+		from t_product_receive_detail d 
+		<where>
+			d.del_flag ='0'
+			<if test="receiptBillId != null and receiptBillId != ''">
+				AND d.product_receive_id = #{receiptBillId}
+			</if>
+			<if test="userId != null and userId != ''">
+				AND d.receiver_id = #{userId}
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="getReceiptDetailLabelList" parameterType="java.lang.String" resultType="com.ys.wms.dto.receipt.ReceiptDetailLabelDto">
+	   select  
+		w.`name` as warehouseName,
+		a.arrive_time as arrivalDate,
+		d.id as receiptDetailId,
+		d.material_code as materailCode,
+		d.material_name as materialName,
+		d.bar_code as barCode
+		from t_product_receive a 
+		LEFT JOIN t_product_receive_detail d on d.product_receive_id=a.id
+        LEFT JOIN t_warehouse_info w on w.id=a.warehouse_id
+		where	
+		d.del_flag ='0'
+		AND a.id=#{receiptBillId}
+	</select>
+	
+	
+	<resultMap id="receiptDetailListMap" type="com.ys.wms.dto.receipt.ReceiptDetailDto">
+		<result column="receiptDetailId" property="receiptDetailId" />
+		<result column="checkerId" property="checkerId" />
+		<result column="checkerName" property="checkerName" />
+		<result column="checkDate" property="checkDate" />
+		<result column="arrivalAmount" property="arrivalAmount" />
+		<result column="qualifiedAmount" property="qualifiedAmount" />
+		<result column="unqualifiedAmount" property="unqualifiedAmount" />
+		<result column="unqualifiedDesc" property="unqualifiedDesc" />
+		<result column="introduction" property="introduction" />
+		<result column="materialCode" property="materialCode" />
+		<result column="materialName" property="materialName" />
+		<result column="modelType" property="modelType" />
+		<result column="specification" property="specification" />
+		<result column="unitName" property="unitName" />
+		<result column="materialCategoryCode" property="materialCategoryCode" />
+		<result column="materialCategoryName" property="materialCategoryName" />
+		<result column="barCode" property="barCode" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductMaterialDao">
+    
+	<sql id="tMaterialColumns">
+		a.id AS "id",
+		a.material_code AS "materialCode",
+		a.version_no AS "versionNo",
+		a.material_type_id AS "materialTypeId",
+		a.material_smalltype_id AS "materialSmalltypeId",
+		a.name AS "name",
+		a.another_name AS "anotherName",
+		a.spec_name AS "specName",
+		a.create_time AS "createTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tMaterialJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductMaterial">
+		SELECT 
+			<include refid="tMaterialColumns"/>
+		<include refid="tMaterialJoins"/>
+		FROM t_material a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductMaterial">
+		SELECT 
+			<include refid="tMaterialColumns"/>,
+			b.name AS "bigTypeName",
+			c.name AS "smallTypeName"
+		FROM t_material a
+		LEFT JOIN t_material_type b
+		ON a.material_type_id = b. id
+		LEFT JOIN t_material_smalltype c
+		ON a.material_smalltype_id = c.id
+		<include refid="tMaterialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="specName != null and specName != ''">
+				AND a.spec_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{specName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{specName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{specName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductMaterial">
+		SELECT 
+			<include refid="tMaterialColumns"/>
+		FROM t_material a
+		<include refid="tMaterialJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_material(
+			
+			material_code,
+			version_no,
+			material_type_id,
+			material_smalltype_id,
+			name,
+			another_name,
+			spec_name,
+			create_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			
+			#{materialCode},
+			#{versionNo},
+			#{materialTypeId},
+			#{materialSmalltypeId},
+			#{name},
+			#{anotherName},
+			#{specName},
+			#{createTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_material SET 	
+			material_code = #{materialCode},
+			version_no = #{versionNo},
+			material_type_id = #{materialTypeId},
+			material_smalltype_id = #{materialSmalltypeId},
+			name = #{name},
+			another_name = #{anotherName},
+			spec_name = #{specName},
+			create_time = #{createTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_material SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

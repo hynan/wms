@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.member.dao.MemberDao">
+	<sql id="userColumns">
+		a.id,
+		a.office_id,
+		a.login_name,
+		a.password,
+		a.no,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.user_type,
+		a.login_ip,
+		a.login_date,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS
+		"updateBy.id",
+		a.update_date,
+		a.del_flag
+	</sql>
+
+	<sql id="userJoins">
+		JOIN sys_office c ON c.id = a.company_id
+		JOIN sys_area ca ON ca.id =
+		c.area_id
+		JOIN sys_office o ON o.id = a.office_id
+		JOIN sys_area oa ON
+		oa.id = o.area_id
+		LEFT JOIN sys_user cu ON cu.id = c.primary_person
+		LEFT JOIN sys_user cu2 ON cu2.id = c.deputy_person
+		LEFT JOIN sys_user
+		ou ON ou.id = o.primary_person
+		LEFT JOIN sys_user ou2 ON ou2.id =
+		o.deputy_person<!-- LEFT JOIN sys_user_role ur ON ur.user_id = a.id LEFT 
+			JOIN sys_role r ON r.id = ur.role_id -->
+	</sql>
+
+	<!-- 验证手机号码是否绑定 -->
+	<select id="checkMobileIsBind" resultType="int" parameterType="String">
+		SELECT COUNT(*) c FROM sys_user u WHERE u.mobile = #{mobileNumber}
+	</select>
+	
+	<!-- 根据userId验证手机是否已经绑定 -->
+	<select id="checkMobileIsBindByUserId" resultType="int" parameterType="String">
+		SELECT COUNT(mobile) c FROM sys_user u WHERE u.id = #{userId}
+	</select>
+	
+	<!--  根据用户手机号码、用户名称、邮箱、验证身份证号是否已经绑定 -->
+	<select id="checkIDCardIsBind" resultType="int">
+		SELECT COUNT(id_card) FROM sys_user u WHERE (u.id = #{id}  or u.login_name = #{id} or u.email = #{id} or u.mobile = #{id}) and u.id_card = #{idCard}
+	</select>
+	
+	<!-- 根据用户userId查询是否存在，此可以是用户名、邮箱、手机号码等 -->
+	<select id="checkUserIdIsExists" parameterType="String" resultType="int">
+		select count(*) from sys_user u WHERE u.login_name = #{id} or u.email = #{id} or u.mobile = #{id}
+	</select>
+	
+	<!-- 取消绑定旧手机号码，绑定新手机号码 -->
+	<update id="unBindMobile">
+		update sys_user u set u.mobile = #{newMobileNumber} where u.login_name = #{userId}
+	</update>
+	
+	<!-- 写入验证号码、手机到数据库中 -->
+	<insert id="addVerificationCode">
+		INSERT INTO sys_verification_code VALUES(#{id},#{mobileNumber},#{verificationCode},NOW())
+	</insert>
+	
+	<!-- 根据手机号码获取2分钟之内的验证码 -->
+	<select id="getVeriCodeByMobileNumber" parameterType="String" resultType="String">
+		SELECT verification_code FROM sys_verification_code t WHERE t.mobile_number = #{mobileNumber} AND 
+			t.send_time BETWEEN SYSDATE()-INTERVAL #{timeout} SECOND AND SYSDATE() 
+			ORDER BY t.send_time DESC LIMIT 1 ;
+	</select>
+
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultType="Member">
+		SELECT
+		<include refid="userColumns" /><!-- , ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		<include refid="userJoins" /><!-- LEFT JOIN sys_role_office ro 
+			ON ro.role_id = r.id -->
+		WHERE a.id = #{id}
+	</select>
+	
+	<!-- 根据用户ID修改密码 -->
+	<update id="modifyPwdByUserId">
+		UPDATE sys_user u SET u.PASSWORD = #{pwd} where u.login_name = #{userId}
+	</update>
+
+	<!-- 根据登录名查询用户信息 -->
+	<select id="getByLoginName" resultType="Member" parameterType="Member">
+		SELECT
+		<include refid="userColumns" /><!-- , ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		WHERE a.login_name = #{loginName} AND a.del_flag = 0
+	</select>
+
+	<!-- 根据登录名查询用户信息 -->
+	<select id="getByEmail" resultType="Member" parameterType="Member">
+		SELECT
+		<include refid="userColumns" /><!-- , ro.office_id AS "roleList.officeList.id" -->
+		FROM sys_user a
+		WHERE a.email = #{entity.loginName} AND a.del_flag = 0
+	</select>
+
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultType="Member">
+		SELECT
+		<include refid="userColumns" />
+		FROM sys_user a
+
+	</select>
+
+	<!-- 根据OfficeId获取用户（树查询用户时用） -->
+	<select id="findMemberByOfficeId" resultType="Member" useCache="true">
+		SELECT
+		a.id, a.name, a.login_name
+		FROM sys_user a
+		WHERE a.del_flag =
+		0
+		AND a.office_id = #{office.id}
+		ORDER BY a.name
+	</select>
+
+	<!-- 查询全部用户 -->
+	<select id="findAllList" resultType="Member">
+		SELECT
+		<include refid="userColumns" />
+		FROM sys_user a
+		<include refid="userJoins" />
+		WHERE a.del_flag = 0
+		ORDER BY c.code, o.code, a.name
+	</select>
+
+	<!-- 查询全部用户数目 -->
+	<select id="findAllCount" resultType="long">
+		SELECT
+		COUNT(1)
+		FROM sys_user
+		a
+		WHERE a.del_flag = 0
+	</select>
+
+	<select id="getEmailActiveCodeByLoginName" parameterType="String" resultType="String">
+		select t.active_code from sys_email_active_code t where `send_time` > DATE_SUB(NOW(),INTERVAL 24 HOUR)  ORDER BY t.send_time DESC LIMIT 1
+	</select>
+	
+	<!-- 插入用户 -->
+	<insert id="insert">
+		INSERT INTO sys_user(
+		id,
+		login_name,
+		password,
+		no,
+		name,
+		email,
+		phone,
+		mobile,
+		user_type,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		login_flag,
+		photo,
+		del_flag,
+		status
+		)
+		VALUES (
+		#{id},
+		#{loginName},
+		#{password},
+		#{no},
+		#{name},
+		#{email},
+		#{phone},
+		#{mobile},
+		#{userType},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{loginFlag},
+		#{photo},
+		#{delFlag},
+		#{status}
+		)
+	</insert>
+
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE sys_user SET
+		login_name = #{loginName},
+		password =
+		#{password},
+		no = #{no},
+		name = #{name},
+		email = #{email},
+		phone =
+		#{phone},
+		mobile = #{mobile},
+		user_type = #{userType},
+		update_by =
+		#{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks},
+		login_flag = #{loginFlag},
+		photo = #{photo}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 删除用户和角色关联表数据 -->
+	<delete id="deleteMemberRole">
+		DELETE FROM sys_user_role WHERE user_id = #{id}
+	</delete>
+
+	<!-- 插入用户和角色关联表数据 -->
+	<insert id="insertMemberRole">
+		INSERT INTO sys_user_role(user_id, role_id)
+		<foreach collection="roleList" item="role" separator=" union all ">
+			SELECT
+			#{id}, #{role.id} FROM dual
+		</foreach>
+	</insert>
+
+	<!-- 更新用户信息 -->
+	<update id="updateMemberInfo">
+		UPDATE sys_user SET
+		email = #{email},
+		phone = #{phone},
+		mobile = #{mobile},
+		update_by = #{updateBy.id},
+		update_date =
+		#{updateDate},
+		remarks = #{remarks},
+		photo = #{photo}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 更新用户密码 -->
+	<update id="updatePasswordById">
+		UPDATE sys_user SET
+		password = #{password}
+		WHERE id =
+		#{id}
+	</update>
+
+	<!-- 更新登录信息，如登录IP、登录时间 -->
+	<update id="updateLoginInfo">
+		UPDATE sys_user SET
+		login_ip = #{loginIp},
+		login_Date =
+		#{loginDate}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 逻辑删除用户 -->
+	<update id="delete">
+		UPDATE sys_user SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新用户激活状态 -->
+	<update id="updateActiveStatus">
+		UPDATE sys_user SET
+		status = #{status}
+		WHERE email = #{email}
+	</update>
+	
+	<!-- 添加邮箱激活码 -->
+	<insert id="addEmailActiveCode">
+		INSERT INTO sys_email_active_code VALUES(#{id},#{email},#{activeCode},NOW())
+	</insert>
+
+	
+	<select id="findList1" resultType="Member">
+		SELECT
+		*
+		FROM sys_user a
+	</select>
+</mapper>

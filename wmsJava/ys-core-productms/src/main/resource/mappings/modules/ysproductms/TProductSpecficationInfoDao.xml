@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TProductSpecficationInfoDao">
+    
+	<sql id="tProductSpecficationInfoColumns">
+		a.id AS "id",
+		a.product_id AS "productId",
+		a.specfication_id AS "specficationId",
+		a.specfication_value AS "specficationValue",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		b.name AS "specficationName",
+		c.product_name AS "productName"
+	</sql>
+	
+	<sql id="tProductSpecficationInfoJoins">
+	LEFT JOIN t_product_specfication b ON a.specfication_id = b.id 
+    LEFT JOIN t_product_info c ON c.id = a.product_id
+	</sql>
+    
+	<select id="get" resultType="TProductSpecficationInfo">
+		SELECT 
+			<include refid="tProductSpecficationInfoColumns"/>
+		FROM t_product_specfication_info a
+		<include refid="tProductSpecficationInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductSpecficationInfo">
+		SELECT 
+			<include refid="tProductSpecficationInfoColumns"/>
+			
+		FROM t_product_specfication_info a
+		<include refid="tProductSpecficationInfoJoins"/>
+	
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="productId !=null and productId !='' ">
+		    AND a.product_id = #{productId}
+		    </if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductSpecficationInfo">
+		SELECT 
+			<include refid="tProductSpecficationInfoColumns"/>
+		FROM t_product_specfication_info a
+		<include refid="tProductSpecficationInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_specfication_info(
+			
+			product_id,
+			specfication_id,
+			specfication_value,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			
+			#{productId},
+			#{specficationId},
+			#{specficationValue},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_specfication_info SET 	
+			product_id = #{productId},
+			specfication_id = #{specficationId},
+			specfication_value = #{specficationValue},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_specfication_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

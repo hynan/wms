@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.CacheManagerDao">
+    
+	<sql id="cacheManagerColumns">
+		a.id AS "id",
+		a.system_name AS "systemName",
+		a.module_name AS "moduleName",
+		a.cache_key AS "cacheKey",
+		a.maxelementsinmemory AS "maxelementsinmemory",
+		a.maxelementsondisk AS "maxelementsondisk",
+		a.eternal AS "eternal",
+		a.overflowtodisk AS "overflowtodisk",
+		a.timetoidleseconds AS "timetoidleseconds",
+		a.timetoliveseconds AS "timetoliveseconds",
+		a.diskpersistent AS "diskpersistent",
+		a.diskexpirythreadintervalseconds AS "diskexpirythreadintervalseconds",
+		a.diskspoolbuffersizemb AS "diskspoolbuffersizemb",
+		a.memorystoreevictionpolicy AS "memorystoreevictionpolicy",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="cacheManagerJoins">
+		LEFT JOIN sys_user u15 ON u15.id = a.create_by
+		LEFT JOIN sys_user u17 ON u17.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="CacheManager">
+		SELECT 
+			<include refid="cacheManagerColumns"/>
+		FROM jeesz_cache_manager a
+		<include refid="cacheManagerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CacheManager">
+		SELECT 
+			<include refid="cacheManagerColumns"/>
+		FROM jeesz_cache_manager a
+		<include refid="cacheManagerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CacheManager">
+		SELECT 
+			<include refid="cacheManagerColumns"/>
+		FROM jeesz_cache_manager a
+		<include refid="cacheManagerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO jeesz_cache_manager(
+			id,
+			system_name,
+			module_name,
+			cache_key,
+			maxelementsinmemory,
+			maxelementsondisk,
+			eternal,
+			overflowtodisk,
+			timetoidleseconds,
+			timetoliveseconds,
+			diskpersistent,
+			diskexpirythreadintervalseconds,
+			diskspoolbuffersizemb,
+			memorystoreevictionpolicy,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{systemName},
+			#{moduleName},
+			#{cacheKey},
+			#{maxelementsinmemory},
+			#{maxelementsondisk},
+			#{eternal},
+			#{overflowtodisk},
+			#{timetoidleseconds},
+			#{timetoliveseconds},
+			#{diskpersistent},
+			#{diskexpirythreadintervalseconds},
+			#{diskspoolbuffersizemb},
+			#{memorystoreevictionpolicy},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE jeesz_cache_manager SET 	
+			system_name = #{systemName},
+			module_name = #{moduleName},
+			cache_key = #{cacheKey},
+			maxelementsinmemory = #{maxelementsinmemory},
+			maxelementsondisk = #{maxelementsondisk},
+			eternal = #{eternal},
+			overflowtodisk = #{overflowtodisk},
+			timetoidleseconds = #{timetoidleseconds},
+			timetoliveseconds = #{timetoliveseconds},
+			diskpersistent = #{diskpersistent},
+			diskexpirythreadintervalseconds = #{diskexpirythreadintervalseconds},
+			diskspoolbuffersizemb = #{diskspoolbuffersizemb},
+			memorystoreevictionpolicy = #{memorystoreevictionpolicy},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE jeesz_cache_manager SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

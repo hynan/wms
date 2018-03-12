@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.CommonEmailConfigDao">
+    
+	<sql id="commonEmailConfigColumns">
+		a.id AS "id",
+		a.protocol AS "protocol",
+		a.email_host AS "emailHost",
+		a.email_port AS "emailPort",
+		a.email_username AS "emailUsername",
+		a.email_password AS "emailPassword",
+		a.email_personal AS "emailPersonal",
+		a.email_encoding AS "emailEncoding",
+		a.message_type AS "messageType",
+		a.message_subject AS "messageSubject",
+		a.message_text AS "messageText",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="commonEmailConfigJoins">
+	</sql>
+    
+	<select id="get" resultType="CommonEmailConfig">
+		SELECT 
+			<include refid="commonEmailConfigColumns"/>
+		FROM sys_email_config a
+		<include refid="commonEmailConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CommonEmailConfig">
+		SELECT 
+			<include refid="commonEmailConfigColumns"/>
+		FROM sys_email_config a
+		<include refid="commonEmailConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="protocol != null and protocol != ''">
+				AND a.protocol = #{protocol}
+			</if>
+			<if test="emailHost != null and emailHost != ''">
+				AND a.email_host = #{emailHost}
+			</if>
+			<if test="messageType != null and messageType != ''">
+				AND a.message_type = #{messageType}
+			</if>
+			<if test="messageSubject != null and messageSubject != ''">
+				AND a.message_subject = #{messageSubject}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CommonEmailConfig">
+		SELECT 
+			<include refid="commonEmailConfigColumns"/>
+		FROM sys_email_config a
+		<include refid="commonEmailConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_email_config(
+			id,
+			protocol,
+			email_host,
+			email_port,
+			email_username,
+			email_password,
+			email_personal,
+			email_encoding,
+			message_type,
+			message_subject,
+			message_text,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{protocol},
+			#{emailHost},
+			#{emailPort},
+			#{emailUsername},
+			#{emailPassword},
+			#{emailPersonal},
+			#{emailEncoding},
+			#{messageType},
+			#{messageSubject},
+			#{messageText},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_email_config SET 	
+			protocol = #{protocol},
+			email_host = #{emailHost},
+			email_port = #{emailPort},
+			email_username = #{emailUsername},
+			email_password = #{emailPassword},
+			email_personal = #{emailPersonal},
+			email_encoding = #{emailEncoding},
+			message_type = #{messageType},
+			message_subject = #{messageSubject},
+			message_text = #{messageText},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_email_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 根据邮件配置类型获取邮件配置信息  -->
+	<select id="getCommonEmailConfigByType" resultType="CommonEmailConfig">
+		SELECT 
+			<include refid="commonEmailConfigColumns"/>
+		FROM sys_email_config a
+		<include refid="commonEmailConfigJoins"/>
+		where a.message_type = #{messageType}
+	</select>
+	
+</mapper>

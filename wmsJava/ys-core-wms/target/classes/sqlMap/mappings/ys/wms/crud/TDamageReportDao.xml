@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TDamageReportDao">
+    
+	<sql id="tDamageReportColumns">
+		a.id AS "id",
+		a.damage_report_code AS "damageReportCode",
+		a.foreign_order_id AS "foreignOrderId",
+		a.warehouse_id AS "warehouseId",
+		a.warehouse_name AS "warehouseName",
+		a.operate_id AS "operateId",
+		a.operate_name AS "operateName",
+		a.operate_time AS "operateTime",
+		a.status AS "status",
+		a.introduction AS "introduction",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tDamageReportJoins">
+	</sql>
+    
+	<select id="get" resultType="TDamageReport">
+		SELECT 
+			<include refid="tDamageReportColumns"/>
+		FROM t_damage_report a
+		<include refid="tDamageReportJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TDamageReport">
+		SELECT 
+			<include refid="tDamageReportColumns"/>
+		FROM t_damage_report a
+		<include refid="tDamageReportJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="damageReportCode != null and damageReportCode != ''">
+				AND a.damage_report_code = #{damageReportCode}
+			</if>
+			<if test="foreignOrderId != null and foreignOrderId != ''">
+				AND a.foreign_order_id = #{foreignOrderId}
+			</if>
+			<if test="warehouseId != null and warehouseId != ''">
+				AND a.warehouse_id = #{warehouseId}
+			</if>
+			<if test="warehouseName != null and warehouseName != ''">
+				AND a.warehouse_name = #{warehouseName}
+			</if>
+			<if test="operateId != null and operateId != ''">
+				AND a.operate_id = #{operateId}
+			</if>
+			<if test="operateName != null and operateName != ''">
+				AND a.operate_name = #{operateName}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="introduction != null and introduction != ''">
+				AND a.introduction = #{introduction}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TDamageReport">
+		SELECT 
+			<include refid="tDamageReportColumns"/>
+		FROM t_damage_report a
+		<include refid="tDamageReportJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_damage_report(
+			id,
+			damage_report_code,
+			foreign_order_id,
+			warehouse_id,
+			warehouse_name,
+			operate_id,
+			operate_name,
+			operate_time,
+			status,
+			introduction,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{damageReportCode},
+			#{foreignOrderId},
+			#{warehouseId},
+			#{warehouseName},
+			#{operateId},
+			#{operateName},
+			#{operateTime},
+			#{status},
+			#{introduction},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_damage_report SET 	
+			damage_report_code = #{damageReportCode},
+			foreign_order_id = #{foreignOrderId},
+			warehouse_id = #{warehouseId},
+			warehouse_name = #{warehouseName},
+			operate_id = #{operateId},
+			operate_name = #{operateName},
+			operate_time = #{operateTime},
+			status = #{status},
+			introduction = #{introduction},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_damage_report SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.sys.dao.ProxyControlDao">
+    
+	<sql id="proxyControlColumns">
+		a.id AS "id",
+		a.sys_name AS "sysName",
+		a.proxy_key AS "proxyKey",
+		a.proxy_config AS "proxyConfig",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="proxyControlJoins">
+		LEFT JOIN sys_user u5 ON u5.id = a.create_by
+		LEFT JOIN sys_user u7 ON u7.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="ProxyControl">
+		SELECT 
+			<include refid="proxyControlColumns"/>
+		FROM sys_proxy_config a
+		<include refid="proxyControlJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProxyControl">
+		SELECT 
+			<include refid="proxyControlColumns"/>
+		FROM sys_proxy_config a
+		<include refid="proxyControlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProxyControl">
+		SELECT 
+			<include refid="proxyControlColumns"/>
+		FROM sys_proxy_config a
+		<include refid="proxyControlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_proxy_config(
+			id,
+			sys_name,
+			proxy_key,
+			proxy_config,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{sysName},
+			#{proxyKey},
+			#{proxyConfig},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_proxy_config SET 	
+			sys_name = #{sysName},
+			proxy_key = #{proxyKey},
+			proxy_config = #{proxyConfig},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_proxy_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

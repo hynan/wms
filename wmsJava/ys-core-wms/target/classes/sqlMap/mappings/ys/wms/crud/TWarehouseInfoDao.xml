@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TWarehouseInfoDao">
+    
+	<sql id="tWarehouseInfoColumns">
+		a.id AS "id",
+		a.material_type_id AS "materialTypeId",
+		<!-- a.material_type_name AS "materialTypeName", -->
+		a.code AS "code",
+		a.name AS "name",
+		a.type AS "type",
+		a.manage_dept_id AS "manageDeptId",
+		a.manage_dept_name AS "manageDeptName",
+		a.manager_id AS "managerId",
+		a.manager_name AS "managerName",
+		a.tel AS "tel",
+		a.region AS "region",
+		a.address AS "address",
+		a.generate_time AS "generateTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.entry_auditor_ids AS "entryAuditorIds",
+		a.entry_shelfman_ids AS "entryShelfmanIds",
+		a.out_auditor_ids AS "outAuditorIds",
+		a.out_shelfman_ids AS "outShelfmanIds",
+		a.out_confirm_ids AS "outConfirmIds",
+		a.transfer_auditor_ids AS "transferAuditorIds",
+		a.cyclecount_verify_ids AS "cyclecountVerifyIds",
+		a.report_auditor_ids AS "reportAuditorIds",
+		a.cyclecount_auditor_ids AS cyclecountAuditorIds
+	</sql>
+	
+	<sql id="tWarehouseInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="TWarehouseInfo">
+		SELECT 
+			<include refid="tWarehouseInfoColumns"/>
+		FROM t_warehouse_info a
+		<include refid="tWarehouseInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TWarehouseInfo">
+		SELECT 
+			<include refid="tWarehouseInfoColumns"/>
+		FROM t_warehouse_info a
+		<include refid="tWarehouseInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="materialCodeLike != null and materialCodeLike != ''">
+				AND a.material_type_id LIKE 
+				<if test="dbName == 'mysql'">concat('%',#{materialCodeLike},'%')</if>
+			</if>
+			<!-- <if test="materialTypeName != null and materialTypeName != ''">
+				AND a.material_type_name = #{materialTypeName}
+			</if> -->
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+				<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+				<!-- AND a.name = #{name} -->
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="manageDeptId != null and manageDeptId != ''">
+				AND a.manage_dept_id = #{manageDeptId}
+			</if>
+			<if test="manageDeptName != null and manageDeptName != ''">
+				AND a.manage_dept_name = #{manageDeptName}
+			</if>
+			<if test="managerId != null and managerId != ''">
+				AND a.manager_id = #{managerId}
+			</if>
+			<if test="managerName != null and managerName != ''">
+				AND a.manager_name = #{managerName}
+			</if>
+			<if test="tel != null and tel != ''">
+				AND a.tel = #{tel}
+			</if>
+			<if test="region != null and region != ''">
+				AND a.region = #{region}
+			</if>
+			<if test="address != null and address != ''">
+				AND a.address = #{address}
+			</if>
+			<if test="entryAuditorIds != null and entryAuditorIds != ''">
+				AND a.entry_auditor_ids like concat('%',#{entryAuditorIds},'%')
+			</if>
+			<if test="entryShelfmanIds != null and entryShelfmanIds != ''">
+				AND a.entry_shelfman_ids like concat('%',#{entryShelfmanIds},'%')
+			</if>
+			<if test="outAuditorIds != null and outAuditorIds != ''">
+				AND a.out_auditor_ids like concat('%',#{outAuditorIds},'%')
+			</if>
+			<if test="outShelfmanIds != null and outShelfmanIds != ''">
+				AND a.out_shelfman_ids like concat('%',#{outShelfmanIds},'%')
+			</if>
+			<if test="outConfirmIds != null and outConfirmIds != ''">
+				AND a.out_confirm_ids like concat('%',#{outConfirmIds},'%')
+			</if>
+			<if test="transferAuditorIds != null and transferAuditorIds != ''">
+				AND a.transfer_auditor_ids like concat('%',#{transferAuditorIds},'%')
+			</if>
+			<if test="cyclecountVerifyIds != null and cyclecountVerifyIds != ''">
+				AND a.cyclecount_verify_ids like concat('%',#{cyclecountVerifyIds},'%')
+			</if>
+			<if test="reportAuditorIds != null and reportAuditorIds != ''">
+				AND a.report_auditor_ids like concat('%',#{reportAuditorIds},'%')
+			</if>
+			<if test="cyclecountAuditorIds != null and cyclecountAuditorIds != ''">
+				AND a.cyclecount_auditor_ids like concat('%',#{cyclecountAuditorIds},'%')
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TWarehouseInfo">
+		SELECT 
+			<include refid="tWarehouseInfoColumns"/>
+		FROM t_warehouse_info a
+		<include refid="tWarehouseInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_warehouse_info(
+			id,
+			material_type_id,
+			code,
+			name,
+			type,
+			manage_dept_id,
+			manage_dept_name,
+			manager_id,
+			manager_name,
+			tel,
+			region,
+			address,
+			generate_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			entry_auditor_ids,
+			entry_shelfman_ids,
+			out_auditor_ids,
+			out_shelfman_ids,
+			out_confirm_ids,
+			transfer_auditor_ids,
+			cyclecount_verify_ids,
+			report_auditor_ids,
+			cyclecount_auditor_ids
+		) VALUES (
+			#{id},
+			#{materialTypeId},
+			#{code},
+			#{name},
+			#{type},
+			#{manageDeptId},
+			#{manageDeptName},
+			#{managerId},
+			#{managerName},
+			#{tel},
+			#{region},
+			#{address},
+			#{generateTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{entryAuditorIds},
+			#{entryShelfmanIds},
+			#{outAuditorIds},
+			#{outShelfmanIds},
+			#{outConfirmIds},
+			#{transferAuditorIds},
+			#{cyclecountVerifyIds},
+			#{reportAuditorIds},
+			#{cyclecountAuditorIds}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_warehouse_info SET 	
+			material_type_id = #{materialTypeId},
+			code = #{code},
+			name = #{name},
+			type = #{type},
+			manage_dept_id = #{manageDeptId},
+			manage_dept_name = #{manageDeptName},
+			manager_id = #{managerId},
+			manager_name = #{managerName},
+			tel = #{tel},
+			region = #{region},
+			address = #{address},
+			generate_time = #{generateTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			entry_auditor_ids = #{entryAuditorIds},
+			entry_shelfman_ids = #{entryShelfmanIds},
+			out_auditor_ids = #{outAuditorIds},
+			out_shelfman_ids = #{outShelfmanIds},
+			out_confirm_ids = #{outConfirmIds},
+			transfer_auditor_ids = #{transferAuditorIds},
+			cyclecount_verify_ids = #{cyclecountVerifyIds},
+			report_auditor_ids = #{reportAuditorIds},
+			cyclecount_auditor_ids = #{cyclecountAuditorIds}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_warehouse_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

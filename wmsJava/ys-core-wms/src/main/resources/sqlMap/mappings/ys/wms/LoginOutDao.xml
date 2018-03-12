@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.LoginOutDao">
+
+
+<insert id="addLoginOutInfo" parameterType="com.ys.wms.entity.TLogInOutInfo">
+	INSERT INTO t_loginout(user_id,login_time,login_token)
+	VALUES(#{userId},#{loginTime},#{login_token})
+</insert>
+
+<delete id="delLoginOutInfo" parameterType="com.ys.wms.entity.TLogInOutInfo">
+	DELETE FROM t_loginout where user_id = #{userId} and login_token = #{login_token}
+</delete>
+	
+<update id="updateLoginOutInfo" parameterType="com.ys.wms.entity.TLogInOutInfo">
+	UPDATE t_loginout SET login_time = #{loginTime},login_token = #{loginToken}
+	WHERE user_id = #{userId} 
+</update>
+
+<select id="getLoginOutInfo" parameterType="map" resultType="com.ys.wms.entity.TLogInOutInfo">
+	SELECT user_id,login_time,login_token FROM t_loginout
+	<where>
+		user_id = #{userId}
+		<if test="login_token != null and login_token != ''">
+			and login_token = #{login_token}
+		</if>
+	</where>
+</select>
+
+<select id="getLoginOutInfo2" parameterType="String" resultType="com.ys.wms.entity.TLogInOutInfo">
+	SELECT user_id,login_time,login_token FROM t_loginout
+	WHERE user_id = #{user_id} 
+</select>
+
+<delete id="delOverTimeUser" parameterType="String">
+	DELETE FROM t_loginout where login_time &lt; #{_parameter}
+</delete>
+	
+</mapper>

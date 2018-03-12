@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TAlertLogDao">
+    
+	<sql id="tAlertLogColumns">
+		a.id AS "id",
+		stock_barcode AS "stockBarcode",
+		warehouseentry_detail_id AS "warehouseentryDetailId",
+		a.material_type_id AS "materialTypeCode",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.alert_type AS "alertType",
+		a.warehouse_code AS "warehouseCode",
+		a.stock_amount AS "stockAmount",
+		a.toplimit_amount AS "toplimitAmount",
+		a.floorlimit_amount AS "floorlimitAmount",
+		a.alert_time AS "alertTime",
+		a.status AS "status",
+		a.cancel_user_id AS "cancelUserId",
+		a.cancel_user_name AS "cancelUserName",
+		a.cancel_time AS "cancelTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tAlertLogJoins">
+	</sql>
+    
+	<select id="get" resultType="TAlertLog">
+		SELECT 
+			<include refid="tAlertLogColumns"/>
+		FROM t_alert_log a
+		<include refid="tAlertLogJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TAlertLog">
+		SELECT 
+			<include refid="tAlertLogColumns"/>
+		FROM t_alert_log a
+		<include refid="tAlertLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="stockBarcode != null and stockBarcode != ''">
+				AND a.stock_barcode = #{stockBarcode}
+			</if>
+			<if test="warehouseentryDetailId != null and warehouseentryDetailId != ''">
+				AND a.warehouseentry_detail_id = #{warehouseentryDetailId}
+			</if>
+			<if test="materialTypeCode != null and materialTypeCode != ''">
+				AND a.material_type_id = #{materialTypeCode}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="alertType != null and alertType != ''">
+				AND a.alert_type = #{alertType}
+			</if>
+			<if test="warehouseCode != null and warehouseCode != ''">
+				AND a.warehouse_code = #{warehouseCode}
+			</if>
+			<if test="stockAmount != null and stockAmount != ''">
+				AND a.stock_amount = #{stockAmount}
+			</if>
+			<if test="toplimitAmount != null and toplimitAmount != ''">
+				AND a.toplimit_amount = #{toplimitAmount}
+			</if>
+			<if test="floorlimitAmount != null and floorlimitAmount != ''">
+				AND a.floorlimit_amount = #{floorlimitAmount}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="cancelUserId != null and cancelUserId != ''">
+				AND a.cancel_user_id = #{cancelUserId}
+			</if>
+			<if test="cancelUserName != null and cancelUserName != ''">
+				AND a.cancel_user_name = #{cancelUserName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TAlertLog">
+		SELECT 
+			<include refid="tAlertLogColumns"/>
+		FROM t_alert_log a
+		<include refid="tAlertLogJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_alert_log(
+			id,
+			warehouseentry_detail_id,
+			stock_barcode,
+			material_type_id,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			alert_type,
+			warehouse_code,
+			stock_amount,
+			toplimit_amount,
+			floorlimit_amount,
+			alert_time,
+			status,
+			cancel_user_id,
+			cancel_user_name,
+			cancel_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{warehouseentryDetailId},
+			#{stockBarcode},
+			#{materialTypeCode},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{alertType},
+			#{warehouseCode},
+			#{stockAmount},
+			#{toplimitAmount},
+			#{floorlimitAmount},
+			#{alertTime},
+			#{status},
+			#{cancelUserId},
+			#{cancelUserName},
+			#{cancelTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_alert_log SET 	
+			stock_barcode = #{stockBarcode},
+			warehouseentry_detail_id = #{warehouseentryDetailId},
+			material_type_id = #{materialTypeCode},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			alert_type = #{alertType},
+			warehouse_code = #{warehouseCode},
+			stock_amount = #{stockAmount},
+			toplimit_amount = #{toplimitAmount},
+			floorlimit_amount = #{floorlimitAmount},
+			alert_time = #{alertTime},
+			status = #{status},
+			cancel_user_id = #{cancelUserId},
+			cancel_user_name = #{cancelUserName},
+			cancel_time = #{cancelTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_alert_log SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

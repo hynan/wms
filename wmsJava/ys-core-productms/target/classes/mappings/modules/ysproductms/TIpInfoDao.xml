@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sml.sz.ysproductms.dao.TIpInfoDao">
+    
+	<sql id="tIpInfoColumns">
+		a.id AS "id",
+		a.owner AS "owner",
+		a.agency AS "agency",
+		a.name AS "name",
+		a.type AS "type",
+		a.apply_date AS "applyDate",
+		a.apply_no AS "applyNo",
+		a.product_type AS "productType",
+		a.authorize_date AS "authorizeDate",
+		a.certificate_no AS "certificateNo",
+		a.law_status AS "lawStatus",
+		a.attach_path AS "attachPath",
+		a.inventor AS "inventor",
+		a.status AS "status",
+		a.attach_path1 AS "attachPath1",
+		a.attach_path2 AS "attachPath2",
+		a.attach_path3 AS "attachPath3",
+		a.project_status AS "projectStatus",
+		a.fund_state AS "fundState",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tIpInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="TIpInfo">
+		SELECT 
+			<include refid="tIpInfoColumns"/>
+		FROM t_ip_info a
+		<include refid="tIpInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TIpInfo">
+		SELECT 
+			<include refid="tIpInfoColumns"/>
+		FROM t_ip_info a
+		<include refid="tIpInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TIpInfo">
+		SELECT 
+			<include refid="tIpInfoColumns"/>
+		FROM t_ip_info a
+		<include refid="tIpInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_ip_info(
+			
+			owner,
+			agency,
+			name,
+			type,
+			apply_date,
+			apply_no,
+			product_type,
+			authorize_date,
+			certificate_no,
+			law_status,
+			attach_path,
+			inventor,
+			status,
+			attach_path1,
+			attach_path2,
+			attach_path3,
+			project_status,
+			fund_state,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			
+			#{owner},
+			#{agency},
+			#{name},
+			#{type},
+			#{applyDate},
+			#{applyNo},
+			#{productType},
+			#{authorizeDate},
+			#{certificateNo},
+			#{lawStatus},
+			#{attachPath},
+			#{inventor},
+			#{status},
+			#{attachPath1},
+			#{attachPath2},
+			#{attachPath3},
+			#{projectStatus},
+			#{fundState},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_ip_info SET 	
+			owner = #{owner},
+			agency = #{agency},
+			name = #{name},
+			type = #{type},
+			apply_date = #{applyDate},
+			apply_no = #{applyNo},
+			product_type = #{productType},
+			authorize_date = #{authorizeDate},
+			certificate_no = #{certificateNo},
+			law_status = #{lawStatus},
+			attach_path = #{attachPath},
+			inventor = #{inventor},
+			status = #{status},
+			attach_path1 = #{attachPath1},
+			attach_path2 = #{attachPath2},
+			attach_path3 = #{attachPath3},
+			project_status = #{projectStatus},
+			fund_state = #{fundState},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_ip_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findPageByDto" parameterType="com.sml.sz.ysproductms.dto.IprQueryPageParam" 
+	    resultType="com.sml.sz.ysproductms.dto.IprInfoOutDto">
+	    SELECT 
+			<include refid="tIpInfoColumns"/>
+		FROM t_ip_info a
+		<include refid="tIpInfoJoins"/>
+		<where>
+			a.del_flag = 0
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%',#{name},'%')
+			</if>
+			<if test="applyNo != null and applyNo != ''">
+				AND a.apply_no LIKE concat('%',#{applyNo},'%')					
+			</if>
+			<if test="owner != null and owner != ''">
+				AND a.owner LIKE concat('%',#{owner},'%')
+			</if>
+			<if test="inventor != null and inventor != ''">
+				AND a.inventor LIKE concat('%',#{inventor},'%')
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type LIKE concat('%',#{type},'%')
+			</if>
+			<if test="agency != null and agency != ''">
+				AND a.agency LIKE concat('%',#{agency},'%')
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status LIKE concat('%',#{status},'%')
+			</if>
+			<if test="lawStatus != null and lawStatus != ''">
+				AND a.lawStatus LIKE concat('%',#{lawStatus},'%')
+			</if>
+			<if test="productType != null and productType != ''">
+				AND a.product_type LIKE concat('%',#{productType},'%')
+			</if>
+			<if test="projectStatus != null and projectStatus != ''">
+				AND a.project_status LIKE concat('%',#{projectStatus},'%')
+			</if>
+			<if test="applyDateBegin != null and applyDateBegin != '' and applyDateEnd != null and
+			    applyDateEnd != '' ">
+				AND a.apply_date <![CDATA[>=]]> #{applyDateBegin} and a.apply_date <![CDATA[<=]]> #{applyDateEnd}
+			</if>
+			<if test="applyDateBegin != null and applyDateBegin != '' and (applyDateEnd == null or
+			    applyDateEnd == '') ">
+				AND a.apply_date <![CDATA[>=]]> #{applyDateBegin} 
+			</if>
+			<if test="applyDateEnd != null and applyDateEnd != '' and (applyDateBegin == null or
+			    applyDateBegin == '') ">
+				AND a.apply_date <![CDATA[<=]]> #{applyDateEnd}
+			</if>
+			
+			<if test="authorizeDateBegin != null and authorizeDateBegin != '' and authorizeDateEnd != null and
+			    authorizeDateEnd != '' ">
+				AND a.authorize_date <![CDATA[>=]]> #{authorizeDateBegin} and a.authorize_date <![CDATA[<=]]> #{authorizeDateEnd}
+			</if>
+			<if test="authorizeDateBegin != null and authorizeDateBegin != '' and (authorizeDateEnd == null or
+			    authorizeDateEnd == '') ">
+				AND a.authorize_date <![CDATA[>=]]> #{authorizeDateBegin} 
+			</if>
+			<if test="authorizeDateEnd != null and authorizeDateEnd != '' and (authorizeDateBegin == null or
+			    authorizeDateBegin == '') ">
+				AND a.authorize_date <![CDATA[<=]]> #{authorizeDateEnd}
+			</if>
+					
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getMaxId" resultType="java.lang.Long">
+	select max(id) from t_ip_info
+	</select>
+	
+	<select id="checkApplyNo" resultType="java.lang.Long">
+	    select id from t_ip_info 
+        <where>
+            del_flag = 0
+            <if test="applyNo != null and applyNo != '' ">
+            and apply_no = #{applyNo}
+            </if>
+            <if test="id != null and id != 0">
+            and id != #{id}
+            </if>
+        </where>
+	    limit 1
+	</select>
+	
+	
+	<select id="ownerList" resultType="java.lang.String">
+	select owner from t_ip_info where del_flag = 0 order by update_date
+	</select>
+	
+	<select id="inventorList" resultType="java.lang.String">
+	select inventor from t_ip_info where del_flag = 0 order by update_date
+	</select>
+	
+    <select id="agencyList" resultType="java.lang.String">
+	select agency from t_ip_info where del_flag = 0 order by update_date
+	</select>
+	
+	<select id="typeList" resultType="java.lang.String">
+	select type from t_ip_info where del_flag = 0 order by update_date
+	</select>
+	
+	<select id="lawStatusList" resultType="java.lang.String">
+	select law_status from t_ip_info where del_flag = 0 order by update_date
+	</select>
+	
+	<select id="statusList" resultType="java.lang.String">
+	select status from t_ip_info where del_flag = 0 order by update_date
+	</select>
+	
+	<select id="productTypeList" resultType="java.lang.String">
+	select product_type from t_ip_info where del_flag = 0 order by update_date
+	</select>
+</mapper>

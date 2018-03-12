@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.multi.TransferDetailDao">
+    
+	<sql id="tStockTransferDetailColumns">
+		a.id AS "id",
+		a.transfer_id AS "transferId",
+		a.stock_id AS "stockId",
+		a.material_type AS "materialType",
+		a.stock_barcode AS "stockBarcode",
+		a.material_code AS "materialCode",
+		a.product_batch_no AS "productBatchNo",
+		a.material_owner_id AS "materialOwnerId",
+		a.material_owner_name AS "materialOwnerName",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.order_id AS "orderId",
+		a.branch_order_id AS "branchOrderId",
+		a.external_require AS "externalRequire",
+		a.technics AS "technics",
+		a.subarea_code AS "subareaCode",
+		a.storagebin_code AS "storagebinCode",
+		a.warehouseentry_time AS "warehouseentryTime",
+		a.amount AS "amount",
+		a.unit AS "unit",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.material_type_name AS "materialTypeName"
+	</sql>
+	
+	<sql id="tStockTransferDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TStockTransferDetail">
+		SELECT 
+			<include refid="tStockTransferDetailColumns"/>
+		FROM t_stock_transfer_detail a
+		<include refid="tStockTransferDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TStockTransferDetail">
+		SELECT 
+			<include refid="tStockTransferDetailColumns"/>
+		FROM t_stock_transfer_detail a
+		<include refid="tStockTransferDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="transferId != null and transferId != ''">
+				AND a.transfer_id = #{transferId}
+			</if>
+			<if test="stockId != null and stockId != ''">
+				AND a.stock_id = #{stockId}
+			</if>
+			<if test="materialType != null and materialType != ''">
+				AND a.material_type = #{materialType}
+			</if>
+			<if test="stockBarcode != null and stockBarcode != ''">
+				AND a.stock_barcode = #{stockBarcode}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="productBatchNo != null and productBatchNo != ''">
+				AND a.product_batch_no = #{productBatchNo}
+			</if>
+			<if test="materialOwnerId != null and materialOwnerId != ''">
+				AND a.material_owner_id = #{materialOwnerId}
+			</if>
+			<if test="materialOwnerName != null and materialOwnerName != ''">
+				AND a.material_owner_name = #{materialOwnerName}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="orderId != null and orderId != ''">
+				AND a.order_id = #{orderId}
+			</if>
+			<if test="branchOrderId != null and branchOrderId != ''">
+				AND a.branch_order_id = #{branchOrderId}
+			</if>
+			<if test="externalRequire != null and externalRequire != ''">
+				AND a.external_require = #{externalRequire}
+			</if>
+			<if test="technics != null and technics != ''">
+				AND a.technics = #{technics}
+			</if>
+			<if test="subareaCode != null and subareaCode != ''">
+				AND a.subarea_code = #{subareaCode}
+			</if>
+			<if test="storagebinCode != null and storagebinCode != ''">
+				AND a.storagebin_code = #{storagebinCode}
+			</if>
+			<if test="amount != null and amount != ''">
+				AND a.amount = #{amount}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TStockTransferDetail">
+		SELECT 
+			<include refid="tStockTransferDetailColumns"/>
+		FROM t_stock_transfer_detail a
+		<include refid="tStockTransferDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_stock_transfer_detail(
+			id,
+			transfer_id,
+			stock_id,
+			material_type,
+			stock_barcode,
+			material_code,
+			product_batch_no,
+			material_owner_id,
+			material_owner_name,
+			material_name,
+			material_model,
+			material_spec,
+			order_id,
+			branch_order_id,
+			external_require,
+			technics,
+			subarea_code,
+			storagebin_code,
+			warehouseentry_time,
+			amount,
+			unit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			material_type_name
+			
+		) VALUES (
+			#{id},
+			#{transferId},
+			#{stockId},
+			#{materialType},
+			#{stockBarcode},
+			#{materialCode},
+			#{productBatchNo},
+			#{materialOwnerId},
+			#{materialOwnerName},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{orderId},
+			#{branchOrderId},
+			#{externalRequire},
+			#{technics},
+			#{subareaCode},
+			#{storagebinCode},
+			#{warehouseentryTime},
+			#{amount},
+			#{unit},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{materialTypeName}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_stock_transfer_detail SET 	
+			transfer_id = #{transferId},
+			stock_id = #{stockId},
+			material_type = #{materialType},
+			stock_barcode = #{stockBarcode},
+			material_code = #{materialCode},
+			product_batch_no = #{productBatchNo},
+			material_owner_id = #{materialOwnerId},
+			material_owner_name = #{materialOwnerName},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			order_id = #{orderId},
+			branch_order_id = #{branchOrderId},
+			external_require = #{externalRequire},
+			technics = #{technics},
+			subarea_code = #{subareaCode},
+			storagebin_code = #{storagebinCode},
+			warehouseentry_time = #{warehouseentryTime},
+			amount = #{amount},
+			unit = #{unit},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			material_type_name=#{materialTypeName}
+			
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_stock_transfer_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getTransferDetailList" parameterType="java.lang.String" resultType="com.ys.wms.dto.transfer.TransferDetailListDto">
+		select 
+		a.id as transferDetailId,
+		a.stock_id as stockId,
+		a.stock_barcode as stockBarcode,
+		a.warehouseentry_time as stockInDate,
+		a.amount as transferAmount,
+		a.order_id as headOfficeOrderNum,
+		a.branch_order_id as branchOfficeOrderNum,
+		a.product_batch_no as productBatch,
+		a.subarea_code as storeAreaCode,
+		a.storagebin_code as goodsAllocationCode,
+		a.material_owner_name as ownerName,
+		a.material_type as materialCategoryCode,
+		a.material_type_name as materialCategoryName,
+		a.material_code as materialCode,
+		a.material_name as materialName,
+		a.material_spec as specification,
+		a.material_model as modelNum,
+		a.unit as measureUnit,
+		b.`name` as storeAreaName
+		from t_stock_transfer_detail a 
+		LEFT JOIN t_warehouse_subarea_info b on b.`code`=a.subarea_code
+		where a.del_flag='0' and a.transfer_id=#{transferId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.multi.AlarmDao">
+    <select id="getExistingStock" resultType="com.ys.wms.entity.crud.TWarehouseentryDetail">
+    	SELECT w.*,s.warehouseentry_detail_id FROM (SELECT * FROM t_stock WHERE del_flag=0 AND stock_amount > 0) s 
+		LEFT JOIN t_warehouseentry_detail w
+		ON s.warehouseentry_detail_id = w.id
+		WHERE w.del_flag = 0
+		GROUP BY w.id
+    </select>
+	<select id="getAlarmList" parameterType="com.ys.wms.dto.alarm.AlarmQueryParam" resultType="com.ys.wms.dto.alarm.AlarmListDto">
+		SELECT  a.alert_time AS alarmDate,
+				a.stock_barcode AS stockBarcode,
+				a.warehouseentry_detail_id AS warehouseentryDetailId,
+			    w.name AS warehouseName,
+				a.stock_amount AS stockAmount,
+				a.toplimit_amount AS upperLimitAmount,
+				a.floorlimit_amount AS lowerLimitAmount,
+				a.alert_type AS alarmTypeKey,
+				a.cancel_user_name AS cancelAlarmPersonName,
+				a.id AS alarmRecordId,
+				a.material_type_id AS materialCategoryCode,
+				a.material_code AS materialCode,
+				a.material_name AS materialName,
+				a.material_model AS modelType,
+				a.material_spec AS specification,
+				a.status AS alarmStatus
+		FROM t_alert_log a
+		LEFT JOIN t_warehouse_info w
+		ON a.warehouse_code = w.code
+		<where>
+			a.del_flag = 0
+			<if test="alarmDateBegin != null">
+				AND a.alert_time > #{alarmDateBegin}
+			</if>
+			<if test="alarmDateEnd != null">
+				AND #{alarmDateEnd} > a.alert_time
+			</if>
+			<if test="warehouseId != null and warehouseId != ''">
+				AND w.id = #{warehouseId}
+			</if>
+			<if test="materialCategoryCode != null and materialCategoryCode != ''">
+				AND a.material_type_id LIKE concat('%', #{materialCategoryCode},'%')
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				ANd a.material_code = #{materialCode} 
+			</if>
+			<if test="materialName != null and materialName != ''">
+				ANd a.material_name LIKE concat('%',#{materialName},'%') 
+			</if>
+			<if test="alarmTypeKey != null and alarmTypeKey != ''">
+				ANd a.alert_type = #{alarmTypeKey} 
+			</if>
+			<if test="alarmStatusKey != null and alarmStatusKey != ''">
+				ANd a.status = #{alarmStatusKey} 
+			</if>
+			<if test="alarmRecordId != null and alarmRecordId != ''">
+				ANd a.id = #{alarmRecordId} 
+			</if>
+		</where>
+		ORDER BY a.status,a.alert_time DESC
+	</select>
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TColumnDisplayConfigDao">
+    
+	<sql id="tColumnDisplayConfigColumns">
+		a.id AS "id",
+		a.warehouseentry_type AS "warehouseentryType",
+		a.order_type AS "orderType",
+		a.column_name AS "columnName",
+		a.is_display AS "isDisplay",
+		a.generate_time AS "generateTime",
+		a.operater_id AS "operaterId",
+		a.operater_name AS "operaterName",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tColumnDisplayConfigJoins">
+	</sql>
+    
+	<select id="get" resultType="TColumnDisplayConfig">
+		SELECT 
+			<include refid="tColumnDisplayConfigColumns"/>
+		FROM t_column_display_config a
+		<include refid="tColumnDisplayConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TColumnDisplayConfig">
+		SELECT 
+			<include refid="tColumnDisplayConfigColumns"/>
+		FROM t_column_display_config a
+		<include refid="tColumnDisplayConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="warehouseentryType != null and warehouseentryType != ''">
+				AND a.warehouseentry_type = #{warehouseentryType}
+			</if>
+			<if test="orderType != null and orderType != ''">
+				AND a.order_type = #{orderType}
+			</if>
+			<if test="columnName != null and columnName != ''">
+				AND a.column_name = #{columnName}
+			</if>
+			<if test="isDisplay != null and isDisplay != ''">
+				AND a.is_display = #{isDisplay}
+			</if>
+			<if test="operaterId != null and operaterId != ''">
+				AND a.operater_id = #{operaterId}
+			</if>
+			<if test="operaterName != null and operaterName != ''">
+				AND a.operater_name = #{operaterName}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TColumnDisplayConfig">
+		SELECT 
+			<include refid="tColumnDisplayConfigColumns"/>
+		FROM t_column_display_config a
+		<include refid="tColumnDisplayConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_column_display_config(
+			id,
+			warehouseentry_type,
+			order_type,
+			column_name,
+			is_display,
+			generate_time,
+			operater_id,
+			operater_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{warehouseentryType},
+			#{orderType},
+			#{columnName},
+			#{isDisplay},
+			#{generateTime},
+			#{operaterId},
+			#{operaterName},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_column_display_config SET 	
+			warehouseentry_type = #{warehouseentryType},
+			order_type = #{orderType},
+			column_name = #{columnName},
+			is_display = #{isDisplay},
+			generate_time = #{generateTime},
+			operater_id = #{operaterId},
+			operater_name = #{operaterName},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_column_display_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

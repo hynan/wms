@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TStockCyclecountDetailDao">
+    
+	<sql id="tStockCyclecountDetailColumns">
+		a.id AS "id",
+		a.cyclecount_id AS "cyclecountId",
+		a.material_code AS "materialCode",
+		a.material_name AS "materialName",
+		a.material_model AS "materialModel",
+		a.material_spec AS "materialSpec",
+		a.stock_amount AS "stockAmount",
+		a.unit AS "unit",
+		a.single_price AS "singlePrice",
+		a.stock_money AS "stockMoney",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.material_type_id AS materialTypeCode
+	</sql>
+	
+	<sql id="tStockCyclecountDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TStockCyclecountDetail">
+		SELECT 
+			<include refid="tStockCyclecountDetailColumns"/>
+		FROM t_stock_cyclecount_detail a
+		<include refid="tStockCyclecountDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TStockCyclecountDetail">
+		SELECT 
+			<include refid="tStockCyclecountDetailColumns"/>
+		FROM t_stock_cyclecount_detail a
+		<include refid="tStockCyclecountDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="cyclecountId != null and cyclecountId != ''">
+				AND a.cyclecount_id = #{cyclecountId}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				AND a.material_code = #{materialCode}
+			</if>
+			<if test="materialName != null and materialName != ''">
+				AND a.material_name = #{materialName}
+			</if>
+			<if test="materialModel != null and materialModel != ''">
+				AND a.material_model = #{materialModel}
+			</if>
+			<if test="materialSpec != null and materialSpec != ''">
+				AND a.material_spec = #{materialSpec}
+			</if>
+			<if test="stockAmount != null and stockAmount != ''">
+				AND a.stock_amount = #{stockAmount}
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.unit = #{unit}
+			</if>
+			<if test="singlePrice != null and singlePrice != ''">
+				AND a.single_price = #{singlePrice}
+			</if>
+			<if test="stockMoney != null and stockMoney != ''">
+				AND a.stock_money = #{stockMoney}
+			</if>
+			<if test="materialTypeCode != null and materialTypeCode != ''">
+				AND a.material_type_id LIKE 
+				<if test="dbName == 'mysql'">concat('%',#{materialTypeCode},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TStockCyclecountDetail">
+		SELECT 
+			<include refid="tStockCyclecountDetailColumns"/>
+		FROM t_stock_cyclecount_detail a
+		<include refid="tStockCyclecountDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_stock_cyclecount_detail(
+			id,
+			cyclecount_id,
+			material_code,
+			material_name,
+			material_model,
+			material_spec,
+			stock_amount,
+			unit,
+			single_price,
+			stock_money,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			material_type_id
+		) VALUES (
+			#{id},
+			#{cyclecountId},
+			#{materialCode},
+			#{materialName},
+			#{materialModel},
+			#{materialSpec},
+			#{stockAmount},
+			#{unit},
+			#{singlePrice},
+			#{stockMoney},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{materialTypeCode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_stock_cyclecount_detail SET 	
+			cyclecount_id = #{cyclecountId},
+			material_code = #{materialCode},
+			material_name = #{materialName},
+			material_model = #{materialModel},
+			material_spec = #{materialSpec},
+			stock_amount = #{stockAmount},
+			unit = #{unit},
+			single_price = #{singlePrice},
+			stock_money = #{stockMoney},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			material_type_id = #{materialTypeCode}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_stock_cyclecount_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

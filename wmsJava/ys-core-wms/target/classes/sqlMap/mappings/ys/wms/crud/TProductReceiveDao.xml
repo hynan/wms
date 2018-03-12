@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TProductReceiveDao">
+    
+	<sql id="tProductReceiveColumns">
+		a.id AS "id",
+		a.order_code AS "orderCode",
+		a.foreign_order_id AS "foreignOrderId",
+		a.arrive_time AS "arriveTime",
+		a.order_source AS "orderSource",
+		a.operator_id AS "operatorId",
+		a.operator_name AS "operatorName",
+		a.generate_time AS "generateTime",
+		a.warehouse_id AS "warehouseId",
+		a.delete_user_id AS "deleteUserId",
+		a.delete_user_name AS "deleteUserName",
+		a.delete_time AS "deleteTime",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.operator_dept_id AS "operatorDeptId"
+	</sql>
+	
+	<sql id="tProductReceiveJoins">
+	</sql>
+    
+	<select id="get" resultType="TProductReceive">
+		SELECT 
+			<include refid="tProductReceiveColumns"/>
+		FROM t_product_receive a
+		<include refid="tProductReceiveJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TProductReceive">
+		SELECT 
+			<include refid="tProductReceiveColumns"/>
+		FROM t_product_receive a
+		<include refid="tProductReceiveJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="orderCode != null and orderCode != ''">
+				AND a.order_code = #{orderCode}
+			</if>
+			<if test="foreignOrderId != null and foreignOrderId != ''">
+				AND a.foreign_order_id = #{foreignOrderId}
+			</if>
+			<if test="orderSource != null and orderSource != ''">
+				AND a.order_source = #{orderSource}
+			</if>
+			<if test="operatorId != null and operatorId != ''">
+				AND a.operator_id = #{operatorId}
+			</if>
+			<if test="operatorName != null and operatorName != ''">
+				AND a.operator_name = #{operatorName}
+			</if>
+			<if test="warehouseId != null and warehouseId != ''">
+				AND a.warehouse_id = #{warehouseId}
+			</if>
+			<if test="deleteUserId != null and deleteUserId != ''">
+				AND a.delete_user_id = #{deleteUserId}
+			</if>
+			<if test="deleteUserName != null and deleteUserName != ''">
+				AND a.delete_user_name = #{deleteUserName}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TProductReceive">
+		SELECT 
+			<include refid="tProductReceiveColumns"/>
+		FROM t_product_receive a
+		<include refid="tProductReceiveJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_product_receive(
+			id,
+			order_code,
+			foreign_order_id,
+			arrive_time,
+			order_source,
+			operator_id,
+			operator_name,
+			generate_time,
+			warehouse_id,
+			delete_user_id,
+			delete_user_name,
+			delete_time,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			operator_dept_id 
+		) VALUES (
+			#{id},
+			#{orderCode},
+			#{foreignOrderId},
+			#{arriveTime},
+			#{orderSource},
+			#{operatorId},
+			#{operatorName},
+			#{generateTime},
+			#{warehouseId},
+			#{deleteUserId},
+			#{deleteUserName},
+			#{deleteTime},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{operatorDeptId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_product_receive SET 	
+			order_code = #{orderCode},
+			foreign_order_id = #{foreignOrderId},
+			arrive_time = #{arriveTime},
+			order_source = #{orderSource},
+			operator_id = #{operatorId},
+			operator_name = #{operatorName},
+			generate_time = #{generateTime},
+			warehouse_id = #{warehouseId},
+			delete_user_id = #{deleteUserId},
+			delete_user_name = #{deleteUserName},
+			delete_time = #{deleteTime},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+		    operator_dept_id =#{operatorDeptId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_product_receive SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 查询最大收货单号 -->
+	<select id="queryOrderCodeMax" parameterType="java.lang.String" resultType="java.lang.String">
+	select t.order_code from t_product_receive t  where t.del_flag='0' and t.order_code like  CONCAT (#{code},'%') ORDER BY order_code DESC LIMIT 0,1
+	</select>
+	
+	<update id="updateStatusById" parameterType="com.ys.wms.entity.crud.TProductReceive">
+		UPDATE t_product_receive SET 	
+			status = #{status}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 查询收货单详情 -->
+	<select id="getReceiptBill" parameterType="java.lang.String" resultMap="receiptBillMap">
+		select  
+		a.id as receiptBillId,
+		a.operator_id as creatorId,
+		a.operator_name as creatorName,
+		a.warehouse_id as warehouseId,
+		w.`name` as warehouseName,
+		a.`status` as receiptBillStatusKey,
+		a.order_code as receiptBillCode,
+		a.arrive_time as arrivalDate,
+		a.order_source as receiptBillSourceKey,
+		a.foreign_order_id as externalBillCode,
+		d.id as receiptDetailId,
+		d.receiver_id as checkerId,
+		d.receiver_name as checkerName,
+		d.receive_time as checkDate,
+		d.amount as arrivalAmount,
+		d.qualified_amount as qualifiedAmount,
+		d.unqualified_amount as unqualifiedAmount,
+		d.unqualified_introduction as unqualifiedDesc,
+		d.receive_introduction as introduction,
+		d.material_code as materialCode,
+		d.material_name as materialName,
+		d.material_model as modelType,
+		d.material_spec as specification,
+		d.unit as unitName,
+		d.material_type_id as materialCategoryCode,
+		d.material_type_name as materialCategoryName,
+		d.bar_code as barCode
+		from t_product_receive a 
+		LEFT JOIN t_warehouse_info w on w.id=a.warehouse_id
+		LEFT JOIN t_product_receive_detail d on d.product_receive_id=a.id
+		where 
+		a.del_flag=0 
+		and d.del_flag=0 
+		and a.id=#{receiptBillId}
+	</select>
+	
+	<select id="getReceiptBillList" parameterType="com.ys.wms.dto.receipt.ReceiptQueryParam" resultType="com.ys.wms.dto.receipt.ReceiptListDto">
+	   SELECT 
+		a.generate_time as createDate,
+		a.order_code as receiptBillCode,
+		a.order_source as receiptBillSourceKey,
+		a.`status` as receiptBillStatusKey,
+		a.id as receiptBillId,
+		a.foreign_order_id as externalBillCode
+		FROM t_product_receive a
+		<where>
+			a.del_flag = '0'
+			<if test="receiptBillId != null and receiptBillId != ''">
+				AND a.id = #{receiptBillId}
+			</if>
+			<if test="receiptBillCode != null and receiptBillCode != ''">
+				AND a.order_code like CONCAT('%',#{receiptBillCode},'%')
+			</if>
+			<if test="externalBillCode != null and externalBillCode != ''">
+				AND a.foreign_order_id like CONCAT('%',#{externalBillCode},'%')
+			</if>
+			<if test="receiptBillSourceKey != null and receiptBillSourceKey >0">
+				AND a.order_source = #{receiptBillSourceKey}
+			</if>
+			<if test="receiptBillStatusKey != null and receiptBillStatusKey >0">
+				AND a.status = #{receiptBillStatusKey}
+			</if>
+			<if test="createDateBegin != null">
+				AND a.generate_time>=#{createDateBegin}
+			</if>
+			<if test="createDateEnd != null ">
+			<![CDATA[
+			    AND a.generate_time <= #{createDateEnd}
+		    ]]>
+			</if>
+			<if test="(userId != null and userId != '')and (checkerId != null and checkerId != '')">
+				AND 
+				(a.operator_id = #{userId} or a.id in      
+				(select d.product_receive_id from t_product_receive_detail d where d.receiver_id=#{checkerId} and d.del_flag='0')
+				)
+			</if>
+			<if test="(userId != null and userId != '')and (checkerId == null or checkerId == '')">
+				AND a.operator_id = #{userId}
+			</if>
+			<if test="(operatorDeptId != null and operatorDeptId != '') and  (checkerId == null or checkerId == '')">
+				AND a.operator_dept_id = #{operatorDeptId}
+			</if>
+			<if test="(operatorDeptId != null and operatorDeptId != '') and  (checkerId != null and checkerId != '')">
+				AND 
+				(a.operator_dept_id = #{operatorDeptId} or a.id in      
+				(select d.product_receive_id from t_product_receive_detail d where d.receiver_id=#{checkerId} and d.del_flag='0')
+				)
+			</if>
+			<if test="(checkerId != null and checkerId != '') and (userId == null or userId == '') and (operatorDeptId == null or operatorDeptId == '')">
+				AND a.operator_dept_id = #{checkerId}
+			</if>
+		</where>
+		ORDER BY a.generate_time DESC
+	</select>
+	
+	
+	
+	<resultMap id="receiptBillMap" type="com.ys.wms.dto.receipt.ReceiptDto">
+        <id column="receiptBillId" property="receiptBillId" />
+		<result column="creatorId" property="creatorId" />
+		<result column="creatorName" property="creatorName" />
+		<result column="warehouseId" property="warehouseId" />
+		<result column="warehouseName" property="warehouseName" />
+		<result column="receiptBillStatusKey" property="receiptBillStatusKey" />
+		<result column="receiptBillCode" property="receiptBillCode" />
+		<result column="arrivalDate" property="arrivalDate" />
+		<result column="receiptBillSourceKey" property="receiptBillSourceKey" />
+		<result column="externalBillCode" property="externalBillCode" />
+		
+		<collection property="details" ofType="com.ys.wms.dto.receipt.ReceiptDetailDto">
+			<result column="receiptDetailId" property="receiptDetailId" />
+			<result column="checkerId" property="checkerId" />
+			<result column="checkerName" property="checkerName" />
+			<result column="checkDate" property="checkDate" />
+			<result column="arrivalAmount" property="arrivalAmount" />
+			<result column="qualifiedAmount" property="qualifiedAmount" />
+			<result column="unqualifiedAmount" property="unqualifiedAmount" />
+			<result column="unqualifiedDesc" property="unqualifiedDesc" />
+			<result column="introduction" property="introduction" />
+			<result column="materialCode" property="materialCode" />
+			<result column="materialName" property="materialName" />
+			<result column="modelType" property="modelType" />
+			<result column="specification" property="specification" />
+			<result column="unitName" property="unitName" />
+			<result column="materialCategoryCode" property="materialCategoryCode" />
+			<result column="materialCategoryName" property="materialCategoryName" />
+			<result column="barCode" property="barCode" />
+		</collection>
+		
+</resultMap>
+	
+</mapper>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ys.wms.dao.crud.TStockCyclecountDao">
+    
+	<sql id="tStockCyclecountColumns">
+		a.id AS "id",
+		a.cyclecount_code AS "cyclecountCode",
+		a.operate_time AS "operateTime",
+		a.warehouse_code AS "warehouseCode",
+		a.warehouse_dept_id AS "warehouseDeptId",
+		a.warehouse_dept_name AS "warehouseDeptName",
+		a.operater_id AS "operaterId",
+		a.operater_name AS "operaterName",
+		a.begin_time AS "beginTime",
+		a.end_time AS "endTime",
+		a.verify_user_id AS "verifyUserId",
+		a.verify_user_name AS "verifyUserName",
+		a.verify_introduction AS "verifyIntroduction",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tStockCyclecountJoins">
+	</sql>
+    
+	<select id="get" resultType="TStockCyclecount">
+		SELECT 
+			<include refid="tStockCyclecountColumns"/>
+		FROM t_stock_cyclecount a
+		<include refid="tStockCyclecountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TStockCyclecount">
+		SELECT 
+			<include refid="tStockCyclecountColumns"/>
+		FROM t_stock_cyclecount a
+		<include refid="tStockCyclecountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="cyclecountCode != null and cyclecountCode != ''">
+				AND a.cyclecount_code = #{cyclecountCode}
+			</if>
+			<if test="warehouseCode != null and warehouseCode != ''">
+				AND a.warehouse_code = #{warehouseCode}
+			</if>
+			<if test="warehouseDeptId != null and warehouseDeptId != ''">
+				AND a.warehouse_dept_id = #{warehouseDeptId}
+			</if>
+			<if test="warehouseDeptName != null and warehouseDeptName != ''">
+				AND a.warehouse_dept_name = #{warehouseDeptName}
+			</if>
+			<if test="operaterId != null and operaterId != ''">
+				AND a.operater_id = #{operaterId}
+			</if>
+			<if test="operaterName != null and operaterName != ''">
+				AND a.operater_name = #{operaterName}
+			</if>
+			<if test="verifyUserId != null and verifyUserId != ''">
+				AND a.verify_user_id = #{verifyUserId}
+			</if>
+			<if test="verifyUserName != null and verifyUserName != ''">
+				AND a.verify_user_name = #{verifyUserName}
+			</if>
+			<if test="verifyIntroduction != null and verifyIntroduction != ''">
+				AND a.verify_introduction = #{verifyIntroduction}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TStockCyclecount">
+		SELECT 
+			<include refid="tStockCyclecountColumns"/>
+		FROM t_stock_cyclecount a
+		<include refid="tStockCyclecountJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_stock_cyclecount(
+			id,
+			cyclecount_code,
+			operate_time,
+			warehouse_code,
+			warehouse_dept_id,
+			warehouse_dept_name,
+			operater_id,
+			operater_name,
+			begin_time,
+			end_time,
+			verify_user_id,
+			verify_user_name,
+			verify_introduction,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{cyclecountCode},
+			#{operateTime},
+			#{warehouseCode},
+			#{warehouseDeptId},
+			#{warehouseDeptName},
+			#{operaterId},
+			#{operaterName},
+			#{beginTime},
+			#{endTime},
+			#{verifyUserId},
+			#{verifyUserName},
+			#{verifyIntroduction},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_stock_cyclecount SET 	
+			cyclecount_code = #{cyclecountCode},
+			operate_time = #{operateTime},
+			warehouse_code = #{warehouseCode},
+			warehouse_dept_id = #{warehouseDeptId},
+			warehouse_dept_name = #{warehouseDeptName},
+			operater_id = #{operaterId},
+			operater_name = #{operaterName},
+			begin_time = #{beginTime},
+			end_time = #{endTime},
+			verify_user_id = #{verifyUserId},
+			verify_user_name = #{verifyUserName},
+			verify_introduction = #{verifyIntroduction},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_stock_cyclecount SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
